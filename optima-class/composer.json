@@ -1,0 +1,22 @@
+{
+    "name": "daz/optima-class",
+    "description": "class for the optima crm",
+    "version": "1.0.0",
+    "license": [
+       "LGPL-2.1-only",
+       "GPL-3.0-or-later"
+    ],
+    "autoload": {
+        "psr-4": {
+            "Daz\\OptimaClass\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Daxit Zadafiya",
+            "email": "daxitzadafiya.work@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {}
+}
