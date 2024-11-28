@@ -1,6 +1,6 @@
 <?php
 
-namespace Daz\OptimaClass;
+namespace Daz\OptimaClass\Providers;
 
 use Illuminate\Support\ServiceProvider;
 
