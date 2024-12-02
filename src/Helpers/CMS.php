@@ -597,8 +597,9 @@ class CMS
             }
         } else {
             $file_data = file_get_contents($file);
-            $data = json_decode($file_data, true);
         }
+
+        $data = json_decode($file_data, true);
 
         if (!is_array($data) || count($data) <= 0) {
             die('Error Getting CMS Data');
@@ -704,8 +705,9 @@ class CMS
             file_put_contents($file, $file_data);
         } else {
             $file_data = file_get_contents($file);
-            $rules = json_decode($file_data, true);
         }
+        
+        $rules = json_decode($file_data, true);
 
         return $rules;
     }
