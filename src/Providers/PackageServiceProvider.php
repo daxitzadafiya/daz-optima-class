@@ -13,8 +13,6 @@ class PackageServiceProvider extends ServiceProvider
 
     public function boot()
     {
-        $this->publishes([
-            __DIR__.'/../config/package.php' => config_path('package.php'),
-        ]);
+        //
     }
 }
