@@ -17,5 +17,8 @@
             "email": "daxitzadafiya.work@gmail.com"
         }
     ],
-    "minimum-stability": "dev"
+    "minimum-stability": "dev",
+    "require": {
+        "illuminate/support": "^11.31"
+    }
 }
