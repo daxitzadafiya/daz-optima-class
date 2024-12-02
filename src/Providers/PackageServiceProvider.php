@@ -8,7 +8,7 @@ class PackageServiceProvider extends ServiceProvider
 {
     public function register()
     {
-        // Register package services
+        $this->app->register('Daz\ReCaptcha\ReCaptchaServiceProvider');
     }
 
     public function boot()

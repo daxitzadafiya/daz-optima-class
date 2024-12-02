@@ -17,8 +17,15 @@
             "email": "daxitzadafiya.work@gmail.com"
         }
     ],
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/daxitzadafiya/daz-recaptcha.git"
+        }
+    ],
     "minimum-stability": "dev",
     "require": {
-        "illuminate/support": "^11.31"
+        "illuminate/support": "^11.31",
+        "daz/recaptcha": "dev-main"
     }
 }
