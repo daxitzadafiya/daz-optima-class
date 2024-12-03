@@ -8,36 +8,11 @@ use Illuminate\Support\Facades\App;
  * Cms Functions to get CMS data
  *
 */
-class CMS
+class CMS extends BaseHelper
 {
     private static $image_url = 'https://images.optima-crm.com/resize/cms_medias/'; // For resize image URLs
     private static $image_url_users = ' https://images.optima-crm.com/resize/users/'; // For getUsers image URLs
     private static $image_url_without_resize = 'https://images.optima-crm.com/cms_medias/'; // For svg images URLs
-    private static $rootUrl;
-    private static $apiUrl;
-    private static $site_id;
-    private static $user;
-    private static $commercial;
-    private static $cms_img;
-    private static $excluded_langs;
-    private static $ImageFrom;
-    private static $template;
-
-    /**
-     * Initialize configuration values.
-    */
-    private static function initialize()
-    {
-        self::$rootUrl = config('params.rootUrl');
-        self::$apiUrl = config('params.apiUrl');
-        self::$site_id = config('params.site_id');
-        self::$user = config('params.user');
-        self::$commercial = config('params.commercial');
-        self::$cms_img = config('params.cms_img');
-        self::$excluded_langs = config('params.excluded_langs');
-        self::$ImageFrom = config('params.ImageFrom');
-        self::$template = config('params.template');
-    }
 
     public static function settings()
     {

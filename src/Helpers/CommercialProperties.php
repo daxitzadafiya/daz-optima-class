@@ -7,34 +7,8 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Request;
 
-class CommercialProperties
+class CommercialProperties extends BaseHelper
 {
-    private static $status;
-    private static $apiUrl;
-    private static $user;
-    private static $node_url;
-    private static $agency;
-    private static $property_img_resize_link;
-    private static $img_url_without_wm;
-    private static $com_img;
-    private static $api_key;
-
-    /**
-     * Initialize configuration values.
-    */
-   private static function initialize()
-   {
-       self::$status = config('params.status');
-       self::$apiUrl = config('params.apiUrl');
-       self::$user = config('params.user');
-       self::$node_url = config('params.node_url');
-       self::$agency = config('params.agency');
-       self::$property_img_resize_link = config('params.property_img_resize_link');
-       self::$img_url_without_wm = config('params.img_url_without_wm');
-       self::$com_img = config('params.com_img');
-       self::$api_key = config('params.api_key');
-   }
-
     public static function findAll($page = 1, $page_size = 10, $query = '', $sort = ['current_price' => '-1'], $set_options = [])
     {
         self::initialize();
