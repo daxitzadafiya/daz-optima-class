@@ -2,8 +2,9 @@
 
 namespace Daz\OptimaClass\Providers;
 
-use Daz\OptimaClass\Helpers\ContactUs;
+use Daz\OptimaClass\Requests\ContactUsRequest;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
 class PackageServiceProvider extends ServiceProvider
@@ -13,8 +14,10 @@ class PackageServiceProvider extends ServiceProvider
         $this->app->register('Daz\ReCaptcha\ReCaptchaServiceProvider');
 
         $this->app->bind(Request::class, function ($app) {
-            return ContactUs::createFrom($app['request'], $app);
+            return ContactUsRequest::createFrom($app['request'], $app);
         });
+
+        $this->app->bind('page_data', fn() => null);
     }
 
     public function boot()

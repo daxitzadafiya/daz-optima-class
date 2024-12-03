@@ -2,9 +2,13 @@
 
 namespace Daz\OptimaClass\Helpers;
 
+use Daz\OptimaClass\Requests\ContactUsRequest;
 use Daz\ReCaptcha\Facades\ReCaptcha;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\File;
+use Illuminate\View\ViewException;
+use Illuminate\Support\Facades\Http;
+
 
 class Functions
 {
@@ -48,6 +52,240 @@ class Functions
 
         // Finally, delete the root directory
         return File::rmdir($dirname);
+    }
+
+    public static function renderReCaptchaJs($callback = false, $onLoadClass = 'onloadCallBack')
+    {
+        $currentAppLanguage = strtolower(App::getLocale());
+        $cmsLang = config("params.replace_iso_code", []);
+
+        // Simplify the language exception handling
+        if (array_key_exists($currentAppLanguage, $cmsLang)) {
+            $currentAppLanguage = $cmsLang[$currentAppLanguage] ?? '';
+        }
+
+        return ReCaptcha::renderJs($currentAppLanguage, $callback, $onLoadClass);
+    }
+    
+    public static function recaptcha($name = 'reCaptcha', $id = '', $options = [])
+    {
+        $siteKey = config('services.recaptcha.site_key', env('RECAPTCHA_SITE_KEY', '6Le9fqsUAAAAAN2KL4FQEogpmHZ_GpdJ9TGmYMrT'));
+
+        $defaultOptions = [
+            "class" => "g-recaptcha",
+            "name" => $name,
+            "data-sitekey" => $siteKey,
+            "data-id" => $id
+        ];
+
+        $mergedOptions = self::mergeOptions($defaultOptions, $options);
+
+        return '<div ' . implode(' ', array_map(fn($key, $value) => $key . '="' . e($value) . '"', array_keys($mergedOptions), $mergedOptions)) . ' ></div>';
+    }
+
+    public static function reCaptcha3($name = 'recaptcha_token', $id = 'recaptchaToken', $options = [])
+    {
+        $siteKey = config('services.recaptcha.site_key', env('RECAPTCHA_SITE_KEY', '6Le9fqsUAAAAAN2KL4FQEogpmHZ_GpdJ9TGmYMrT'));
+
+        return '<input type="hidden" name="' . $name . '" id="' . $id . '" value="">';
+    }
+
+    // public static function siteSendEmail($object, $redirect_url = null)
+    // {
+    //     $model = new ContactUs();
+    //     $model->fill(request()->all());
+    //     $model->verifyCode = true;
+    //     $model->reCaptcha = request()->get('reCaptcha');
+    //     if ($model->reCaptcha3 = request()->get('reCaptcha3')) {
+    //         $model->scenario = ContactUsRequest::SCENARIO_V3;
+    //     }
+
+    //     if (isset($_GET['owner'])) {
+    //         $model->owner = 1;
+    //     }
+    //     if (isset($_GET['friend_name']) && isset($_GET['friend_ser_name']) && isset($_GET['friend_email'])) {
+    //         $message = '';
+
+    //         $message .= 'Message: ' . $model->message;
+
+    //         $model->message = "Friend's Name = " . $_GET['friend_name'] . "\r\n Friend's Ser Name = " . $_GET['friend_ser_name'] . "\r\n Friend's Email = " . $_GET['friend_email'] . "\r\n" . $message;
+    //     }
+
+    //     if (isset($_GET['morning_call']) || isset($_GET['afternoon_call'])) {
+    //         if (isset($_GET['morning_call']) && !isset($_GET['afternoon_call'])) {
+    //             $scedual_msg = 'Call me back in the morning';
+    //         } elseif (isset($_GET['afternoon_call']) && !isset(($_GET['morning_call']))) {
+    //             $scedual_msg = 'Call me back in the afternoon';
+    //         } else {
+    //             $scedual_msg = 'Call me back in the morning.<br>Call me back in the afternoon.';
+    //         }
+    //         $message = '';
+
+    //         $message .= 'Message: ' . $model->message;
+
+    //         $model->message = "Preferred time = " . $scedual_msg . "\r\n" . $message;
+    //     }
+
+    //     if (!$model->sendMail()) {
+    //         /*if ($model->last_name == 'Request')
+    //         {
+    //             $model->reCaptcha = false;
+    //             Yii::$app->session->setFlash('success', "Thank you for your message!");
+    //         }*/
+    //         $errors = 'Message not sent!';
+    //         if (isset($model->errors) and count($model->errors) > 0) {
+    //             $errs = array();
+    //             foreach ($model->errors as $k => $err) {
+    //                 $errs[] = $err[0];
+    //             }
+    //             $errors = implode(',', $errs);
+    //         }
+
+    //         Yii::$app->session->setFlash('failure', $errors);
+    //         if (isset(Yii::$app->params['send_error_mails_to'])) {
+    //             self::sendErrorMail($errors, Yii::$app->params['send_error_mails_to']);
+    //         }
+    //     } else {
+    //         Yii::$app->session->setFlash('success', "Thank you for your message!");
+    //         if ($redirect_url) {
+    //             return $object->redirect($redirect_url);
+    //         }
+    //     }
+
+    //     return $object->redirect(Yii::$app->request->referrer);
+    // }
+
+    // public static function sendErrorMail($model, $bcc = [])
+    // {
+    //     $errors = 'Message not sent!';
+    //     if (isset($model->errors) and count($model->errors) > 0) {
+    //         $errs = array();
+    //         foreach ($model->errors as $k => $err) {
+    //             $errs[] = $err[0];
+    //         }
+    //         $errors = implode(',', $errs);
+    //     }
+
+    //     $message = "";
+    //     $message .= 'Name : ' . $model->first_name . ' ' . $model->last_name . '<br>';
+    //     $message .= 'Email : ' . $model->email . '<br>';
+    //     $message .= 'Phone : ' . $model->phone . '<br>';
+    //     $message .= 'Message : ' . $model->message . '<br><br>';
+    //     $message .= 'Site : ' . Url::home(true) . '<br>';
+    //     $message .= 'Url : ' . Yii::$app->request->referrer . '<br>';
+    //     $message .= 'Errors : ' . $errors . '<br>';
+
+
+    //     Yii::$app->mailer->compose()
+    //         ->setFrom($model->email)
+    //         ->setTo('support@optimasys.es')
+    //         ->setBcc($bcc)
+    //         ->setSubject('Leads Error')
+    //         ->setHtmlBody($message)
+    //         ->send();
+    // }
+
+    public static function loadPageDynamically($object)
+    {
+        $slug = request()->get('slug', '');
+        if ($slug) {
+            app()->instance('page_data', $page_data = Cms::getPage(['slug' => $slug, 'lang' => App::getLocale()]));
+            // } else {
+            //     app()->instance('page_data', $page_data = Cms::getPage(['slug' => request()->get('title'), 'lang' => strtoupper(App::getLocale())]));
+        }
+
+        // redirect if there is no page_data is available
+        if (!isset($page_data) || empty(array_filter($page_data))) {
+            return redirect(to: '/404');
+        }
+
+        if (!empty($page_data['view_path'])) {
+            try {
+                return $object->render($page_data['view_path'], [
+                    'page_data' => $page_data
+                ]);
+            } catch (ViewException $error) {
+                throw $error;
+            }
+        } elseif ($slug == '404') {
+            return $object->render($slug, [
+                'page_data' => $page_data
+            ]);
+        } else {
+            return $object->render('page', [
+                'page_data' => $page_data
+            ]);
+        }
+    }
+
+    public static function dynamicPage($object)
+    {
+        $cmsModel = CMS::Slugs('page');
+        $url = explode('/', request()->path());
+        $this_page = urldecode(end($url));        
+        app()->instance('page_data', $page_data = CMS::pageBySlug(request()->input('title')));
+        if (isset($cmsModel) && count($cmsModel) > 0) {
+            foreach ($cmsModel as $row) {
+                if (isset($row['slug_all'][strtoupper(App::getLocale())]) and $row['slug_all'][strtoupper(App::getLocale())] == $this_page) {
+                    $page_data = Cms::pageBySlug($this_page);
+                    if (isset($page_data['custom_settings'][strtoupper(App::getLocale())]) and count($page_data['custom_settings'][strtoupper(App::getLocale())]) > 0) {
+                        foreach ($page_data['custom_settings'][strtoupper(App::getLocale())] as $custom_keys) {
+                            if ($custom_keys['key'] == 'page_template') {
+                                $page_template = $custom_keys['value'];
+                            }
+                            if ($custom_keys['key'] == 'custom_post_id') {
+                                $custom_post_id = $custom_keys['value'];
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if (isset($page_template)) {
+            try {
+                if (isset($custom_post_id)) {
+                    $custom_post_id = Cms::postTypes($custom_post_id);
+                } else {
+                    $custom_post_id = '';
+                }
+                app()->instance('page_data',$page_data);
+                return $object->render($page_template, [
+                    'page_data' => $page_data,
+                    'custom_post_id' => $custom_post_id
+                ]);
+            } catch (ViewException $e) {
+                //die;
+            }
+        } elseif (isset($this_page) && is_file($this_page)) {
+            return $object->render($this_page, [
+                'page_data' => isset($page_data) ? $page_data : ''
+            ]);
+        } else {
+            if (!array_filter($page_data)) {
+                $page_data_404 = Cms::pageBySlug('404');
+                if (!isset($page_data_404) || !isset($page_data_404['slug_all']['EN'])) {
+                    die('Please create 404 page with slug "404" in CMS');
+                }
+                app()->instance('page_data', $page_data = Cms::pageBySlug('404'));
+                return $object->render('404', [
+                    'page_data' => isset($page_data) ? $page_data : ''
+                ]);
+            }
+            app()->instance('page_data', $page_data);
+            return $object->render('page', [
+                'page_data' => isset($page_data) ? $page_data : ''
+            ]);
+        }
+    }
+
+    public static function getAgentsList($agent_name = '')
+    {
+        $url = config('params.apiUrl') . 'properties/get-assigned-to-listing-agent' . http_build_query([
+            'user_apikey' => config('api_key'),
+            'search_word' => $agent_name,
+        ]);
+        $response = Http::get($url)->json();
+        return $response;
     }
 
     public static function getCRMData($url, $cache = true, $fields = array(), $auth = false)
@@ -118,35 +356,6 @@ class Functions
         $string = str_replace(' ', '-', $string); // Replaces all spaces with hyphens.
 
         return preg_replace('/[^A-Za-z0-9\-]/', '', $string); // Removes special chars.
-    }
-
-    public static function renderReCaptchaJs($callback = false, $onLoadClass = 'onloadCallBack')
-    {
-        $currentAppLanguage = strtolower(App::getLocale());
-        $cmsLang = config("params.replace_iso_code", []);
-
-        // Simplify the language exception handling
-        if (array_key_exists($currentAppLanguage, $cmsLang)) {
-            $currentAppLanguage = $cmsLang[$currentAppLanguage] ?? '';
-        }
-
-        return ReCaptcha::renderJs($currentAppLanguage, $callback, $onLoadClass);
-    }
-    
-    public static function recaptcha($name = 'reCaptcha', $id = '', $options = [])
-    {
-        $siteKey = config('services.recaptcha.site_key', env('RECAPTCHA_SITE_KEY', '6Le9fqsUAAAAAN2KL4FQEogpmHZ_GpdJ9TGmYMrT'));
-
-        $defaultOptions = [
-            "class" => "g-recaptcha",
-            "name" => $name,
-            "data-sitekey" => $siteKey,
-            "data-id" => $id
-        ];
-
-        $mergedOptions = self::mergeOptions($defaultOptions, $options);
-
-        return '<div ' . implode(' ', array_map(fn($key, $value) => $key . '="' . e($value) . '"', array_keys($mergedOptions), $mergedOptions)) . ' ></div>';
     }
 
     private static function mergeOptions(array $defaultOptions, array $options): array
