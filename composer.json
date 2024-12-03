@@ -25,7 +25,7 @@
     ],
     "minimum-stability": "dev",
     "require": {
-        "illuminate/support": "^11.31",
+        "laravel/framework": "^11.31",
         "daz/recaptcha": "dev-main"
     }
 }
