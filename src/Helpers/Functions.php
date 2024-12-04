@@ -159,8 +159,8 @@ class Functions
             // Handle unexpected errors
             session()->flash('failure', "An error occurred: " . $e->getMessage());
 
-            if (config('app.send_error_mails_to')) {
-                self::sendErrorMail($e->getMessage(), config('app.send_error_mails_to'));
+            if (config('params.send_error_mails_to')) {
+                self::sendErrorMail($e->getMessage(), config('params.send_error_mails_to'));
             }
         }
 

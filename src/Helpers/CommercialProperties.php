@@ -2,6 +2,8 @@
 
 namespace Daz\OptimaClass\Helpers;
 
+use DateTime;
+use DateTimeZone;
 use Daz\OptimaClass\Traits\ConfigTrait;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\File;
@@ -24,7 +26,7 @@ class CommercialProperties
             ]
         ];
 
-        if (Request::has('orderby') && is_array(Request::get('orderby')) && count(Request::get('orderby')) === 2) {
+        if (Request::has('orderby') && is_array(Request::get('orderby')) && count(Request::get('orderby')) == 2) {
             $sort = [Request::get('orderby')[0] => Request::get('orderby')[1]];
         }
 
@@ -134,14 +136,22 @@ class CommercialProperties
             $query['$and'] = [['project' => ['$exists' => true]],["project" => (boolean) $get['project']]];
         }
 
+        if (isset($get['resale']) && !empty($get['resale'])) {
+            $query['$and'] = [['project' => ['$ne' => true]]];
+        }
+
         if (isset($get['project_on']) && !empty($get['project_on'])) {
-            $query['$or'] = [["own" => false],['own' => ['$exists' => false]] ];
+            $query['$or'] = [["own" => false], ['own' => ['$exists' => false]]];
+        }
+        
+        if (isset($get['own']) && !empty($get['own']) && $get['own']) {
+            $query['own'] = $get['own'];
         }
 
         if (isset($get['prop_ids']) && !empty($get['prop_ids'])) {
             $prop_ids = $get['prop_ids'] != '' ? $get['prop_ids'] : [];
-                $prop_ids = explode(',', $prop_ids);
-                 $query['_id'] = ['$in' =>  $prop_ids];
+            $prop_ids = explode(',', $prop_ids);
+            $query['_id'] = ['$in' =>  $prop_ids];
         }
 
         if (isset($get['type']) && !empty($get['type']) && is_array($get['type']) && count($get['type']) > 0 && $get['type'][0] != 0 && $get['type'][0] != '' && $get['type'][0] != '0') {
@@ -181,12 +191,26 @@ class CommercialProperties
             $query['rental_seasons_price_to'] = (int) $get['rental_price_to'];
         }
 
+        if ((isset($get['period_seasons_price_from']) && !empty($get['period_seasons_price_from'])) || (isset($get['period_seasons_price_to']) && !empty($get['period_seasons_price_to']))) {
+            $query['period_seasons_price'] = true;
+        }
+        if (isset($get['period_seasons_price_from']) && $get['period_seasons_price_from'] != '') {
+            $query['period_seasons_price_from'] = (int) $get['period_seasons_price_from'];
+        }
+        if (isset($get['period_seasons_price_to']) && $get['period_seasons_price_to'] != '') {
+            $query['period_seasons_price_to'] = (int) $get['period_seasons_price_to'];
+        }
+
         if (isset($get['auction']) && !empty($get['auction'])) {
             $query['auction_tab'] = true;
         }
 
-        if (isset($get['show_on']) && !empty($get['show_on'])) {
+        if (isset($get['show_on']) && !empty($get['show_on']) && !isset($get['latLang'])) {
             $query['show_on'] = ['$in' => $get['show_on']];
+        }
+
+        if (isset($get['show_on']) && !empty($get['show_on']) && isset($get['latLang']) && !empty($get['latLang'])) {            
+            $query['basic_info_object.'. self::$agency .'.show_on'] = ['$in' => $get['show_on']];
         }
 
         if (isset($get['status']) && !empty($get['status'])) {
@@ -249,6 +273,14 @@ class CommercialProperties
             $query['shared_categories'] = ['$in' => $intArray];
         }
 
+        if (isset($get['custom_categories']) && !empty($get['custom_categories'])) {
+            $intArray = array();
+            foreach ($get['custom_categories'] as $int_val) {
+                $intArray[] = (int) $int_val;
+            }
+            $query['custom_categories'] = ['$nin' => $intArray];
+        }
+
         if (isset($get['country']) && !empty($get['country'])) {
             $query['country'] = (int) $get['country'];
         }
@@ -286,13 +318,13 @@ class CommercialProperties
         }
 
         if (isset($get['cp_features']) && !empty($get['cp_features'])) {
-            foreach($_GET['cp_features'] as $features){
-                if(isset($features) && count($features) > 1 ){
+            foreach ($_GET['cp_features'] as $features) {
+                if (isset($features) && count($features) > 1) {
                     $group_feature['$or'] = $features;
                     $search_feature[] = $group_feature;
-                }else{
-                    if(!empty($features)){
-                        foreach($features as $feature){
+                } else {
+                    if (!empty($features)) {
+                        foreach ($features as $feature) {
                             $search_feature[] = $feature;
                         }
                     }
@@ -356,9 +388,18 @@ class CommercialProperties
         }
 
         if (isset($get['office']) && !empty($get['office'])) {
-            $query['offices'] =['$in' => $get['office']];
+            $query['offices'] = ['$in' => $get['office']];
         }
-
+        if (isset($get['remove_count']) && $get['remove_count']) {
+            $query['remove_count'] = $get['remove_count'];
+        }
+        if (isset($get["listing_agent"]) && $get["listing_agent"]) {
+            $intArray = array();
+            foreach ($get['listing_agent'] as $int_val) {
+                $intArray[] = $int_val;
+            }
+            $query['listing_agent'] = ['$in' => $intArray];
+        }
         return $query;
     }
 
@@ -374,6 +415,11 @@ class CommercialProperties
             $contentLang = 'es_AR';
         }
 
+        if (strtolower(App::getLocale()) == 'po') {
+            $contentLang = 'pl';
+            $lang = strtoupper("pl");
+        }
+        
         $f_property = [];
         if (isset($settings['general_settings']['reference']) && $settings['general_settings']['reference'] != 'reference') {
             $ref = $settings['general_settings']['reference'];
@@ -439,59 +485,54 @@ class CommercialProperties
         if (isset($property['reference'])) {
             $f_property['id'] = $property['reference'];
         }
-
-        if (isset($property['shared_data']['title'][$lang]) && $property['shared_data']['title'][$lang] != '') {
-            $f_property['sale_title'] = $property['shared_data']['title'][$lang];
-        } else if (isset($property['title'][$lang]) && $property['title'][$lang] != '') {
+        if (isset($property['title'][$lang]) && $property['title'][$lang] != '') {
             $f_property['sale_title'] = $property['title'][$lang];
+        } elseif (isset($property['shared_data']['title'][$lang]) && $property['shared_data']['title'][$lang] != '') {
+            $f_property['sale_title'] = $property['shared_data']['title'][$lang];
         } else {
             $f_property['sale_title'] = (isset($property['property_type_one']['value'][$contentLang]) ? __('app.'.$property['property_type_one']['value'][$contentLang]) : '') . ' ' . (isset($property['property_location']['value'][$contentLang]) ? __('app.in'). ' ' . __('app.'.$property['property_location']['value'][$contentLang]) : '');
         }
-
-        if (isset($property['shared_data']['description'][$lang]) && $property['shared_data']['description'][$lang] != '') {
-            $f_property['sale_description'] = $property['shared_data']['description'][$lang];
-        } elseif (isset($property['description'][$lang]) && $property['description'][$lang] != '') {
+        if (isset($property['description'][$lang]) && $property['description'][$lang] != '') {
             $f_property['sale_description'] = $property['description'][$lang];
+        }elseif (isset($property['shared_data']['description'][$lang]) && $property['shared_data']['description'][$lang] != ''  && (isset($property['agency']) && $property['agency'] != self::$agency) && (isset($property['mls']) && $property['mls'] == 1)) {
+            $f_property['sale_description'] = $property['shared_data']['description'][$lang];
         }
-
-        if ( self::$agency == '6110fa9b8334050aac21e779' ) { // For ImmoMarket
-            if (isset($property['shared_data']['rental_external_title'][$lang]) && $property['shared_data']['rental_external_title'][$lang] != '' && isset($property['agency']) && $property['agency'] != self::$agency) {
-                $f_property['rent_title'] = $property['shared_data']['rental_external_title'][$lang];
-            } elseif (isset($property['rental_title'][$lang]) && $property['rental_title'][$lang] != '') {
+        if (self::$agency == '6110fa9b8334050aac21e779') { // For ImmoMarket
+            if (isset($property['rental_title'][$lang]) && $property['rental_title'][$lang] != '') {
                 $f_property['rent_title'] = $property['rental_title'][$lang];
+            }elseif (isset($property['shared_data']['rental_external_title'][$lang]) && $property['shared_data']['rental_external_title'][$lang] != '' && isset($property['agency']) && $property['agency'] != self::$agency) {
+                $f_property['rent_title'] = $property['shared_data']['rental_external_title'][$lang];
             } else {
                 $f_property['rent_title'] = (isset($property['property_type_one']['value'][$contentLang]) ? __('app.'. $property['property_type_one']['value'][$contentLang]) : '') . ' ' . (isset($property['property_location']['value'][$contentLang]) ? __('app.in'). ' ' . __('app.'.$property['property_location']['value'][$contentLang]) : '');
             }
-
-            if (isset($property['shared_data']['rental_external_description'][$lang]) && $property['shared_data']['rental_external_description'][$lang] != '' && isset($property['agency']) && $property['agency'] != self::$agency) {
-                $f_property['rent_description'] = $property['shared_data']['rental_external_description'][$lang];
-            } elseif (isset($property['rental_description'][$lang]) && $property['rental_description'][$lang] != '') {
+            if (isset($property['rental_description'][$lang]) && $property['rental_description'][$lang] != '') {
                 $f_property['rent_description'] = $property['rental_description'][$lang];
+            }elseif (isset($property['shared_data']['rental_external_description'][$lang]) && $property['shared_data']['rental_external_description'][$lang] != '' && isset($property['agency']) && $property['agency'] != self::$agency) {
+                $f_property['rent_description'] = $property['shared_data']['rental_external_description'][$lang];
             }
         } else { // For Other Sites
-            if (isset($property['shared_data']['rental_external_title'][$lang]) && $property['shared_data']['rental_external_title'][$lang] != '' && (isset($property['agency']) && $property['agency'] != self::$agency) && (isset($property['mls']) && $property['mls'] == 1)) {
-                $f_property['rent_title'] = $property['shared_data']['rental_external_title'][$lang];
-            }elseif (isset($property['rental_title'][$lang]) && $property['rental_title'][$lang] != '') {
+            if (isset($property['rental_title'][$lang]) && $property['rental_title'][$lang] != '') {
                 $f_property['rent_title'] = $property['rental_title'][$lang];
-            }else{
+            } elseif (isset($property['shared_data']['rental_external_title'][$lang]) && $property['shared_data']['rental_external_title'][$lang] != '' && (isset($property['agency']) && $property['agency'] != self::$agency) && (isset($property['mls']) && $property['mls'] == 1)) {
+                $f_property['rent_title'] = $property['shared_data']['rental_external_title'][$lang];
+            } else {
                 $f_property['rent_title'] = (isset($property['property_type_one']['value'][$contentLang]) ? __('app.'.$property['property_type_one']['value'][$contentLang]) : '') . ' ' . (isset($property['property_location']['value'][$contentLang]) ? __('app.in'). ' ' . __('app.'. $property['property_location']['value'][$contentLang]) : '');
             }
-            if (isset($property['shared_data']['rental_external_description'][$lang]) && $property['shared_data']['rental_external_description'][$lang] != '' && (isset($property['agency']) && $property['agency'] != self::$agency) && (isset($property['mls']) && $property['mls'] == 1)) {
-                $f_property['rent_description'] = $property['shared_data']['rental_external_description'][$lang];
-            } elseif (isset($property['rental_description'][$lang]) && $property['rental_description'][$lang] != '') {
+            if (isset($property['rental_description'][$lang]) && $property['rental_description'][$lang] != '') {
                 $f_property['rent_description'] = $property['rental_description'][$lang];
+            } elseif (isset($property['shared_data']['rental_external_description'][$lang]) && $property['shared_data']['rental_external_description'][$lang] != '' && (isset($property['agency']) && $property['agency'] != self::$agency) && (isset($property['mls']) && $property['mls'] == 1)) {
+                $f_property['rent_description'] = $property['shared_data']['rental_external_description'][$lang];
             }
         }
 
         if (isset($property['status'])) {
             $f_property['status'] = __('app.'. $property['status']);
         }
-
-        if (isset($property['agency_data']['logo']['name']) && !empty($property['agency_data']['logo']['name']) ) {
+        if (isset($property['agency_data']['logo']['name']) && !empty($property['agency_data']['logo']['name'])) {
             $f_property['agency_logo'] = 'https://images.optima-crm.com/agencies/' . (isset($property['agency_data']['_id']) ? $property['agency_data']['_id'] : '') . '/' . (isset($property['agency_data']['logo']['name']) ? $property['agency_data']['logo']['name'] : '');
         }
 
-        if (isset($property['listing_agency_data']['logo']['name']) && !empty($property['listing_agency_data']['logo']['name']) ) {
+        if (isset($property['listing_agency_data']['logo']['name']) && !empty($property['listing_agency_data']['logo']['name'])) {
             $f_property['agency_logo'] = 'https://images.optima-crm.com/companies/' . (isset($property['listing_agency_data']['_id']) ? $property['listing_agency_data']['_id'] : '') . '/' . (isset($property['listing_agency_data']['logo']['name']) ? $property['listing_agency_data']['logo']['name'] : '');
             $f_property['compnay_id'] = isset($property['listing_agency_data']['_id']) ? $property['listing_agency_data']['_id'] : '';
         }
@@ -524,9 +565,14 @@ class CommercialProperties
             $f_property['urls'] =  $property['property_urls'];
         }
 
-        if(isset($property['videos']) && !empty($property['videos'])){
+        if(isset($property['urls_without_domain']) && !empty($property['urls_without_domain'])) {
+            $f_property['property_url'] = $property['urls_without_domain'];
+        }
+
+        if (isset($property['videos']) && !empty($property['videos'])) {
             $videos = [];
             $virtual_tours = [];
+            $floor_plan = [];
             $link_to_auction = [];
 
             foreach($property['videos'] as $video){
@@ -536,16 +582,21 @@ class CommercialProperties
             }
 
             $f_property['videos'] = $videos;
-            foreach($property['videos'] as $vt){
-                if(isset($vt['type']) && $vt['type'] == '2' && isset($vt['status']) && $vt['status'] == 1){
-                    $virtual_tours[] = (isset($vt['url'][strtoupper(App::getLocale())]) ? $vt['url'][strtoupper(App::getLocale())] : '');
-                }elseif(isset($vt['type']) && $vt['type'] == '112' && isset($vt['status']) && $vt['status'] == 1){
+            foreach ($property['videos'] as $vt) {
+                if (isset($vt['type']) && $vt['type'] == '2' && isset($vt['status']) && $vt['status'] == 1) {
+                    $virtual_tours['url'] = (isset($vt['url'][strtoupper(App::getLocale())]) ? $vt['url'][strtoupper(App::getLocale())] : '');
+                    $virtual_tours['description'] = (isset($vt['description'][strtoupper(App::getLocale())]) ? $vt['description'][strtoupper(App::getLocale())] : '');
+                } elseif (isset($vt['type']) && $vt['type'] == '112' && isset($vt['status']) && $vt['status'] == 1) {
                     $link_to_auction['link'] = (isset($vt['url'][strtoupper(App::getLocale())]) ? $vt['url'][strtoupper(App::getLocale())] : '');
                     $link_to_auction['status'] = (isset($vt['status']) ? $vt['status'] : '');
                 }
+                if (isset($vt['type']) && $vt['type'] == 'FP' && isset($vt['status']) && $vt['status'] == 1) {
+                    $floor_plan[] = (isset($vt['url'][strtoupper(App::getLocale())]) ? $vt['url'][strtoupper(App::getLocale())] : '');
+                } 
             }
 
             $f_property['vt'] = $virtual_tours;
+            $f_property['fp'] = $floor_plan;
             $f_property['link_to_auction'] = $link_to_auction;
         }
 
@@ -610,7 +661,7 @@ class CommercialProperties
         } elseif (isset($property['address']['lat']) && isset($property['address']['lng']) && $property['address']['lat'] != '' && $property['address']['lng'] != '') {
             $f_property['lat'] = $property['address']['lat'];
             $f_property['lng'] = $property['address']['lng'];
-        } elseif (isset($property['private_info_object'][self::$agency]['latitude']) && !empty($property['private_info_object'][self::$agency]['latitude'])){
+        } elseif (isset($property['private_info_object'][self::$agency]['latitude']) && !empty($property['private_info_object'][self::$agency]['latitude'])) {
             $f_property['lat'] = isset($property['private_info_object'][self::$agency]['latitude']) ? $property['private_info_object'][self::$agency]['latitude'] : '';
             $f_property['lng'] = isset($property['private_info_object'][self::$agency]['longitude']) ? $property['private_info_object'][self::$agency]['longitude'] : '';
         } elseif (isset($property['property_location']['latitude']) && isset($property['property_location']['longitude']) && $property['property_location']['latitude'] != '' && $property['property_location']['longitude'] != '') {
@@ -672,18 +723,22 @@ class CommercialProperties
 
         if (isset($property['property_city']['value'][$contentLang])) {
             $f_property['city'] = $property['property_city']['value'][$contentLang];
+        }elseif(isset($property['property_city']['value']['en'])){
+            $f_property['city'] = $property['property_city']['value']['en'];
         }
 
         if (isset($property['province_value'][$contentLang])) {
             $f_property['province'] = $property['province_value'][$contentLang];
         }
-
+        
         if (isset($property['location'])) {
             $f_property['location_key'] = $property['location'];
         }
 
         if (isset($property['property_location']['value'][$contentLang])) {
             $f_property['location'] = $property['property_location']['value'][$contentLang];
+        }elseif(isset($property['property_location']['value']['en'])) {
+            $f_property['location'] = $property['property_location']['value']['en'];
         }
 
         if (isset($property['type_one_key'])) {
@@ -726,39 +781,80 @@ class CommercialProperties
             $attachments = [];
             $attachments_alt = [];
             foreach ($property['property_attachments'] as $pic) {
-                if(isset($pic['document']) && $pic['document'] != 1 && isset($set_options['image_size']) && !empty($set_options['image_size'])){
-                    $attachments[] = self::$property_img_resize_link . '/' . $pic['model_id'] . '/' . $set_options['image_size'] . '/' .  urldecode($pic['file_md5_name']);
-                }
-                elseif(isset($pic['document']) && $pic['document'] != 1){
-                    $attachments[] = self::$com_img . '/' . $pic['model_id'] . '/' .  urldecode($pic['file_md5_name']);
-                }
-                if(isset($pic['alt_description'][$lang]) && !empty($pic['alt_description'][$lang])){
-                    $attachments_alt[] = $pic['alt_description'][$lang];
+                if(isset($pic["publish_status"]) && !empty($pic["publish_status"])){
+                    if (isset($pic['document']) && $pic['document'] != 1 && isset($set_options['image_size']) && !empty($set_options['image_size'])) {
+                        $attachments[] = self::$property_img_resize_link . '/' . $pic['model_id'] . '/' . $set_options['image_size'] . '/' .  urldecode($pic['file_md5_name']);
+                    } elseif (isset($pic['document']) && $pic['document'] != 1) {
+                        $attachments[] = self::$com_img . '/' . $pic['model_id'] . '/' .  urldecode($pic['file_md5_name']);
+                    }
+                    if (isset($pic['alt_description'][$lang]) && !empty($pic['alt_description'][$lang])) {
+                        $attachments_alt[] = $pic['alt_description'][$lang];
+                    }
                 }
             }
-
             $f_property['attachments'] = $attachments;
             $f_property['attachments_alt'] = $attachments_alt;
-        } elseif(isset($property['attachments']) && count($property['attachments']) > 0 && isset($property['from_residential']) && $property['from_residential'] == 1){
+        } elseif (isset($property['attachments']) && count($property['attachments']) > 0 && isset($property['from_residential']) && $property['from_residential'] == 1) {
             $attachments = [];
             $attachments_alt = [];
             foreach ($property['attachments'] as $pic) {
-                if(isset($pic['document']) && $pic['document'] != 1 && isset($set_options['image_size']) && !empty($set_options['image_size'])){
-                    $attachments[] = self::$img_url_without_wm . '/' . $pic['model_id'] . '/' . $set_options['image_size'] . '/' .  urldecode($pic['file_md5_name']);
-                }
-                elseif(isset($pic['document']) && $pic['document'] != 1){
-                    $attachments[] = self::$img_url_without_wm . '/' . $pic['model_id'] . '/1200/' .  urldecode($pic['file_md5_name']);
-                }
-                if(isset($pic['alt_description'][$lang]) && !empty($pic['alt_description'][$lang])){
-                    $attachments_alt[] = $pic['alt_description'][$lang];
-
+                if(isset($pic["publish_status"]) && !empty($pic["publish_status"])){
+                    if (isset($pic['document']) && $pic['document'] != 1 && isset($set_options['image_size']) && !empty($set_options['image_size'])) {
+                        // $attachments[] = self::$mls_img_url'] . (isset($property['agency']) ? $property['agency'] : '') . '/' . $pic['model_id'] . '/' . $set_options['image_size'] . '/' .  urldecode($pic['file_md5_name']);
+                        $attachments[] = self::$img_url_without_wm . '/' . $pic['model_id'] . '/' . $set_options['image_size'] . '/' .  urldecode($pic['file_md5_name']);
+                    } elseif (isset($pic['document']) && $pic['document'] != 1) {
+                        $attachments[] = self::$img_url_without_wm . '/' . $pic['model_id'] . '/1200/' .  urldecode($pic['file_md5_name']);
+                    }
+                    if (isset($pic['alt_description'][$lang]) && !empty($pic['alt_description'][$lang])) {
+                        $attachments_alt[] = $pic['alt_description'][$lang];
+                    }
                 }
             }
             $f_property['attachments'] = $attachments;
             $f_property['attachments_alt'] = $attachments_alt;
         }
+        
+        if (isset($property['property_attachments']) && count($property['property_attachments']) > 0 && !isset($property['from_residential'])) {
+            $attachments_document = [];
+            foreach ($property['property_attachments'] as $pic) {
+                if(isset($pic["publish_status"]) && !empty($pic["publish_status"])){
+                    $document = [];
+                    if (isset($pic['document']) && $pic['document'] == 1 && isset($set_options['image_size']) && !empty($set_options['image_size'])) {
+                        $document["link"] = self::$property_img_resize_link . '/' . $pic['model_id'] . '/' . $set_options['image_size'] . '/' .  urldecode($pic['file_md5_name']);
+                        $document["type"] = isset($pic["identification_type"]) && !empty($pic["identification_type"]) ? $pic["identification_type"] : 'document';
+                    } elseif (isset($pic['document']) && $pic['document'] == 1) {
+                        $document["link"] = self::$com_img . '/' . $pic['model_id'] . '/' .  urldecode($pic['file_md5_name']);
+                        $document["type"] = isset($pic["identification_type"]) && !empty($pic["identification_type"]) ? $pic["identification_type"] : 'document';
+                    }
+                    $attachments_document[] = $document;
+                }
+            }
+            $f_property['attachments_document'] = array_filter($attachments_document);
+        } elseif (isset($property['attachments']) && count($property['attachments']) > 0 && isset($property['from_residential']) && $property['from_residential'] == 1) {
+            $attachments_document = [];
+            foreach ($property['attachments'] as $pic) {
+                if(isset($pic["publish_status"]) && !empty($pic["publish_status"])){
+                    $document = [];
+                    if (isset($pic['document']) && $pic['document'] == 1 && isset($set_options['image_size']) && !empty($set_options['image_size'])) {
+                        $document["link"] = self::$img_url_without_wm . '/' . $pic['model_id'] . '/' . $set_options['image_size'] . '/' .  urldecode($pic['file_md5_name']);
+                        $document["type"] = isset($pic["identification_type"]) && !empty($pic["identification_type"]) ? $pic["identification_type"] : 'document';
+                    } elseif (isset($pic['document']) && $pic['document'] == 1) {
+                        $document["link"] = self::$img_url_without_wm . '/' . $pic['model_id'] . '/1200/' .  urldecode($pic['file_md5_name']);
+                        $attachments_document[]["type"] = isset($pic["identification_type"]) && !empty($pic["identification_type"]) ? $pic["identification_type"] : 'document';
+                    }
+                    $attachments_document[] = $document;
+                }
+            }
+            $f_property['attachments_document'] = array_filter($attachments_document);
+        }
+        if (isset($property['title']) && $property['title'] != '') {
+            $f_property['title'] = isset($property['title'][$lang]) && !empty($property['title'][$lang]) ? $property['title'][$lang] : (isset($property['title']["EN"]) ? $property['title']["EN"] : "");
+        }
+        if (isset($property['description']) && !empty($property['description'])) {
+            $f_property['description'] = isset($property['description'][$lang]) && !empty($property['description'][$lang]) ? $property['description'][$lang] : (isset($property['description']["EN"]) ? $property['description']["EN"] : "");
+        }
 
-        if (isset($property['buildings']) && $property['buildings'] !='') {
+        if (isset($property['buildings']) && $property['buildings'] != '') {
             $f_property['buildings'] = $property['buildings'];
         }
 
@@ -873,12 +969,78 @@ class CommercialProperties
             $f_property['storage_size'] = $property['storage_size'];
         }
 
+        if (isset($property['bath_tubs']) && $property['bath_tubs'] != '') {
+            $f_property['bath_tubs'] = $property['bath_tubs'];
+        }
+
+        if (isset($property['bidet']) && $property['bidet'] != '') {
+            $f_property['bidet'] = $property['bidet'];
+        }
+
+        if (isset($property['jaccuzi_bath']) && $property['jaccuzi_bath'] != '') {
+            $f_property['jaccuzi_bath'] = $property['jaccuzi_bath'];
+        }
+
+        if (isset($property['corner_shower']) && $property['corner_shower'] != '') {
+            $f_property['corner_shower'] = $property['corner_shower'];
+        }
+
+        if (isset($property['sink']) && $property['sink'] != '') {
+            $f_property['sink'] = $property['sink'];
+        }
+
+        if (isset($property['double_sink']) && $property['double_sink'] != '') {
+            $f_property['double_sink'] = $property['double_sink'];
+        }
+
+        if (isset($property['walk_in_shower']) && $property['walk_in_shower'] != '') {
+            $f_property['walk_in_shower'] = $property['walk_in_shower'];
+        }
+
+        if (isset($property['en_suite']) && $property['en_suite'] != '') {
+            $f_property['en_suite'] = $property['en_suite'];
+        }
+
+        if (isset($property['wheelchair_accesible_shower']) && $property['wheelchair_accesible_shower'] != '') {
+            $f_property['wheelchair_accesible_shower'] = $property['wheelchair_accesible_shower'];
+        }
+
+        if (isset($property['hairdryer']) && $property['hairdryer'] != '') {
+            $f_property['hairdryer'] = $property['hairdryer'];
+        }
+
+        if (isset($property['furniture_optional']) && $property['furniture_optional'] != '') {
+            $f_property['furniture_optional'] = $property['furniture_optional'];
+        }
+        
+        // if (isset($property['feet_moorings']) && $property['feet_moorings'] != '') {
+        //     $f_property['feet_moorings'] = $property['feet_moorings'];
+        // }
+
+        if (isset($property['double_bed']) && $property['double_bed'] != '') {
+            $f_property['beds']['double_bed'] = $property['double_bed'];
+        }
+
+        if (isset($property['single_bed']) && $property['single_bed'] != '') {
+            $f_property['beds']['single_bed'] = $property['single_bed'];
+        }
+
+        if (isset($property['sofa_bed']) && $property['sofa_bed'] != '') {
+            $f_property['beds']['sofa_bed'] = $property['sofa_bed'];
+        }
+
+        if (isset($property['bunk_beds']) && $property['bunk_beds'] != '') {
+            $f_property['beds']['bunk_beds'] = $property['bunk_beds'];
+        }
+
         $categories = [];
         $setting = [];
+        $distances = [];
         $orientation = [];
         $views = [];
         $condition = [];
         $offices = [];
+        $custom_fields = [];
         if (isset($property['categories']) && count($property['categories']) > 0) {
             foreach ($property['categories'] as $key => $value) {
                 if ($value == true) {
@@ -919,6 +1081,22 @@ class CommercialProperties
             }
         }
 
+        if (isset($property['distances']) && count($property['distances']) > 0) {
+            foreach ($property['distances'] as $key => $value) {
+                if ($value == true && isset($value['value']) && !empty($value['value'])) {
+                    $distances[$key] = $value;
+                }
+            }
+        }
+
+        if (isset($property['custom_fields']) && count($property['custom_fields']) > 0) {
+            foreach ($property['custom_fields'] as $key => $value) {
+                if ($value == true) {
+                    $custom_fields[$key] = $value;
+                }
+            }
+        }
+
         if (isset($property['offices']) && count($property['offices']) > 0) {
             foreach ($property['offices'] as $key => $value) {
                 if ($value) {
@@ -933,18 +1111,46 @@ class CommercialProperties
         $f_property['property_features']['orientation'] = $orientation;
         $f_property['property_features']['views'] = $views;
         $f_property['property_features']['condition'] = $condition;
-        $f_property['property_features']['kitchen'] = (isset($property['kitchen']))?$property['kitchen']:'';
-        $f_property['property_features']['security'] = (isset($property['security']))?$property['security']:'';
-        $f_property['property_features']['utility'] = (isset($property['utility']))?$property['utility']:'';
-        $f_property['property_features']['furniture'] = (isset($property['furniture']))?$property['furniture']:'';
-        $f_property['property_features']['climate_control'] = (isset($property['climate_control']))?$property['climate_control']:'';
-        $f_property['property_features']['parking'] = (isset($property['parking']))?$property['parking']:'';
-        $f_property['property_features']['garden'] = (isset($property['garden']))?$property['garden']:'';
-        $f_property['property_features']['pool'] = (isset($property['pool']))?$property['pool']:'';
-        $f_property['property_features']['leisure'] = (isset($property['leisure']))?$property['leisure']:'';
-        $f_property['property_features']['features'] = (isset($property['features']))?$property['features']:'';
-        $f_property['property_features']['rooms'] = (isset($property['rooms']))?$property['rooms']:'';
+        $f_property['property_features']['distances'] = $distances;
+        $f_property['property_features']['custom_fields'] = $custom_fields;
+        $f_property['property_features']['kitchen'] = (isset($property['kitchen'])) ? $property['kitchen'] : '';
+        $f_property['property_features']['living_room'] = (isset($property['living_room'])) ? $property['living_room'] : '';
+        $f_property['property_features']['security'] = (isset($property['security'])) ? $property['security'] : '';
+        $f_property['property_features']['utility'] = (isset($property['utility'])) ? $property['utility'] : '';
+        $f_property['property_features']['furniture'] = (isset($property['furniture'])) ? $property['furniture'] : '';
+        $f_property['property_features']['climate_control'] = (isset($property['climate_control'])) ? $property['climate_control'] : '';
+        $f_property['property_features']['parking'] = (isset($property['parking'])) ? $property['parking'] : '';
+        $f_property['property_features']['garden'] = (isset($property['garden'])) ? $property['garden'] : '';
+        $f_property['property_features']['pool'] = (isset($property['pool'])) ? $property['pool'] : '';
+        $f_property['property_features']['leisure'] = (isset($property['leisures'])) ? $property['leisures'] : '';
+        $f_property['property_features']['features'] = (isset($property['features'])) ? $property['features'] : '';
+        $f_property['property_features']['rooms'] = (isset($property['rooms'])) ? $property['rooms'] : '';
         $f_property['offices'] = $offices;
+
+        if (isset($property['created_by_name']) && count($property['created_by_name']) > 0) {
+            $f_property['created_by_name'] = $property['created_by_name'];
+        }
+
+        if (isset($property['lt_rental']) && $property['lt_rental']) {
+            $f_property['lt_rental'] = $property['lt_rental'];
+        }
+
+        if (isset($property['st_rental']) && $property['st_rental']) {
+            $f_property['st_rental'] = $property['st_rental'];
+        }
+
+        if (isset($property['license_number']) && $property['license_number']) {
+            $f_property['license_number'] = $property['license_number'];
+        }
+
+        if (isset($property['date_stamp']) && $property['date_stamp']) {
+            $f_property['date_stamp'] = $property['date_stamp'];
+        }
+
+        if (isset($property['year_built']) && $property['year_built']) {
+            $year_built_date = new DateTime($property['year_built'], new DateTimeZone('UTC'));
+            $f_property['year_built'] = $year_built_date->format('d-m-Y');
+        }
 
         return $f_property;
     }
@@ -986,14 +1192,15 @@ class CommercialProperties
         return $file_data;
     }
 
-    public static function findAllWithLatLang($qry = 'true',$map_query =[], $cache = false)
+    public static function findAllWithLatLang($qry = 'true', $map_query = [], $cache = false, $selectedFields= "")
     {
         self::initialize();
         $webroot = public_path() . '/uploads/';
-        $node_url = self::$node_url . 'commercial_properties/find-all?user=' . self::$user.(isset($qry) && $qry == 'true' ? '&latLang=1' : '');
+        $node_url = self::$node_url . 'commercial_properties/find-all?user=' . self::$user . (isset($qry) && $qry == 'true' ? '&latLang=1' : '');
+        $node_url = isset($selectedFields) && !empty($selectedFields) ? ($node_url . $selectedFields) : $node_url;
         $query = [];
         $sort = ['current_price' => '-1'];
-        $query_array=[];
+        $query_array = [];
         $options = ["page" => 1, "limit" => 10];
         $options['populate'] = [
             [
@@ -1002,43 +1209,43 @@ class CommercialProperties
             ]
         ];
 
-        if (Request::has('orderby') && is_array(Request::get('orderby')) && count(Request::get('orderby')) === 2) {
+        if (Request::has('orderby') && is_array(Request::get('orderby')) && count(Request::get('orderby')) == 2) {
             $sort = [Request::get('orderby')[0] => Request::get('orderby')[1]];
         }
 
         $options['sort'] = $sort;
 
-        if(isset($query) && $query != '' && !is_array($query)){
+
+        if (isset($query) && $query != '' && !is_array($query)) {
             $vars = explode('&', $query);
-            foreach($vars as $var){
+            foreach ($vars as $var) {
                 $k = explode('=', $var);
-                if(isset($k[0]) && isset($k[1])){
-                    if($k[0] == 'favourite_ids'){
+                if (isset($k[0]) && isset($k[1])) {
+                    if ($k[0] == 'favourite_ids') {
                         $query_array['favourite_ids'] = explode(',', $k[1]);
                         $query_array['archived']['$ne'] = true;
-                    }else{
+                    } else {
                         $post_data[$k[0]] = $k[1];
                         $post_data['archived']['$ne'] = true;
                     }
                 }
             }
         }
-        if(isset($query) && $query != '' && is_array($query)){
+        if (isset($query) && $query != '' && is_array($query)) {
             if (!count($query)) {
                 $query = self::setQuery();
             }
-            if (count($query)){
+            if (count($query)) {
                 $query_array = $query;
                 $query_array['status'] = ['$in' => (isset(self::$status) && !empty(self::$status) ? self::$status : ['Available', 'Under Offer'])];
             }
         }
         $post_data = ["options" => $options];
-        if(!empty($query_array))
-        {
+        if (!empty($query_array)) {
             $post_data["query"] =  $query_array;
         }
 
-        $post_data["query"] = isset($map_query['ids']) && !empty($map_query['ids']) ? array_merge($post_data["query"] ,["id"  => $map_query['ids']]  ) : $post_data["query"];
+        $post_data["query"] = isset($map_query['ids']) && !empty($map_query['ids']) ? array_merge($post_data["query"], ["id"  => $map_query['ids']]) : $post_data["query"];
 
         $response = Http::withHeaders([
             'Content-Type' => 'application/json',
@@ -1053,13 +1260,13 @@ class CommercialProperties
         if (!File::exists($tempDirectory)) {
             File::makeDirectory($tempDirectory, 0755, true); // Creates the directory with proper permissions
         }
-
-        if($cache){
+        if (!$cache) {
             return json_decode($response, true);
         }
 
         $file = $tempDirectory . 'commercial_properties-latlang.json';
         if (!file_exists($file) || (file_exists($file) && time() - filemtime($file) > 2 * 3600)) {
+            file_put_contents($file, $response);
             $file_data = file_put_contents($file, $response);
         } else {
             $file_data = file_get_contents($file);
@@ -1074,28 +1281,23 @@ class CommercialProperties
         $post_data['options'] = [
             'page' => $options['page'],
             'limit' => $options['limit'],
-            'populate' => ['property_attachments','agency_data','listing_agency_data']
+            'populate' => ['property_attachments', 'agency_data', 'listing_agency_data']
         ];
-
         $post_data['query'] = [
             'id' => $id
         ];
-
-        $node_url = self::$node_url . 'commercial_properties/get-properties-with-transaction-types/'. $transaction_type .'?user=' . self::$user;
-
+        $node_url = self::$node_url . 'commercial_properties/get-properties-with-transaction-types/' . $transaction_type . '?user=' . self::$user;
         $response = Http::withHeaders([
             'Content-Type' => 'application/json',
         ])->post($node_url, json_encode($post_data))->json();
 
         $response = json_decode($response, TRUE);
         $properties = [];
-
-        if(isset($response) && isset($response['docs'])) {
+        if (isset($response) && isset($response['docs']))
             foreach ($response['docs'] as $property) {
                 $properties[] = self::formateProperty($property);
             }
-            $response['docs'] = $properties;
-        }
+        $response['docs'] = $properties;
 
         return $response;
     }
@@ -1192,7 +1394,8 @@ class CommercialProperties
         return json_decode($response);
     }
 
-    public static function createProperty($data){
+    public static function createProperty($data)
+    {
         self::initialize();
         $languages = Cms::siteLanguages();
         $fields = [
@@ -1226,11 +1429,14 @@ class CommercialProperties
         'longitude_alt' => (isset($data['lng']) && !empty($data['lng']) ? $data['lng'] : ''),
         'status' => (isset($data['status']) && !empty($data['status']) ? $data['status'] : 'Valuation'),
         'owner' => (isset($data['owner_id']) ? $data['owner_id'] : ''),
+        'property_name' => (isset($data['property_name']) ? $data['property_name'] : ''),
+        'ltr' => (isset($data['ltr']) ? $data['ltr'] : null),
+        'period_seasons' => (isset($data['period_seasons']) ? $data['period_seasons'] : null),
+        'shared_categories' => (isset($data['shared_categories']) ? $data['shared_categories'] : null),
         ];
-        if(isset($data['transaction_type']) && $data['transaction_type'] == 'sale'){
+        if (isset($data['transaction_type']) && $data['transaction_type'] == 'sale') {
             $fields['current_price'] = (isset($data['current_price']) && !empty($data['current_price']) ? (int)$data['current_price'] : '');
-        }
-        elseif(isset($data['transaction_type']) && $data['transaction_type'] == 'rent'){
+        } elseif (isset($data['transaction_type']) && $data['transaction_type'] == 'rent') {
             $fields['period_seasons'][] = ['seasons' => (isset($data['seasons']) && !empty($data['seasons']) ? $data['seasons'] : 'All year'), 'new_price' => (isset($data['current_price']) && !empty($data['current_price']) ? ((int)$data['current_price'] * 12) : ''), 'total_per_month' => (isset($data['current_price']) && !empty($data['current_price']) ? (int)$data['current_price'] : '')];
         }
         $fields['project'] = false;
@@ -1244,48 +1450,45 @@ class CommercialProperties
         $fields['garden']['garden_communal'] = false;
         $fields['pool']['pool_private'] = false;
         $fields['pool']['pool_communal'] = false;
-        if(isset($data['parking']) && !empty($data['parking'])){
-            foreach($data['parking'] as $parking){
+        if (isset($data['parking']) && !empty($data['parking'])) {
+            foreach ($data['parking'] as $parking) {
                 $fields['parking'][$parking] = true;
             }
         }
-        if(isset($data['garden']) && !empty($data['garden'])){
-            foreach($data['garden'] as $garden){
+        if (isset($data['garden']) && !empty($data['garden'])) {
+            foreach ($data['garden'] as $garden) {
                 $fields['garden'][$garden] = true;
             }
         }
-        if(isset($data['pool']) && !empty($data['pool'])){
-            foreach($data['pool'] as $pool){
+        if (isset($data['pool']) && !empty($data['pool'])) {
+            foreach ($data['pool'] as $pool) {
                 $fields['pool'][$pool] = true;
             }
         }
-        if(isset($data['features']) && !empty($data['features'])){
-            foreach($data['features'] as $feature){
-                if($feature == 'project'){
+        if (isset($data['features']) && !empty($data['features'])) {
+            foreach ($data['features'] as $feature) {
+                if ($feature == 'project') {
                     $fields[$feature] = true;
-                }
-                elseif($feature == 'lift_elevator'){
+                } elseif ($feature == 'lift_elevator') {
                     $fields['features'] = [$feature => true];
-                }
-                elseif($feature == 'gated_complex'){
+                } elseif ($feature == 'gated_complex') {
                     $fields['security'] = [$feature => true];
-                }
-                else {
+                } else {
                     $fields['categories'][$feature] = true;
                 }
             }
         }
-        if(isset($languages) && !empty($languages)){
-            foreach($languages as $lang){
-                if(isset($data['transaction_type']) && $data['transaction_type'] == 'sale' ){
+        if (isset($languages) && !empty($languages)) {
+            foreach ($languages as $lang) {
+                if (isset($data['transaction_type']) && $data['transaction_type'] == 'sale') {
                     $fields['title'][strtoupper($lang)] = (isset($data['title'][strtoupper($lang)]) && !empty($data['title'][strtoupper($lang)]) ? $data['title'][strtoupper($lang)] : $data['title']['EN']);
-                    $fields['description'][strtoupper($lang)] =(isset($data['description'][strtoupper($lang)]) && !empty($data['description'][strtoupper($lang)]) ? $data['description'][strtoupper($lang)] : $data['description']['EN']);
-                }elseif(isset($data['transaction_type']) && $data['transaction_type'] == 'auction' ){
+                    $fields['description'][strtoupper($lang)] = (isset($data['description'][strtoupper($lang)]) && !empty($data['description'][strtoupper($lang)]) ? $data['description'][strtoupper($lang)] : $data['description']['EN']);
+                } elseif (isset($data['transaction_type']) && $data['transaction_type'] == 'auction') {
                     $fields['title'][strtoupper($lang)] = (isset($data['title'][strtoupper($lang)]) && !empty($data['title'][strtoupper($lang)]) ? $data['title'][strtoupper($lang)] : $data['title']['EN']);
-                    $fields['description'][strtoupper($lang)] =(isset($data['description'][strtoupper($lang)]) && !empty($data['description'][strtoupper($lang)]) ? $data['description'][strtoupper($lang)] : $data['description']['EN']);
-                }else {
+                    $fields['description'][strtoupper($lang)] = (isset($data['description'][strtoupper($lang)]) && !empty($data['description'][strtoupper($lang)]) ? $data['description'][strtoupper($lang)] : $data['description']['EN']);
+                } else {
                     $fields['rental_title'][strtoupper($lang)] = (isset($data['title'][strtoupper($lang)]) && !empty($data['title'][strtoupper($lang)]) ? $data['title'][strtoupper($lang)] : $data['title']['EN']);
-                    $fields['rental_description'][strtoupper($lang)] =(isset($data['description'][strtoupper($lang)]) && !empty($data['description'][strtoupper($lang)]) ? $data['description'][strtoupper($lang)] : $data['description']['EN']);
+                    $fields['rental_description'][strtoupper($lang)] = (isset($data['description'][strtoupper($lang)]) && !empty($data['description'][strtoupper($lang)]) ? $data['description'][strtoupper($lang)] : $data['description']['EN']);
                 }
             }
         }
