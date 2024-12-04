@@ -243,7 +243,7 @@ class ContactUs extends Model
                     $message->html($html);
                 });
 
-                Mail::send([], [], function ($message) use($from_email, $settings) {
+                Mail::send([], [], function ($message) use($ae_array, $settings) {
                     // From address
                     $message->from(isset($ae_array[0]) ? trim($ae_array[0]) : self::$from_email);
 
@@ -323,7 +323,7 @@ class ContactUs extends Model
                     $message->to(isset($ae_array) ? $ae_array : '')->subject(isset($settings['email_response_subject'][strtoupper(App::getLocale())]) ? $settings['email_response_subject'][strtoupper(App::getLocale())] : (isset($settings['email_response_subject'][0]) ? $settings['email_response_subject'][0]['key'] : 'Web enquiry'));
                 });
 
-                Mail::send([], [], function ($message) use($from_email, $settings, $htmlBody) {
+                Mail::send([], [], function ($message) use($ae_array, $settings, $htmlBody) {
                     // From address
                     $message->from(isset($ae_array[0]) ? trim($ae_array[0]) : self::$from_email);
 

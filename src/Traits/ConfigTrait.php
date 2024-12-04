@@ -29,6 +29,13 @@ trait ConfigTrait
     protected static $send_error_mails_to;
     protected static $recaptcha_secret_site_key;
     protected static $mooring_img_url;
+    protected static $rental_logic;
+    protected static $rental_logic_week;
+    protected static $rental_logic_day;
+    protected static $exclude_per_stay_extras;
+    protected static $img_url_wm;
+    protected static $default_title;
+    protected static $date_fromate;
 
     /**
      * Initialize configuration values.
@@ -44,7 +51,7 @@ trait ConfigTrait
         self::$excluded_langs = config('params.excluded_langs');
         self::$ImageFrom = config('params.ImageFrom');
         self::$template = config('params.template');
-        self::$status = config('params.status');
+        self::$status = config('params.status',[]);
         self::$node_url = config('params.node_url');
         self::$agency = config('params.agency');
         self::$property_img_resize_link = config('params.property_img_resize_link');
@@ -60,5 +67,12 @@ trait ConfigTrait
         self::$send_error_mails_to = config('params.send_error_mails_to');
         self::$recaptcha_secret_site_key = config('params.recaptcha_secret_site_key');
         self::$mooring_img_url = config('params.mooring_img_url');
+        self::$rental_logic = config('params.rental_logic');
+        self::$rental_logic_week = config('params.rental_logic_week');
+        self::$rental_logic_day = config('params.rental_logic_day');
+        self::$exclude_per_stay_extras = config('params.exclude_per_stay_extras');
+        self::$img_url_wm = config('params.img_url_wm');
+        self::$default_title = config('params.default_title');
+        self::$date_fromate = config('params.date_fromate');
     }
 }
