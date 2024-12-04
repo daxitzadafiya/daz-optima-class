@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3d2939c6878f2709d2c2aaf98dfb7f5a",
+    "content-hash": "2b42610000c3fec955091b33f394c44c",
     "packages": [
         {
             "name": "brick/math",
@@ -137,7 +137,7 @@
         },
         {
             "name": "cocur/slugify",
-            "version": "dev-main",
+            "version": "v4.6.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/cocur/slugify.git",
@@ -177,7 +177,6 @@
                 "zendframework/zend-servicemanager": "~2.2",
                 "zendframework/zend-view": "~2.2"
             },
-            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -1203,12 +1202,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/framework.git",
-                "reference": "217640654f0968ac36b489bc7bf798c9e63b9282"
+                "reference": "7db7ea950d3df663391718730f4490a4e189234a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/framework/zipball/217640654f0968ac36b489bc7bf798c9e63b9282",
-                "reference": "217640654f0968ac36b489bc7bf798c9e63b9282",
+                "url": "https://api.github.com/repos/laravel/framework/zipball/7db7ea950d3df663391718730f4490a4e189234a",
+                "reference": "7db7ea950d3df663391718730f4490a4e189234a",
                 "shasum": ""
             },
             "require": {
@@ -1409,7 +1408,7 @@
                 "issues": "https://github.com/laravel/framework/issues",
                 "source": "https://github.com/laravel/framework"
             },
-            "time": "2024-12-02T22:09:41+00:00"
+            "time": "2024-12-03T16:20:26+00:00"
         },
         {
             "name": "laravel/prompts",
