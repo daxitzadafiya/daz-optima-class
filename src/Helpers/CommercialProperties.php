@@ -17,7 +17,7 @@ class CommercialProperties
     public static function findAll($page = 1, $page_size = 10, $query = '', $sort = ['current_price' => '-1'], $set_options = [])
     {
         self::initialize();
-        $query_array=[];
+        $query_array = [];
         $options = ["page" => $page, "limit" => $page_size];
         $options['populate'] = [
             [
@@ -34,28 +34,28 @@ class CommercialProperties
 
         $get = Request::all();
 
-        if(isset($get['favorite_ids']) && !empty($get['favorite_ids'])){
+        if (isset($get['favorite_ids']) && !empty($get['favorite_ids'])) {
             $query_array["archived"] = [
                 '$ne' => true
             ];
             $query_array["reference"] =
-            [
-                '$in' => $get['favorite_ids'],
-            ];
+                [
+                    '$in' => $get['favorite_ids'],
+                ];
         }
 
-        if(isset($query) && $query != '' && is_array($query)) {
+        if (isset($query) && $query != '' && is_array($query)) {
             if (!count($query)) {
                 $query = self::setQuery();
             }
-            if (count($query)){
+            if (count($query)) {
                 $query_array = $query;
                 $query_array['status'] = ['$in' => (isset($_GET['status']) && !empty($_GET['status']) ? $_GET['status'] : (isset(self::$status) && !empty(self::$status) ? self::$status : ['Available', 'Under Offer']))];
             }
         }
 
         $post_data = ["options" => $options];
-        if(!empty($query_array)){
+        if (!empty($query_array)) {
             $post_data["query"] =  $query_array;
         }
 
@@ -63,10 +63,10 @@ class CommercialProperties
             $post_data['selectRecords'] = false;
         }
 
-        $random_query = isset($get['random']) && !empty($get['random']) ? '&random='.$get['random'] : '';
-        $node_url = self::$node_url . 'commercial_properties?user=' . self::$user.$random_query;
+        $random_query = isset($get['random']) && !empty($get['random']) ? '&random=' . $get['random'] : '';
+        $node_url = self::$node_url . 'commercial_properties?user=' . self::$user . $random_query;
 
-        if(isset($set_options['cache']) && $set_options['cache'] == true) {
+        if (isset($set_options['cache']) && $set_options['cache'] == true) {
             $response = self::DoCache($post_data, $node_url);
         } else {
             $response = Http::withHeaders([
@@ -79,7 +79,7 @@ class CommercialProperties
 
         $properties = [];
 
-        if(isset($response) && isset($response['docs'])) {
+        if (isset($response) && isset($response['docs'])) {
             foreach ($response['docs'] as $property) {
                 $properties[] = self::formateProperty($property, $set_options);
             }
@@ -104,7 +104,7 @@ class CommercialProperties
 
         $response = Http::withHeaders([
             'Content-Type' => 'application/json',
-        ])->post(self::$node_url . 'commercial_properties/view/' . $id .'?user='.self::$user, $post_data);
+        ])->post(self::$node_url . 'commercial_properties/view/' . $id . '?user=' . self::$user, $post_data);
 
         $response = json_decode($response->json(), TRUE);
 
@@ -120,8 +120,8 @@ class CommercialProperties
         $query = [];
         if (isset($get['auction_price_from']) && !empty($get['auction_price_from']) || isset($get['auction_price_to']) && !empty($get['auction_price_to'])) {
             $query['starting_price'] = ['$gte' => (int) $get['auction_price_from'], '$lte' => isset($get['auction_price_to']) && !empty($get['auction_price_to']) ?  (int) $get['auction_price_to'] : ''];
-        } elseif(isset($get['price_from']) && !empty($get['price_from']) || isset($get['price_to']) && !empty($get['price_to'])) {
-            $query['current_price'] = ['$gte' => (int) $get['price_from'],'$lte' => isset($get['price_to']) && !empty($get['price_to']) ?  (int) $get['price_to'] : ''];
+        } elseif (isset($get['price_from']) && !empty($get['price_from']) || isset($get['price_to']) && !empty($get['price_to'])) {
+            $query['current_price'] = ['$gte' => (int) $get['price_from'], '$lte' => isset($get['price_to']) && !empty($get['price_to']) ?  (int) $get['price_to'] : ''];
         }
 
         if (isset($get['reference']) && !empty($get['reference'])) {
@@ -133,7 +133,7 @@ class CommercialProperties
         }
 
         if (isset($get['project']) && !empty($get['project'])) {
-            $query['$and'] = [['project' => ['$exists' => true]],["project" => (boolean) $get['project']]];
+            $query['$and'] = [['project' => ['$exists' => true]], ["project" => (bool) $get['project']]];
         }
 
         if (isset($get['resale']) && !empty($get['resale'])) {
@@ -143,7 +143,7 @@ class CommercialProperties
         if (isset($get['project_on']) && !empty($get['project_on'])) {
             $query['$or'] = [["own" => false], ['own' => ['$exists' => false]]];
         }
-        
+
         if (isset($get['own']) && !empty($get['own']) && $get['own']) {
             $query['own'] = $get['own'];
         }
@@ -209,8 +209,8 @@ class CommercialProperties
             $query['show_on'] = ['$in' => $get['show_on']];
         }
 
-        if (isset($get['show_on']) && !empty($get['show_on']) && isset($get['latLang']) && !empty($get['latLang'])) {            
-            $query['basic_info_object.'. self::$agency .'.show_on'] = ['$in' => $get['show_on']];
+        if (isset($get['show_on']) && !empty($get['show_on']) && isset($get['latLang']) && !empty($get['latLang'])) {
+            $query['basic_info_object.' . self::$agency . '.show_on'] = ['$in' => $get['show_on']];
         }
 
         if (isset($get['status']) && !empty($get['status'])) {
@@ -411,7 +411,7 @@ class CommercialProperties
         $get = Request::all();
         $contentLang = strtolower(App::getLocale());
 
-        if(strtolower(App::getLocale()) == 'es'){
+        if (strtolower(App::getLocale()) == 'es') {
             $contentLang = 'es_AR';
         }
 
@@ -419,7 +419,7 @@ class CommercialProperties
             $contentLang = 'pl';
             $lang = strtoupper("pl");
         }
-        
+
         $f_property = [];
         if (isset($settings['general_settings']['reference']) && $settings['general_settings']['reference'] != 'reference') {
             $ref = $settings['general_settings']['reference'];
@@ -433,24 +433,24 @@ class CommercialProperties
         }
 
         $agency = '';
-        if(isset($property['agency']) && !empty($property['agency'])){
+        if (isset($property['agency']) && !empty($property['agency'])) {
             $agency = $property['agency'];
             $f_property['agency'] = $property['agency'];
         }
 
-        if(isset($property['from_residential']) && !empty($property['from_residential'])){
+        if (isset($property['from_residential']) && !empty($property['from_residential'])) {
             $f_property['from_residential'] = $property['from_residential'];
         }
 
-        if(isset($property['shared_categories']) && !empty($property['shared_categories'])){
+        if (isset($property['shared_categories']) && !empty($property['shared_categories'])) {
             $f_property['shared_categories'] = $property['shared_categories'];
         }
 
-        if(isset($property['property_name']) && !empty($property['property_name'])){
+        if (isset($property['property_name']) && !empty($property['property_name'])) {
             $f_property['property_name'] = $property['property_name'];
         }
 
-        if(isset($property['own']) && !empty($property['own'])){
+        if (isset($property['own']) && !empty($property['own'])) {
             $f_property['own'] = $property['own'];
         }
 
@@ -458,23 +458,23 @@ class CommercialProperties
             $f_property['price_on_demand'] = $property['price_on_demand'];
         }
 
-        if(isset($property['agency_data']['commercial_name']) && !empty($property['agency_data']['commercial_name'])){
+        if (isset($property['agency_data']['commercial_name']) && !empty($property['agency_data']['commercial_name'])) {
             $f_property['agency_name'] = $property['agency_data']['commercial_name'];
         }
 
-        if(isset($property['listing_agency_data']['commercial_name']) && !empty($property['listing_agency_data']['commercial_name'])){
+        if (isset($property['listing_agency_data']['commercial_name']) && !empty($property['listing_agency_data']['commercial_name'])) {
             $f_property['agency_name'] = $property['listing_agency_data']['commercial_name'];
         }
 
-        if(isset($property['agency_data']['agency_email']) && !empty($property['agency_data']['agency_email'])){
+        if (isset($property['agency_data']['agency_email']) && !empty($property['agency_data']['agency_email'])) {
             $f_property['agency_email'] = $property['agency_data']['agency_email'];
         }
 
-        if(isset($property['listing_agency_data']['agency_email']) && !empty($property['listing_agency_data']['agency_email'])){
+        if (isset($property['listing_agency_data']['agency_email']) && !empty($property['listing_agency_data']['agency_email'])) {
             $f_property['agency_email'] = $property['listing_agency_data']['agency_email'];
         }
 
-        if (isset($property['private_info_object'][$agency]['cadastral_numbers'][0]['cadastral_number']) && !empty($property['private_info_object'][$agency]['cadastral_numbers'][0]['cadastral_number']) ) {
+        if (isset($property['private_info_object'][$agency]['cadastral_numbers'][0]['cadastral_number']) && !empty($property['private_info_object'][$agency]['cadastral_numbers'][0]['cadastral_number'])) {
             $f_property['cadastral_number'] = $property['private_info_object'][$agency]['cadastral_numbers'][0]['cadastral_number'];
         }
 
@@ -490,24 +490,24 @@ class CommercialProperties
         } elseif (isset($property['shared_data']['title'][$lang]) && $property['shared_data']['title'][$lang] != '') {
             $f_property['sale_title'] = $property['shared_data']['title'][$lang];
         } else {
-            $f_property['sale_title'] = (isset($property['property_type_one']['value'][$contentLang]) ? __('app.'.$property['property_type_one']['value'][$contentLang]) : '') . ' ' . (isset($property['property_location']['value'][$contentLang]) ? __('app.in'). ' ' . __('app.'.$property['property_location']['value'][$contentLang]) : '');
+            $f_property['sale_title'] = (isset($property['property_type_one']['value'][$contentLang]) ? __('app.' . $property['property_type_one']['value'][$contentLang]) : '') . ' ' . (isset($property['property_location']['value'][$contentLang]) ? __('app.in') . ' ' . __('app.' . $property['property_location']['value'][$contentLang]) : '');
         }
         if (isset($property['description'][$lang]) && $property['description'][$lang] != '') {
             $f_property['sale_description'] = $property['description'][$lang];
-        }elseif (isset($property['shared_data']['description'][$lang]) && $property['shared_data']['description'][$lang] != ''  && (isset($property['agency']) && $property['agency'] != self::$agency) && (isset($property['mls']) && $property['mls'] == 1)) {
+        } elseif (isset($property['shared_data']['description'][$lang]) && $property['shared_data']['description'][$lang] != ''  && (isset($property['agency']) && $property['agency'] != self::$agency) && (isset($property['mls']) && $property['mls'] == 1)) {
             $f_property['sale_description'] = $property['shared_data']['description'][$lang];
         }
         if (self::$agency == '6110fa9b8334050aac21e779') { // For ImmoMarket
             if (isset($property['rental_title'][$lang]) && $property['rental_title'][$lang] != '') {
                 $f_property['rent_title'] = $property['rental_title'][$lang];
-            }elseif (isset($property['shared_data']['rental_external_title'][$lang]) && $property['shared_data']['rental_external_title'][$lang] != '' && isset($property['agency']) && $property['agency'] != self::$agency) {
+            } elseif (isset($property['shared_data']['rental_external_title'][$lang]) && $property['shared_data']['rental_external_title'][$lang] != '' && isset($property['agency']) && $property['agency'] != self::$agency) {
                 $f_property['rent_title'] = $property['shared_data']['rental_external_title'][$lang];
             } else {
-                $f_property['rent_title'] = (isset($property['property_type_one']['value'][$contentLang]) ? __('app.'. $property['property_type_one']['value'][$contentLang]) : '') . ' ' . (isset($property['property_location']['value'][$contentLang]) ? __('app.in'). ' ' . __('app.'.$property['property_location']['value'][$contentLang]) : '');
+                $f_property['rent_title'] = (isset($property['property_type_one']['value'][$contentLang]) ? __('app.' . $property['property_type_one']['value'][$contentLang]) : '') . ' ' . (isset($property['property_location']['value'][$contentLang]) ? __('app.in') . ' ' . __('app.' . $property['property_location']['value'][$contentLang]) : '');
             }
             if (isset($property['rental_description'][$lang]) && $property['rental_description'][$lang] != '') {
                 $f_property['rent_description'] = $property['rental_description'][$lang];
-            }elseif (isset($property['shared_data']['rental_external_description'][$lang]) && $property['shared_data']['rental_external_description'][$lang] != '' && isset($property['agency']) && $property['agency'] != self::$agency) {
+            } elseif (isset($property['shared_data']['rental_external_description'][$lang]) && $property['shared_data']['rental_external_description'][$lang] != '' && isset($property['agency']) && $property['agency'] != self::$agency) {
                 $f_property['rent_description'] = $property['shared_data']['rental_external_description'][$lang];
             }
         } else { // For Other Sites
@@ -516,7 +516,7 @@ class CommercialProperties
             } elseif (isset($property['shared_data']['rental_external_title'][$lang]) && $property['shared_data']['rental_external_title'][$lang] != '' && (isset($property['agency']) && $property['agency'] != self::$agency) && (isset($property['mls']) && $property['mls'] == 1)) {
                 $f_property['rent_title'] = $property['shared_data']['rental_external_title'][$lang];
             } else {
-                $f_property['rent_title'] = (isset($property['property_type_one']['value'][$contentLang]) ? __('app.'.$property['property_type_one']['value'][$contentLang]) : '') . ' ' . (isset($property['property_location']['value'][$contentLang]) ? __('app.in'). ' ' . __('app.'. $property['property_location']['value'][$contentLang]) : '');
+                $f_property['rent_title'] = (isset($property['property_type_one']['value'][$contentLang]) ? __('app.' . $property['property_type_one']['value'][$contentLang]) : '') . ' ' . (isset($property['property_location']['value'][$contentLang]) ? __('app.in') . ' ' . __('app.' . $property['property_location']['value'][$contentLang]) : '');
             }
             if (isset($property['rental_description'][$lang]) && $property['rental_description'][$lang] != '') {
                 $f_property['rent_description'] = $property['rental_description'][$lang];
@@ -526,7 +526,7 @@ class CommercialProperties
         }
 
         if (isset($property['status'])) {
-            $f_property['status'] = __('app.'. $property['status']);
+            $f_property['status'] = __('app.' . $property['status']);
         }
         if (isset($property['agency_data']['logo']['name']) && !empty($property['agency_data']['logo']['name'])) {
             $f_property['agency_logo'] = 'https://images.optima-crm.com/agencies/' . (isset($property['agency_data']['_id']) ? $property['agency_data']['_id'] : '') . '/' . (isset($property['agency_data']['logo']['name']) ? $property['agency_data']['logo']['name'] : '');
@@ -561,11 +561,11 @@ class CommercialProperties
             $f_property['meta_keywords'] = $property['keywords'][$lang];
         }
 
-        if (isset($property['property_urls']) && !empty($property['property_urls']) ) {
+        if (isset($property['property_urls']) && !empty($property['property_urls'])) {
             $f_property['urls'] =  $property['property_urls'];
         }
 
-        if(isset($property['urls_without_domain']) && !empty($property['urls_without_domain'])) {
+        if (isset($property['urls_without_domain']) && !empty($property['urls_without_domain'])) {
             $f_property['property_url'] = $property['urls_without_domain'];
         }
 
@@ -575,8 +575,8 @@ class CommercialProperties
             $floor_plan = [];
             $link_to_auction = [];
 
-            foreach($property['videos'] as $video){
-                if(isset($video['type']) && $video['type'] == 'Video' && isset($video['status']) && $video['status'] == 1){
+            foreach ($property['videos'] as $video) {
+                if (isset($video['type']) && $video['type'] == 'Video' && isset($video['status']) && $video['status'] == 1) {
                     $videos[] = (isset($video['url'][strtoupper(App::getLocale())]) ? $video['url'][strtoupper(App::getLocale())] : '');
                 }
             }
@@ -592,7 +592,7 @@ class CommercialProperties
                 }
                 if (isset($vt['type']) && $vt['type'] == 'FP' && isset($vt['status']) && $vt['status'] == 1) {
                     $floor_plan[] = (isset($vt['url'][strtoupper(App::getLocale())]) ? $vt['url'][strtoupper(App::getLocale())] : '');
-                } 
+                }
             }
 
             $f_property['vt'] = $virtual_tours;
@@ -609,19 +609,19 @@ class CommercialProperties
         }
 
         if (isset($property['type_one'])) {
-            $f_property['type'] = __('app.'. $property['type_one']);
+            $f_property['type'] = __('app.' . $property['type_one']);
         }
 
         if (isset($property['type_one_value'][$contentLang])) {
-            $f_property['type_one'] = __('app.'. $property['type_one_value'][$contentLang]);
+            $f_property['type_one'] = __('app.' . $property['type_one_value'][$contentLang]);
         }
 
         if (isset($property['type_two'])) {
-            $f_property['type_two_key'] = __('app.'. $property['type_two']);
+            $f_property['type_two_key'] = __('app.' . $property['type_two']);
         }
 
         if (isset($property['type_two_value'][$contentLang])) {
-            $f_property['type_two'] = __('app.'. $property['type_two_value'][$contentLang]);
+            $f_property['type_two'] = __('app.' . $property['type_two_value'][$contentLang]);
         }
 
         if (isset($property['address']['formatted_address'])) {
@@ -723,21 +723,21 @@ class CommercialProperties
 
         if (isset($property['property_city']['value'][$contentLang])) {
             $f_property['city'] = $property['property_city']['value'][$contentLang];
-        }elseif(isset($property['property_city']['value']['en'])){
+        } elseif (isset($property['property_city']['value']['en'])) {
             $f_property['city'] = $property['property_city']['value']['en'];
         }
 
         if (isset($property['province_value'][$contentLang])) {
             $f_property['province'] = $property['province_value'][$contentLang];
         }
-        
+
         if (isset($property['location'])) {
             $f_property['location_key'] = $property['location'];
         }
 
         if (isset($property['property_location']['value'][$contentLang])) {
             $f_property['location'] = $property['property_location']['value'][$contentLang];
-        }elseif(isset($property['property_location']['value']['en'])) {
+        } elseif (isset($property['property_location']['value']['en'])) {
             $f_property['location'] = $property['property_location']['value']['en'];
         }
 
@@ -781,7 +781,7 @@ class CommercialProperties
             $attachments = [];
             $attachments_alt = [];
             foreach ($property['property_attachments'] as $pic) {
-                if(isset($pic["publish_status"]) && !empty($pic["publish_status"])){
+                if (isset($pic["publish_status"]) && !empty($pic["publish_status"])) {
                     if (isset($pic['document']) && $pic['document'] != 1 && isset($set_options['image_size']) && !empty($set_options['image_size'])) {
                         $attachments[] = self::$property_img_resize_link . '/' . $pic['model_id'] . '/' . $set_options['image_size'] . '/' .  urldecode($pic['file_md5_name']);
                     } elseif (isset($pic['document']) && $pic['document'] != 1) {
@@ -798,7 +798,7 @@ class CommercialProperties
             $attachments = [];
             $attachments_alt = [];
             foreach ($property['attachments'] as $pic) {
-                if(isset($pic["publish_status"]) && !empty($pic["publish_status"])){
+                if (isset($pic["publish_status"]) && !empty($pic["publish_status"])) {
                     if (isset($pic['document']) && $pic['document'] != 1 && isset($set_options['image_size']) && !empty($set_options['image_size'])) {
                         // $attachments[] = self::$mls_img_url'] . (isset($property['agency']) ? $property['agency'] : '') . '/' . $pic['model_id'] . '/' . $set_options['image_size'] . '/' .  urldecode($pic['file_md5_name']);
                         $attachments[] = self::$img_url_without_wm . '/' . $pic['model_id'] . '/' . $set_options['image_size'] . '/' .  urldecode($pic['file_md5_name']);
@@ -813,11 +813,11 @@ class CommercialProperties
             $f_property['attachments'] = $attachments;
             $f_property['attachments_alt'] = $attachments_alt;
         }
-        
+
         if (isset($property['property_attachments']) && count($property['property_attachments']) > 0 && !isset($property['from_residential'])) {
             $attachments_document = [];
             foreach ($property['property_attachments'] as $pic) {
-                if(isset($pic["publish_status"]) && !empty($pic["publish_status"])){
+                if (isset($pic["publish_status"]) && !empty($pic["publish_status"])) {
                     $document = [];
                     if (isset($pic['document']) && $pic['document'] == 1 && isset($set_options['image_size']) && !empty($set_options['image_size'])) {
                         $document["link"] = self::$property_img_resize_link . '/' . $pic['model_id'] . '/' . $set_options['image_size'] . '/' .  urldecode($pic['file_md5_name']);
@@ -833,7 +833,7 @@ class CommercialProperties
         } elseif (isset($property['attachments']) && count($property['attachments']) > 0 && isset($property['from_residential']) && $property['from_residential'] == 1) {
             $attachments_document = [];
             foreach ($property['attachments'] as $pic) {
-                if(isset($pic["publish_status"]) && !empty($pic["publish_status"])){
+                if (isset($pic["publish_status"]) && !empty($pic["publish_status"])) {
                     $document = [];
                     if (isset($pic['document']) && $pic['document'] == 1 && isset($set_options['image_size']) && !empty($set_options['image_size'])) {
                         $document["link"] = self::$img_url_without_wm . '/' . $pic['model_id'] . '/' . $set_options['image_size'] . '/' .  urldecode($pic['file_md5_name']);
@@ -858,114 +858,114 @@ class CommercialProperties
             $f_property['buildings'] = $property['buildings'];
         }
 
-        if (isset($property['sleeps']) && $property['sleeps'] !='') {
+        if (isset($property['sleeps']) && $property['sleeps'] != '') {
             $f_property['sleeps'] = $property['sleeps'];
         }
 
-        if (isset($property['bedrooms']) && $property['bedrooms'] !='') {
+        if (isset($property['bedrooms']) && $property['bedrooms'] != '') {
             $f_property['bedrooms'] = $property['bedrooms'];
         }
 
-        if (isset($property['bathrooms']) && $property['bathrooms'] !='') {
+        if (isset($property['bathrooms']) && $property['bathrooms'] != '') {
             $f_property['bathrooms'] = $property['bathrooms'];
         }
 
-        if (isset($property['toilets']) && $property['toilets'] !='') {
+        if (isset($property['toilets']) && $property['toilets'] != '') {
             $f_property['toilets'] = $property['toilets'];
         }
 
-        if (isset($property['living_rooms']) && $property['living_rooms'] !='') {
+        if (isset($property['living_rooms']) && $property['living_rooms'] != '') {
             $f_property['living_rooms'] = $property['living_rooms'];
         }
 
-        if (isset($property['energy_certificate_one']) && $property['energy_certificate_one'] !='') {
+        if (isset($property['energy_certificate_one']) && $property['energy_certificate_one'] != '') {
             $f_property['energy_certificate_one'] = $property['energy_certificate_one'];
         }
 
-        if (isset($property['energy_certificate_two']) && $property['energy_certificate_two'] !='') {
+        if (isset($property['energy_certificate_two']) && $property['energy_certificate_two'] != '') {
             $f_property['energy_certificate_two'] = $property['energy_certificate_two'];
         }
 
-        if (isset($property['kilowatt']) && $property['kilowatt'] !='') {
+        if (isset($property['kilowatt']) && $property['kilowatt'] != '') {
             $f_property['kilowatt'] = $property['kilowatt'];
         }
 
-        if (isset($property['miscellaneous_tax']) && $property['miscellaneous_tax'] !='') {
+        if (isset($property['miscellaneous_tax']) && $property['miscellaneous_tax'] != '') {
             $f_property['miscellaneous_tax'] = $property['miscellaneous_tax'];
         }
 
-        if (isset($property['rubbish']) && $property['rubbish'] !='') {
+        if (isset($property['rubbish']) && $property['rubbish'] != '') {
             $f_property['rubbish'] = $property['rubbish'];
         }
 
-        if (isset($property['parking_license']) && $property['parking_license'] !='') {
+        if (isset($property['parking_license']) && $property['parking_license'] != '') {
             $f_property['parking_license'] = $property['parking_license'];
         }
 
-        if (isset($property['community_fees']) && $property['community_fees'] !='') {
+        if (isset($property['community_fees']) && $property['community_fees'] != '') {
             $f_property['community_fees'] = $property['community_fees'];
         }
 
-        if (isset($property['real_estate_tax']) && $property['real_estate_tax'] !='') {
+        if (isset($property['real_estate_tax']) && $property['real_estate_tax'] != '') {
             $f_property['real_estate_tax '] = $property['real_estate_tax'];
         }
 
-        if (isset($property['show_on']) && $property['show_on'] !='') {
+        if (isset($property['show_on']) && $property['show_on'] != '') {
             $f_property['show_on '] = $property['show_on'];
         }
 
-        if (isset($property['dimensions']) && $property['dimensions'] !='') {
+        if (isset($property['dimensions']) && $property['dimensions'] != '') {
             $f_property['dimensions'] = $property['dimensions'];
         }
 
-        if (isset($property['plot']) && $property['plot'] !='') {
+        if (isset($property['plot']) && $property['plot'] != '') {
             $f_property['plot'] = $property['plot'];
         }
 
-        if (isset($property['built']) && $property['built'] !='') {
+        if (isset($property['built']) && $property['built'] != '') {
             $f_property['built'] = $property['built'];
         }
-        if (isset($property['usefull_area']) && $property['usefull_area'] !='') {
+        if (isset($property['usefull_area']) && $property['usefull_area'] != '') {
             $f_property['usefull_area'] = $property['usefull_area'];
         }
 
-        if (isset($property['terrace']) && $property['terrace'] !='') {
+        if (isset($property['terrace']) && $property['terrace'] != '') {
             $f_property['terrace'] = $property['terrace'];
         }
 
-        if (isset($property['terraces']) && $property['terraces'] !='') {
+        if (isset($property['terraces']) && $property['terraces'] != '') {
             $f_property['terraces'] = $property['terraces'];
         }
 
-        if (isset($property['cee']) && $property['cee'] !='') {
+        if (isset($property['cee']) && $property['cee'] != '') {
             $f_property['cee'] = $property['cee'];
         }
 
-        if (isset($property['facade_size']) && $property['facade_size'] !='') {
+        if (isset($property['facade_size']) && $property['facade_size'] != '') {
             $f_property['facade_size'] = $property['facade_size'];
         }
 
-        if (isset($property['display_window']) && $property['display_window'] !='') {
+        if (isset($property['display_window']) && $property['display_window'] != '') {
             $f_property['display_window'] = $property['display_window'];
         }
 
-        if (isset($property['office_size']) && $property['office_size'] !='') {
+        if (isset($property['office_size']) && $property['office_size'] != '') {
             $f_property['office_size'] = $property['office_size'];
         }
 
-        if (isset($property['ground_floor']) && $property['ground_floor'] !='') {
+        if (isset($property['ground_floor']) && $property['ground_floor'] != '') {
             $f_property['ground_floor'] = $property['ground_floor'];
         }
 
-        if (isset($property['stories_total']) && $property['stories_total'] !='') {
+        if (isset($property['stories_total']) && $property['stories_total'] != '') {
             $f_property['stories_total'] = $property['stories_total'];
         }
 
-        if (isset($property['height']) && $property['height'] !='') {
+        if (isset($property['height']) && $property['height'] != '') {
             $f_property['height'] = $property['height'];
         }
 
-        if (isset($property['storage_size']) && $property['storage_size'] !='') {
+        if (isset($property['storage_size']) && $property['storage_size'] != '') {
             $f_property['storage_size'] = $property['storage_size'];
         }
 
@@ -1012,7 +1012,7 @@ class CommercialProperties
         if (isset($property['furniture_optional']) && $property['furniture_optional'] != '') {
             $f_property['furniture_optional'] = $property['furniture_optional'];
         }
-        
+
         // if (isset($property['feet_moorings']) && $property['feet_moorings'] != '') {
         //     $f_property['feet_moorings'] = $property['feet_moorings'];
         // }
@@ -1171,8 +1171,8 @@ class CommercialProperties
             File::makeDirectory($tempDirectory, 0755, true); // Creates the directory with proper permissions
         }
 
-        if(isset($_GET) && !empty($_GET)){
-            foreach($_GET as $key => $value){
+        if (isset($_GET) && !empty($_GET)) {
+            foreach ($_GET as $key => $value) {
                 $file_name .= $key . '_';
             }
         }
@@ -1192,7 +1192,7 @@ class CommercialProperties
         return $file_data;
     }
 
-    public static function findAllWithLatLang($qry = 'true', $map_query = [], $cache = false, $selectedFields= "")
+    public static function findAllWithLatLang($qry = 'true', $map_query = [], $cache = false, $selectedFields = "")
     {
         self::initialize();
         $webroot = public_path() . '/uploads/';
@@ -1335,7 +1335,7 @@ class CommercialProperties
 
         if (isset($query['transaction_type']) && !empty($query['transaction_type'])) {
             foreach ($query['transaction_type'] as $int_val) {
-                $post_data['query'][$int_val] = (boolean)'true';
+                $post_data['query'][$int_val] = (bool)'true';
             }
         }
 
@@ -1399,40 +1399,40 @@ class CommercialProperties
         self::initialize();
         $languages = Cms::siteLanguages();
         $fields = [
-        'sale' => (isset($data['transaction_type']) && $data['transaction_type'] == 'sale' ? (Boolean)'1' : (Boolean)'0'),
-        'rent' => (isset($data['transaction_type']) && $data['transaction_type'] == 'rent' ? (Boolean)'1' : (Boolean)'0'),
-        'auction_tab' => (isset($data['transaction_type']) && $data['transaction_type'] == 'auction' ? (Boolean)'1' : (Boolean)'0'),
-        'starting_price' => (isset($data['starting_price']) && !empty($data['starting_price']) ? (int)$data['starting_price'] : ''),
-        'minimum_price' => (isset($data['minimum_price']) && !empty($data['minimum_price']) ? (int)$data['minimum_price'] : ''),
-        'auction_start_date' => (isset($data['auction_start_date']) && !empty($data['auction_start_date']) ? $data['auction_start_date'] : ''),
-        'auction_end_date' => (isset($data['auction_end_date']) && !empty($data['auction_end_date']) ? $data['auction_end_date'] : ''),
-        'lt_rental' => (isset($data['transaction_type']) && $data['transaction_type'] == 'rent' ? (Boolean)'1' : (Boolean)'0'),
-        'type_one' => (isset($data['type_one']) && !empty($data['type_one']) ? (int)$data['type_one'] : ''),
-        'type_two' => (isset($data['type_two']) && !empty($data['type_two']) ? (int)$data['type_two'] : ''),
-        'bedrooms' => (isset($data['bedrooms']) && !empty($data['bedrooms']) ? (int)$data['bedrooms'] : ''),
-        'bathrooms' => (isset($data['bathrooms']) && !empty($data['bathrooms']) ? (int)$data['bathrooms'] : ''),
-        'built'  => (isset($data['built']) && !empty($data['built']) ? (int)$data['built'] : ''),
-        'plot'  => (isset($data['plot']) && !empty($data['plot']) ? (int)$data['plot'] : ''),
-        'energy_certificate_one' => (isset($data['energy_certificate_one']) && !empty($data['energy_certificate_one']) ? (string)$data['energy_certificate_one'] : ''),
-        'private_info_object' => [self::$agency => ['cadastral_numbers' => [0 => ['cadastral_number'=> (isset($data['cadastral_numbers']) && !empty($data['cadastral_numbers']) ? (int)$data['cadastral_numbers'] : '')]]]],
-        'address' => ['formatted_address' => (isset($data['formatted_address']) && !empty($data['formatted_address']) ? (string)$data['formatted_address'] : '')],
-        'country' => (isset($data['country']) && !empty($data['country']) ? (int)$data['country'] : ''),
-        'region'  => (isset($data['region']) && !empty($data['region']) ? (int)$data['region'] : ''),
-        'province'  => (isset($data['province']) && !empty($data['province']) ? (int)$data['province'] : ''),
-        'city'  => (isset($data['city']) && !empty($data['city']) ? (int)$data['city'] : ''),
-        'location' => (isset($data['location']) && !empty($data['location']) ? (int)$data['location'] : ''),
-        'street' => (isset($data['street']) && !empty($data['street']) ? (string)$data['street'] : ''),
-        'street_number' => (isset($data['street_number']) && !empty($data['street_number']) ? (string)$data['street_number'] : ''),
-        'postal_code'  => (isset($data['postal_code']) && !empty($data['postal_code']) ? (string)$data['postal_code'] : ''),
-        'currency' => (isset($data['currency']) && !empty($data['currency']) ? (string)$data['currency'] : ''),
-        'latitude_alt' => (isset($data['lat']) && !empty($data['lat']) ? $data['lat'] : ''),
-        'longitude_alt' => (isset($data['lng']) && !empty($data['lng']) ? $data['lng'] : ''),
-        'status' => (isset($data['status']) && !empty($data['status']) ? $data['status'] : 'Valuation'),
-        'owner' => (isset($data['owner_id']) ? $data['owner_id'] : ''),
-        'property_name' => (isset($data['property_name']) ? $data['property_name'] : ''),
-        'ltr' => (isset($data['ltr']) ? $data['ltr'] : null),
-        'period_seasons' => (isset($data['period_seasons']) ? $data['period_seasons'] : null),
-        'shared_categories' => (isset($data['shared_categories']) ? $data['shared_categories'] : null),
+            'sale' => (isset($data['transaction_type']) && $data['transaction_type'] == 'sale' ? (bool)'1' : (bool)'0'),
+            'rent' => (isset($data['transaction_type']) && $data['transaction_type'] == 'rent' ? (bool)'1' : (bool)'0'),
+            'auction_tab' => (isset($data['transaction_type']) && $data['transaction_type'] == 'auction' ? (bool)'1' : (bool)'0'),
+            'starting_price' => (isset($data['starting_price']) && !empty($data['starting_price']) ? (int)$data['starting_price'] : ''),
+            'minimum_price' => (isset($data['minimum_price']) && !empty($data['minimum_price']) ? (int)$data['minimum_price'] : ''),
+            'auction_start_date' => (isset($data['auction_start_date']) && !empty($data['auction_start_date']) ? $data['auction_start_date'] : ''),
+            'auction_end_date' => (isset($data['auction_end_date']) && !empty($data['auction_end_date']) ? $data['auction_end_date'] : ''),
+            'lt_rental' => (isset($data['transaction_type']) && $data['transaction_type'] == 'rent' ? (bool)'1' : (bool)'0'),
+            'type_one' => (isset($data['type_one']) && !empty($data['type_one']) ? (int)$data['type_one'] : ''),
+            'type_two' => (isset($data['type_two']) && !empty($data['type_two']) ? (int)$data['type_two'] : ''),
+            'bedrooms' => (isset($data['bedrooms']) && !empty($data['bedrooms']) ? (int)$data['bedrooms'] : ''),
+            'bathrooms' => (isset($data['bathrooms']) && !empty($data['bathrooms']) ? (int)$data['bathrooms'] : ''),
+            'built'  => (isset($data['built']) && !empty($data['built']) ? (int)$data['built'] : ''),
+            'plot'  => (isset($data['plot']) && !empty($data['plot']) ? (int)$data['plot'] : ''),
+            'energy_certificate_one' => (isset($data['energy_certificate_one']) && !empty($data['energy_certificate_one']) ? (string)$data['energy_certificate_one'] : ''),
+            'private_info_object' => [self::$agency => ['cadastral_numbers' => [0 => ['cadastral_number' => (isset($data['cadastral_numbers']) && !empty($data['cadastral_numbers']) ? (int)$data['cadastral_numbers'] : '')]]]],
+            'address' => ['formatted_address' => (isset($data['formatted_address']) && !empty($data['formatted_address']) ? (string)$data['formatted_address'] : '')],
+            'country' => (isset($data['country']) && !empty($data['country']) ? (int)$data['country'] : ''),
+            'region'  => (isset($data['region']) && !empty($data['region']) ? (int)$data['region'] : ''),
+            'province'  => (isset($data['province']) && !empty($data['province']) ? (int)$data['province'] : ''),
+            'city'  => (isset($data['city']) && !empty($data['city']) ? (int)$data['city'] : ''),
+            'location' => (isset($data['location']) && !empty($data['location']) ? (int)$data['location'] : ''),
+            'street' => (isset($data['street']) && !empty($data['street']) ? (string)$data['street'] : ''),
+            'street_number' => (isset($data['street_number']) && !empty($data['street_number']) ? (string)$data['street_number'] : ''),
+            'postal_code'  => (isset($data['postal_code']) && !empty($data['postal_code']) ? (string)$data['postal_code'] : ''),
+            'currency' => (isset($data['currency']) && !empty($data['currency']) ? (string)$data['currency'] : ''),
+            'latitude_alt' => (isset($data['lat']) && !empty($data['lat']) ? $data['lat'] : ''),
+            'longitude_alt' => (isset($data['lng']) && !empty($data['lng']) ? $data['lng'] : ''),
+            'status' => (isset($data['status']) && !empty($data['status']) ? $data['status'] : 'Valuation'),
+            'owner' => (isset($data['owner_id']) ? $data['owner_id'] : ''),
+            'property_name' => (isset($data['property_name']) ? $data['property_name'] : ''),
+            'ltr' => (isset($data['ltr']) ? $data['ltr'] : null),
+            'period_seasons' => (isset($data['period_seasons']) ? $data['period_seasons'] : null),
+            'shared_categories' => (isset($data['shared_categories']) ? $data['shared_categories'] : null),
         ];
         if (isset($data['transaction_type']) && $data['transaction_type'] == 'sale') {
             $fields['current_price'] = (isset($data['current_price']) && !empty($data['current_price']) ? (int)$data['current_price'] : '');
@@ -1493,13 +1493,13 @@ class CommercialProperties
             }
         }
 
-        if(isset($data['prop_id']) && !empty($data['prop_id'])){
-            $node_url = self::$node_url . 'commercial_properties/update/'.$data['prop_id'].'?user=' . $data['user_id'];
+        if (isset($data['prop_id']) && !empty($data['prop_id'])) {
+            $node_url = self::$node_url . 'commercial_properties/update/' . $data['prop_id'] . '?user=' . $data['user_id'];
 
             $response = Http::withHeaders([
                 'Content-Type' => 'application/json',
             ])->put($node_url, $fields)->json();
-        }else{
+        } else {
             $node_url = self::$node_url . 'commercial_properties/create?user=' . $data['user_id'];
 
             $response = Http::withHeaders([
@@ -1611,7 +1611,7 @@ class CommercialProperties
     public static function getCadastralProperties($same_cadastral_prop_ids)
     {
         self::initialize();
-        $url = self::$node_url .'/commercial_properties/get-same-properties-of-cadastral-number/?user=' . self::$user;
+        $url = self::$node_url . '/commercial_properties/get-same-properties-of-cadastral-number/?user=' . self::$user;
         $query['query'] = [
             'ids' => $same_cadastral_prop_ids,
         ];
@@ -1623,7 +1623,7 @@ class CommercialProperties
         $response = json_decode($response, TRUE);
         $properties = [];
 
-        if(isset($response) && isset($response['docs'])) {
+        if (isset($response) && isset($response['docs'])) {
             foreach ($response['docs'] as $property) {
                 $properties[] = self::formateProperty($property);
             }
