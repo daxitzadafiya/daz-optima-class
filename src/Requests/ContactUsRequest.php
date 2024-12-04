@@ -292,7 +292,7 @@ class ContactUsRequest extends FormRequest
             'cv_file' => 'nullable|file',
             'phone' => 'required|regex:/^\d{8,}$/',
             'reCaptcha' => $this->isReCaptchaEnabled() ? 'required' : 'nullable',
-            'verifyCode' => ['captcha', $this->verifyCode !== "null" ? 'required' : 'nullable'],
+            'verifyCode' => ['captcha', $this->verifyCode !== null ? 'required' : 'nullable'],
             'reCaptcha3' => $this->isReCaptchaV3Enabled() ? 'required' : 'nullable',
         ];
     }

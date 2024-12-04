@@ -98,9 +98,9 @@ class Functions
         $model = new ContactUs();
         $model->fill(request()->all());
         $model->verifyCode = true;
-        $model->reCaptcha = request()->get('reCaptcha');
+        $model->reCaptcha = request()->input('reCaptcha');
 
-        if ($model->reCaptcha3 = request()->get('reCaptcha3')) {
+        if ($model->reCaptcha3 = request()->input('reCaptcha3')) {
             $model->scenario = ContactUsRequest::SCENARIO_V3;
         }
 
@@ -190,17 +190,17 @@ class Functions
             $mail->to($to)
                 ->bcc($bcc)
                 ->subject('Leads Error');
-            $mail->setBody($message, 'text/html');
+            $mail->html($message);
         });
     }
 
     public static function loadPageDynamically($object)
     {
-        $slug = request()->get('slug', '');
+        $slug = request()->input('slug', '');
         if ($slug) {
             app()->instance('page_data', $page_data = Cms::getPage(['slug' => $slug, 'lang' => App::getLocale()]));
             // } else {
-            //     app()->instance('page_data', $page_data = Cms::getPage(['slug' => request()->get('title'), 'lang' => strtoupper(App::getLocale())]));
+            //     app()->instance('page_data', $page_data = Cms::getPage(['slug' => request()->input('title'), 'lang' => strtoupper(App::getLocale())]));
         }
 
         // redirect if there is no page_data is available
@@ -229,10 +229,10 @@ class Functions
 
     public static function dynamicPage($object)
     {
-        $cmsModel = CMS::Slugs('page');
+        $cmsModel = Cms::Slugs('page');
         $url = explode('/', request()->path());
         $this_page = urldecode(end($url));
-        app()->instance('page_data', $page_data = CMS::pageBySlug(request()->input('title')));
+        app()->instance('page_data', $page_data = Cms::pageBySlug(request()->input('title')));
         if (isset($cmsModel) && count($cmsModel) > 0) {
             foreach ($cmsModel as $row) {
                 if (isset($row['slug_all'][strtoupper(App::getLocale())]) and $row['slug_all'][strtoupper(App::getLocale())] == $this_page) {

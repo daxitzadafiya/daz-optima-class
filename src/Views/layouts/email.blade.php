@@ -368,7 +368,7 @@
                 <div class="content">
                     <table>
                         <tr>
-                            <td><img style="height:80px" src="<?= Sitehelper::get_site_logo('') ?>" /></td>
+                            <td><img style="height:80px" src="" /></td>
                             <td align="right">
                                 <h6 class="collapse"></h6>
                             </td>

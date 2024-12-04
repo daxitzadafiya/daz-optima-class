@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\App;
  * Cms Functions to get CMS data
  *
 */
-class CMS
+class Cms
 {
     use ConfigTrait;
 

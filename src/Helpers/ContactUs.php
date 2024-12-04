@@ -63,6 +63,7 @@ class ContactUs extends Model
         self::initialize();
         //if you wanna pass email with name format will me:  Your Name[Your@email.address]
         $settings = Cms::settings();
+        $htmlBody = "";
 
         if (isset($settings['general_settings']['admin_email']) && $settings['general_settings']['admin_email'] != '') {
             $ae_array = explode(',', $settings['general_settings']['admin_email']);
@@ -92,7 +93,7 @@ class ContactUs extends Model
             $from_email = self::$from_email;
         }
 
-        if ($this->validate($this) && isset($ae_array)) {
+        if ($this->validate($this->toArray()) && isset($ae_array)) {
             if (isset($this->attach) && $this->attach == 1) {
                 $webroot = public_path();
 
@@ -107,14 +108,14 @@ class ContactUs extends Model
                         // Recipient
                         $message->to($this->email)->subject('Thank you for contacting us');
 
-                        $message->setBody(isset($settings['email_response'][strtoupper(App::getLocale())]) ? $settings['email_response'][strtoupper(App::getLocale())] : 'Thank you for contacting us');
+                        $message->html(isset($settings['email_response'][strtoupper(App::getLocale())]) ? $settings['email_response'][strtoupper(App::getLocale())] : 'Thank you for contacting us');
 
                         $message->attach($webroot . '/uploads/pdf/property.pdf');
                     });
 
-                    Mail::send("optima::emails.mail", ['model' => $this], function ($message) use($from_email, $ae_array, $settings) {
+                    Mail::send("optima::emails.mail", ['model' => $this], function ($message) use($ae_array, $settings) {
                         // From address
-                        $message->from($from_email);
+                        $message->from(isset($ae_array[0]) ? trim($ae_array[0]) : self::$from_email);
 
                         // Recipient
                         $message->to(isset($ae_array) ? $ae_array : '')->subject(isset($settings['email_response_subject'][strtoupper(App::getLocale())]) ? $settings['email_response_subject'][strtoupper(App::getLocale())] : (isset($settings['email_response_subject'][0]) ? $settings['email_response_subject'][0]['key'] : 'Web enquiry'));
@@ -160,7 +161,7 @@ class ContactUs extends Model
                     // Recipient
                     $message->to(isset($ae_array) ? $ae_array : '')->subject('Subscribing newsletter Email');
 
-                    $message->setBody($this->email . ' would like to be added to your newsletters', 'text/html');
+                    $message->html($this->email . ' would like to be added to your newsletters');
                 });
 
                 Mail::send([], [], function ($message) use($from_email, $subscribe_subject, $subscribe_msg, $htmlBody, $email_response) {
@@ -170,7 +171,7 @@ class ContactUs extends Model
                     // Recipient
                     $message->to($this->email)->subject($subscribe_subject != '' ? $subscribe_subject : 'Thank you for contacting us');
 
-                    $message->setBody($subscribe_msg != '' ? $htmlBody : $email_response);
+                    $message->html($subscribe_msg != '' ? $htmlBody : $email_response);
                 });
             } else if (isset($this->booking_enquiry) && $this->booking_enquiry == 1) {
                 $html = '';
@@ -238,17 +239,17 @@ class ContactUs extends Model
                     // Recipient
                     $message->to(isset($ae_array) ? $ae_array : '')->subject('Booking Enquiry');
 
-                    $message->setBody($html);
+                    $message->html($html);
                 });
 
                 Mail::send([], [], function ($message) use($from_email, $settings) {
                     // From address
-                    $message->from($from_email);
+                    $message->from(isset($ae_array[0]) ? trim($ae_array[0]) : self::$from_email);
 
                     // Recipient
                     $message->to($this->email)->subject('Thank you for contacting us');
 
-                    $message->setBody(isset($settings['email_response'][strtoupper(App::getLocale())]) ? $settings['email_response'][strtoupper(App::getLocale())] : 'Thank you for Subscribing');
+                    $message->html(isset($settings['email_response'][strtoupper(App::getLocale())]) ? $settings['email_response'][strtoupper(App::getLocale())] : 'Thank you for Subscribing');
                 });
             } elseif (isset($_GET['ContactUs']['file_link'])) {
                 $file = $_GET['ContactUs']['file_link'];
@@ -286,7 +287,7 @@ class ContactUs extends Model
                     // Recipient
                     $message->to($this->email)->subject(isset($settings['email_response_subject'][strtoupper(App::getLocale())]) ? $settings['email_response_subject'][strtoupper(App::getLocale())] : (isset($settings['email_response_subject'][0]) ? $settings['email_response_subject'][0]['key'] : 'Thank you for contacting us'));
 
-                    $message->setBody(isset($htmlBody) && isset($_GET['ContactUs']['file_link']) ? "<a href=" . $_GET['ContactUs']['file_link'] . ">Download File</a><br>" . $htmlBody : 'Thank you for contacting us');
+                    $message->html((isset($htmlBody) && !empty($htmlBody)) && isset($_GET['ContactUs']['file_link']) ? "<a href=" . $_GET['ContactUs']['file_link'] . ">Download File</a><br>" . $htmlBody : 'Thank you for contacting us');
                 });
 
                 if (isset($this->sender_first_name) || isset($this->sender_last_name) || isset($this->sender_email) || isset($this->sender_phone))
@@ -323,12 +324,12 @@ class ContactUs extends Model
 
                 Mail::send([], [], function ($message) use($from_email, $settings, $htmlBody) {
                     // From address
-                    $message->from($from_email);
+                    $message->from(isset($ae_array[0]) ? trim($ae_array[0]) : self::$from_email);
 
                     // Recipient
                     $message->to($this->email)->subject(isset($settings['email_response_subject'][strtoupper(App::getLocale())]) ? $settings['email_response_subject'][strtoupper(App::getLocale())] : (isset($settings['email_response_subject'][0]) ? $settings['email_response_subject'][0]['key'] : 'Thank you for contacting us'));
 
-                    $message->setBody(isset($htmlBody) ? $htmlBody : 'Thank you for contacting us');
+                    $message->html(isset($htmlBody) && !empty($htmlBody) ? $htmlBody : 'Thank you for contacting us');
                 });
 
                 if (isset($this->sender_first_name) || isset($this->sender_last_name) || isset($this->sender_email) || isset($this->sender_phone))

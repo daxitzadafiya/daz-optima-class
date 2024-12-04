@@ -1,10 +1,8 @@
-@extends('layouts.email')
+@extends('optima::layouts.email')
 
 @section('content')
-    @inject('app', 'Illuminate\Support\Facades\App')
-    
     @php
-        $lang = $app->getLocale();
+        $lang = app()->getLocale();
     @endphp
 
     <table>
@@ -31,26 +29,26 @@
                         Property Ref: <?= $other_reference ?>
                     </p>
                 <?php else : ?>
-                    <?php if ($model->reference != '') : ?>
+                    <?php if (isset($model->reference) && !empty($model->reference)) : ?>
                         <p>
                             Property Ref: <?= $model->reference ?>
                         </p>
                     <?php endif ?>
                 <?php endif ?>
 
-                <?php if ($model->arrival_date != '') : ?>
+                <?php if (isset($model->arrival_date) && !empty($model->arrival_date)) : ?>
                     <p>
                         Arrival Date: <?= $model->arrival_date ?>
                     </p>
                 <?php endif ?>
 
-                <?php if ($model->departure_date != '') : ?>
+                <?php if (isset($model->departure_date) && !empty($model->departure_date)) : ?>
                     <p>
                         Departure Date: <?= $model->departure_date ?>
                     </p>
                 <?php endif ?>
 
-                <?php if ($model->guests != '') : ?>
+                <?php if (isset($model->guests) && !empty($model->guests)) : ?>
                     <p>
                         Number Guests: <?= $model->guests ?>
                     </p>
