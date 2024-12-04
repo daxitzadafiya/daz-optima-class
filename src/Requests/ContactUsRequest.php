@@ -2,6 +2,7 @@
 
 namespace Daz\OptimaClass\Requests;
 
+use Daz\OptimaClass\Components\Translate;
 use Daz\OptimaClass\Traits\ConfigTrait;
 use Daz\ReCaptcha\Facades\ReCaptcha;
 use Illuminate\Foundation\Http\FormRequest;
@@ -302,12 +303,12 @@ class ContactUsRequest extends FormRequest
     public function messages()
     {
         return [
-            'first_name.required' => __('app.first name cannot be blank.'),
-            'last_name.required' => __('app.last name cannot be blank.'),
-            'email.required' => __('app.email cannot be blank.'),
-            'message.required' => __('app.message cannot be blank.'),
-            'verifyCode.required' => __('app.the verification code is incorrect.'),
-            'phone.regex' => __('app.please enter the valid phone number.'),
+            'first_name.required' => Translate::t('first name cannot be blank.'),
+            'last_name.required' => Translate::t('last name cannot be blank.'),
+            'email.required' => Translate::t('email cannot be blank.'),
+            'message.required' => Translate::t('message cannot be blank.'),
+            'verifyCode.required' => Translate::t('the verification code is incorrect.'),
+            'phone.regex' => Translate::t('please enter the valid phone number.'),
         ];
     }
 
@@ -315,7 +316,7 @@ class ContactUsRequest extends FormRequest
     {
         $validator->after(function ($validator) {
             if ($this->first_name === $this->last_name) {
-                $validator->errors()->add('first_name', __('app.first name and last name cannot be the same.'));
+                $validator->errors()->add('first_name', Translate::t('first name and last name cannot be the same.'));
             }
         });
     }

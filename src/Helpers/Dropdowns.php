@@ -2,6 +2,7 @@
 
 namespace Daz\OptimaClass\Helpers;
 
+use Daz\OptimaClass\Components\Translate;
 use Daz\OptimaClass\Traits\ConfigTrait;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Http;
@@ -508,13 +509,13 @@ class Dropdowns
             $sub_types = [];
             if (isset($file->sub_type) && count($file->sub_type) > 0) {
                 foreach ($file->sub_type as $subtype) {
-                    $sub_types[] = ['key' => $subtype->key, 'value' => __('app.'. strtolower($subtype->value->en))];
+                    $sub_types[] = ['key' => $subtype->key, 'value' => Translate::t(strtolower($subtype->value->en))];
                 }
                 usort($sub_types, function ($item1, $item2) {
                     return $item1['value'] <=> $item2['value'];
                 });
             }
-            $types[] = ['key' => $file->key, 'value' => __('app.'. strtolower($file->value->en)), 'sub_types' => $sub_types];
+            $types[] = ['key' => $file->key, 'value' => Translate::t(strtolower($file->value->en)), 'sub_types' => $sub_types];
         }
 
         usort($types, function ($item1, $item2) {
@@ -585,173 +586,173 @@ class Dropdowns
     public static function settings()
     {
         return [
-            ['key' => "beachfront", 'value' => __('app.beachfront')],
-            ['key' => "beachside", 'value' => __('app.beachside')],
-            ['key' => "close_to_airport", 'value' => __('app.close_to_airport')],
-            ['key' => "close_to_busstop", 'value' => __('app.close_to_busstop')],
-            ['key' => "close_to_church", 'value' => __('app.close_to_church')],
-            ['key' => "close_to_forest", 'value' => __('app.close_to_forest')],
-            ['key' => "close_to_golf", 'value' => __('app.close_to_golf')],
-            ['key' => "close_to_hotel", 'value' => __('app.close_to_hotel')],
-            ['key' => "close_to_marina", 'value' => __('app.close_to_marina')],
-            ['key' => "close_to_mosque", 'value' => __('app.close_to_mosque')],
-            ['key' => "close_to_port", 'value' => __('app.close_to_port')],
-            ['key' => "close_to_restaurant", 'value' => __('app.close_to_restaurant')],
-            ['key' => "close_to_schools", 'value' => __('app.close_to_schools')],
-            ['key' => "close_to_sea", 'value' => __('app.close_to_sea')],
-            ['key' => "close_to_shops", 'value' => __('app.close_to_shops')],
-            ['key' => "close_to_skiing", 'value' => __('app.close_to_skiing')],
-            ['key' => "close_to_supermarkets", 'value' => __('app.close_to_supermarkets')],
-            ['key' => "close_to_taxistand", 'value' => __('app.close_to_taxistand')],
-            ['key' => "close_to_town", 'value' => __('app.close_to_town')],
-            ['key' => "close_to_train", 'value' => __('app.close_to_train')],
-            ['key' => "commercial_area", 'value' => __('app.commercial_area')],
-            ['key' => "countryside", 'value' => __('app.countryside')],
-            ['key' => "easy_access", 'value' => __('app.easy_access')],
-            ['key' => "frontline_golf", 'value' => __('app.frontline_golf')],
-            ['key' => "marina", 'value' => __('app.marina')],
-            ['key' => "mountain_pueblo", 'value' => __('app.mountain_pueblo')],
-            ['key' => "no_nearby_neighbours", 'value' => __('app.no_nearby_neighbours')],
-            ['key' => "not_isolated", 'value' => __('app.not_isolated')],
-            ['key' => "port", 'value' => __('app.port')],
-            ['key' => "private", 'value' => __('app.private')],
-            ['key' => "suburban", 'value' => __('app.suburban')],
-            ['key' => "town", 'value' => __('app.town')],
-            ['key' => "tranquil", 'value' => __('app.tranquil')],
-            ['key' => "urbanisation", 'value' => __('app.urbanisation')],
-            ['key' => "village", 'value' => __('app.village')],
+            ['key' => "beachfront", 'value' => Translate::t('beachfront')],
+            ['key' => "beachside", 'value' => Translate::t('beachside')],
+            ['key' => "close_to_airport", 'value' => Translate::t('close_to_airport')],
+            ['key' => "close_to_busstop", 'value' => Translate::t('close_to_busstop')],
+            ['key' => "close_to_church", 'value' => Translate::t('close_to_church')],
+            ['key' => "close_to_forest", 'value' => Translate::t('close_to_forest')],
+            ['key' => "close_to_golf", 'value' => Translate::t('close_to_golf')],
+            ['key' => "close_to_hotel", 'value' => Translate::t('close_to_hotel')],
+            ['key' => "close_to_marina", 'value' => Translate::t('close_to_marina')],
+            ['key' => "close_to_mosque", 'value' => Translate::t('close_to_mosque')],
+            ['key' => "close_to_port", 'value' => Translate::t('close_to_port')],
+            ['key' => "close_to_restaurant", 'value' => Translate::t('close_to_restaurant')],
+            ['key' => "close_to_schools", 'value' => Translate::t('close_to_schools')],
+            ['key' => "close_to_sea", 'value' => Translate::t('close_to_sea')],
+            ['key' => "close_to_shops", 'value' => Translate::t('close_to_shops')],
+            ['key' => "close_to_skiing", 'value' => Translate::t('close_to_skiing')],
+            ['key' => "close_to_supermarkets", 'value' => Translate::t('close_to_supermarkets')],
+            ['key' => "close_to_taxistand", 'value' => Translate::t('close_to_taxistand')],
+            ['key' => "close_to_town", 'value' => Translate::t('close_to_town')],
+            ['key' => "close_to_train", 'value' => Translate::t('close_to_train')],
+            ['key' => "commercial_area", 'value' => Translate::t('commercial_area')],
+            ['key' => "countryside", 'value' => Translate::t('countryside')],
+            ['key' => "easy_access", 'value' => Translate::t('easy_access')],
+            ['key' => "frontline_golf", 'value' => Translate::t('frontline_golf')],
+            ['key' => "marina", 'value' => Translate::t('marina')],
+            ['key' => "mountain_pueblo", 'value' => Translate::t('mountain_pueblo')],
+            ['key' => "no_nearby_neighbours", 'value' => Translate::t('no_nearby_neighbours')],
+            ['key' => "not_isolated", 'value' => Translate::t('not_isolated')],
+            ['key' => "port", 'value' => Translate::t('port')],
+            ['key' => "private", 'value' => Translate::t('private')],
+            ['key' => "suburban", 'value' => Translate::t('suburban')],
+            ['key' => "town", 'value' => Translate::t('town')],
+            ['key' => "tranquil", 'value' => Translate::t('tranquil')],
+            ['key' => "urbanisation", 'value' => Translate::t('urbanisation')],
+            ['key' => "village", 'value' => Translate::t('village')],
         ];
     }
 
     public static function orientations()
     {
         return [
-            ['key' => "north", 'value' => __('app.north')],
-            ['key' => "north_east", 'value' => __('app.north_east')],
-            ['key' => "east", 'value' => __('app.east')],
-            ['key' => "south_east", 'value' => __('app.south_east')],
-            ['key' => "south", 'value' => __('app.south')],
-            ['key' => "south_west", 'value' => __('app.south_west')],
-            ['key' => "west", 'value' => __('app.west')],
-            ['key' => "north_west", 'value' => __('app.north_west')],
+            ['key' => "north", 'value' => Translate::t('north')],
+            ['key' => "north_east", 'value' => Translate::t('north_east')],
+            ['key' => "east", 'value' => Translate::t('east')],
+            ['key' => "south_east", 'value' => Translate::t('south_east')],
+            ['key' => "south", 'value' => Translate::t('south')],
+            ['key' => "south_west", 'value' => Translate::t('south_west')],
+            ['key' => "west", 'value' => Translate::t('west')],
+            ['key' => "north_west", 'value' => Translate::t('north_west')],
         ];
     }
 
     public static function views()
     {
         return [
-            ['key' => "beach", 'value' => __('app.beach')],
-            ['key' => "countryside", 'value' => __('app.countryside')],
-            ['key' => "forest", 'value' => __('app.forest')],
-            ['key' => "garden", 'value' => __('app.garden')],
-            ['key' => "golf", 'value' => __('app.golf')],
-            ['key' => "lake", 'value' => __('app.lake')],
-            ['key' => "mountain", 'value' => __('app.mountain')],
-            ['key' => "panoramic", 'value' => __('app.panoramic')],
-            ['key' => "partial_seaviews", 'value' => __('app.partial_seaviews')],
-            ['key' => "pool", 'value' => __('app.pool')],
-            ['key' => "port", 'value' => __('app.port')],
-            ['key' => "sea", 'value' => __('app.sea')],
-            ['key' => "ski", 'value' => __('app.ski')],
-            ['key' => "street", 'value' => __('app.street')],
-            ['key' => "urban", 'value' => __('app.urban')],
+            ['key' => "beach", 'value' => Translate::t('beach')],
+            ['key' => "countryside", 'value' => Translate::t('countryside')],
+            ['key' => "forest", 'value' => Translate::t('forest')],
+            ['key' => "garden", 'value' => Translate::t('garden')],
+            ['key' => "golf", 'value' => Translate::t('golf')],
+            ['key' => "lake", 'value' => Translate::t('lake')],
+            ['key' => "mountain", 'value' => Translate::t('mountain')],
+            ['key' => "panoramic", 'value' => Translate::t('panoramic')],
+            ['key' => "partial_seaviews", 'value' => Translate::t('partial_seaviews')],
+            ['key' => "pool", 'value' => Translate::t('pool')],
+            ['key' => "port", 'value' => Translate::t('port')],
+            ['key' => "sea", 'value' => Translate::t('sea')],
+            ['key' => "ski", 'value' => Translate::t('ski')],
+            ['key' => "street", 'value' => Translate::t('street')],
+            ['key' => "urban", 'value' => Translate::t('urban')],
         ];
     }
 
     public static function conditions()
     {
         return [
-            ['key' => "excellent", 'value' => __('app.excellent')],
-            ['key' => "fair", 'value' => __('app.fair')],
-            ['key' => "minor_updates_required", 'value' => __('app.minor_updates_required')],
-            ['key' => "good", 'value' => __('app.good')],
-            ['key' => "never_lived", 'value' => __('app.never_lived')],
-            ['key' => "renovation_required", 'value' => __('app.renovation_required')],
-            ['key' => "recently_renovated", 'value' => __('app.recently_renovated')],
-            ['key' => "recently_refurbished", 'value' => __('app.recently_refurbished')],
-            ['key' => "finishing_habitable_required", 'value' => __('app.finishing_habitable_required')],
-            ['key' => "basically_habitable", 'value' => __('app.basically_habitable')],
+            ['key' => "excellent", 'value' => Translate::t('excellent')],
+            ['key' => "fair", 'value' => Translate::t('fair')],
+            ['key' => "minor_updates_required", 'value' => Translate::t('minor_updates_required')],
+            ['key' => "good", 'value' => Translate::t('good')],
+            ['key' => "never_lived", 'value' => Translate::t('never_lived')],
+            ['key' => "renovation_required", 'value' => Translate::t('renovation_required')],
+            ['key' => "recently_renovated", 'value' => Translate::t('recently_renovated')],
+            ['key' => "recently_refurbished", 'value' => Translate::t('recently_refurbished')],
+            ['key' => "finishing_habitable_required", 'value' => Translate::t('finishing_habitable_required')],
+            ['key' => "basically_habitable", 'value' => Translate::t('basically_habitable')],
         ];
     }
 
     public static function parkings()
     {
         return [
-            ['key' => "communal_garage", 'value' => __('app.communal_garage')],
-            ['key' => "parking_communal", 'value' => __('app.parking_communal')],
-            ['key' => "covered", 'value' => __('app.covered')],
-            ['key' => "private", 'value' => __('app.private')],
-            ['key' => "more_than_one", 'value' => __('app.more_than_one')],
+            ['key' => "communal_garage", 'value' => Translate::t('communal_garage')],
+            ['key' => "parking_communal", 'value' => Translate::t('parking_communal')],
+            ['key' => "covered", 'value' => Translate::t('covered')],
+            ['key' => "private", 'value' => Translate::t('private')],
+            ['key' => "more_than_one", 'value' => Translate::t('more_than_one')],
         ];
         // $propertyParkings = [
-        //     'garage' => __('app.'. strtolower('garage')),
-        //     'open' => __('app.'. strtolower('open')),
-        //     'parking_optional' => __('app.'. strtolower('parking_optional')),
-        //     'private' => __('app.'. strtolower('private')),
-        //     'public_parking_nearby_against_a_fee' => __('app.'. strtolower('public_parking_nearby_against_a_fee')),
-        //     'parking_street' => __('app.'. strtolower('parking_street')),
-        //     'underground' => __('app.'. strtolower('underground'))
+        //     'garage' => Translate::t(strtolower('garage')),
+        //     'open' => Translate::t(strtolower('open')),
+        //     'parking_optional' => Translate::t(strtolower('parking_optional')),
+        //     'private' => Translate::t(strtolower('private')),
+        //     'public_parking_nearby_against_a_fee' => Translate::t(strtolower('public_parking_nearby_against_a_fee')),
+        //     'parking_street' => Translate::t(strtolower('parking_street')),
+        //     'underground' => Translate::t(strtolower('underground'))
         // ];
     }
 
     public static function pools()
     {
         return [
-            ['key' => "pool_communal", 'value' => __('app.pool_communal')],
-            ['key' => "pool_indoor", 'value' => __('app.pool_indoor')],
-            ['key' => "pool_private", 'value' => __('app.pool_private')],
+            ['key' => "pool_communal", 'value' => Translate::t('pool_communal')],
+            ['key' => "pool_indoor", 'value' => Translate::t('pool_indoor')],
+            ['key' => "pool_private", 'value' => Translate::t('pool_private')],
         ];
         // $propertyPools = [
-        //     'childrens_pool' => __('app.'. strtolower('childrens_pool')),
-        //     'covfenced_poolered' => __('app.'. strtolower('fenced_pool')),
-        //     'freshwater' => __('app.'. strtolower('freshwater')),
-        //     'pool_heated' => __('app.'. strtolower('pool_heated')),
-        //     'ladder_access' => __('app.'. strtolower('ladder_access')),
-        //     'outside_shower' => __('app.'. strtolower('outside_shower')),
-        //     'outside_toilets' => __('app.'. strtolower('outside_toilets')),
-        //     'roman_steps_into_pool' => __('app.'. strtolower('roman_steps_into_pool')),
-        //     'soler_heated_pool' => __('app.'. strtolower('soler_heated_pool')),
-        //     'room_for_pool' => __('app.'. strtolower('room_for_pool')),
-        //     'sun_beds' => __('app.'. strtolower('sun_beds')),
-        //     'whirlpool' => __('app.'. strtolower('whirlpool'))
+        //     'childrens_pool' => Translate::t(strtolower('childrens_pool')),
+        //     'covfenced_poolered' => Translate::t(strtolower('fenced_pool')),
+        //     'freshwater' => Translate::t(strtolower('freshwater')),
+        //     'pool_heated' => Translate::t(strtolower('pool_heated')),
+        //     'ladder_access' => Translate::t(strtolower('ladder_access')),
+        //     'outside_shower' => Translate::t(strtolower('outside_shower')),
+        //     'outside_toilets' => Translate::t(strtolower('outside_toilets')),
+        //     'roman_steps_into_pool' => Translate::t(strtolower('roman_steps_into_pool')),
+        //     'soler_heated_pool' => Translate::t(strtolower('soler_heated_pool')),
+        //     'room_for_pool' => Translate::t(strtolower('room_for_pool')),
+        //     'sun_beds' => Translate::t(strtolower('sun_beds')),
+        //     'whirlpool' => Translate::t(strtolower('whirlpool'))
         // ];
     }
 
     public static function gardens()
     {
         return [
-            ['key' => "almond_grove", 'value' => __('app.almond_grove')],
-            ['key' => "garden_communal", 'value' => __('app.garden_communal')],
-            ['key' => "easy_maintenance", 'value' => __('app.easy_maintenance')],
-            ['key' => "fenced", 'value' => __('app.fenced_garden')],
-            ['key' => "fruit_trees_citrus", 'value' => __('app.fruit_trees_citrus')],
-            ['key' => "fruit_trees_tropical", 'value' => __('app.fruit_trees_tropical')],
-            ['key' => "irrigation_rights", 'value' => __('app.irrigation_rights')],
-            ['key' => "landscaped", 'value' => __('app.landscaped')],
-            ['key' => "Lawn", 'value' => __('app.Lawn')],
-            ['key' => "olive_grove", 'value' => __('app.olive_grove')],
-            ['key' => "outdoor_dining", 'value' => __('app.outdoor_dining')],
-            ['key' => "playground", 'value' => __('app.playground')],
-            ['key' => "plenty_of_water", 'value' => __('app.plenty_of_water')],
-            ['key' => "pool_house", 'value' => __('app.pool_house')],
-            ['key' => "garden_private", 'value' => __('app.garden_private')],
-            ['key' => "shade_control", 'value' => __('app.shade_control')],
-            ['key' => "tropical_garden", 'value' => __('app.tropical_garden')],
-            ['key' => "vegetable", 'value' => __('app.vegetable')],
-            ['key' => "veranda", 'value' => __('app.veranda')],
-            ['key' => "vineyard", 'value' => __('app.vineyard')],
+            ['key' => "almond_grove", 'value' => Translate::t('almond_grove')],
+            ['key' => "garden_communal", 'value' => Translate::t('garden_communal')],
+            ['key' => "easy_maintenance", 'value' => Translate::t('easy_maintenance')],
+            ['key' => "fenced", 'value' => Translate::t('fenced_garden')],
+            ['key' => "fruit_trees_citrus", 'value' => Translate::t('fruit_trees_citrus')],
+            ['key' => "fruit_trees_tropical", 'value' => Translate::t('fruit_trees_tropical')],
+            ['key' => "irrigation_rights", 'value' => Translate::t('irrigation_rights')],
+            ['key' => "landscaped", 'value' => Translate::t('landscaped')],
+            ['key' => "Lawn", 'value' => Translate::t('Lawn')],
+            ['key' => "olive_grove", 'value' => Translate::t('olive_grove')],
+            ['key' => "outdoor_dining", 'value' => Translate::t('outdoor_dining')],
+            ['key' => "playground", 'value' => Translate::t('playground')],
+            ['key' => "plenty_of_water", 'value' => Translate::t('plenty_of_water')],
+            ['key' => "pool_house", 'value' => Translate::t('pool_house')],
+            ['key' => "garden_private", 'value' => Translate::t('garden_private')],
+            ['key' => "shade_control", 'value' => Translate::t('shade_control')],
+            ['key' => "tropical_garden", 'value' => Translate::t('tropical_garden')],
+            ['key' => "vegetable", 'value' => Translate::t('vegetable')],
+            ['key' => "veranda", 'value' => Translate::t('veranda')],
+            ['key' => "vineyard", 'value' => Translate::t('vineyard')],
         ];
     }
 
     public static function furnitures()
     {
         return [
-            ['key' => "fully_furnished", 'value' => __('app.fully_furnished')],
-            ['key' => "part_furnished", 'value' => __('app.part_furnished')],
-            ['key' => "not_furnished", 'value' => __('app.not_furnished')],
+            ['key' => "fully_furnished", 'value' => Translate::t('fully_furnished')],
+            ['key' => "part_furnished", 'value' => Translate::t('part_furnished')],
+            ['key' => "not_furnished", 'value' => Translate::t('not_furnished')],
         ];
         // $propertyFurnitures = [
-        //     'optional' => __('app.'. strtolower('optional')),
+        //     'optional' => Translate::t(strtolower('optional')),
         // ];
     }
 

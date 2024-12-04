@@ -2,6 +2,7 @@
 
 namespace Daz\OptimaClass\Helpers;
 
+use Daz\OptimaClass\Components\Translate;
 use Daz\OptimaClass\Requests\ContactUsRequest;
 use Daz\OptimaClass\Traits\ConfigTrait;
 use Illuminate\Database\Eloquent\Model;
@@ -37,11 +38,11 @@ class ContactUs extends Model
     public function attributeLabels()
     {
         return [
-            'verifyCode' => __('app.'. strtolower('Verification Code')),
-            'first_name' => __('app.'. strtolower('First Name')),
-            'last_name' => __('app.'. strtolower('Last Name')),
-            'email' => __('app.'. strtolower('Email')),
-            'message' => __('app.'. strtolower('Message')),
+            'verifyCode' => Translate::t(strtolower('Verification Code')),
+            'first_name' => Translate::t(strtolower('First Name')),
+            'last_name' => Translate::t(strtolower('Last Name')),
+            'email' => Translate::t(strtolower('Email')),
+            'message' => Translate::t(strtolower('Message')),
         ];
     }
 
@@ -142,10 +143,10 @@ class ContactUs extends Model
 
                 foreach ($settings['custom_settings'] as $setting) {
                     if ($setting['key'] == 'subscribe') {
-                        $subscribe_msg = __('app.'. $setting['value']);
+                        $subscribe_msg = Translate::t($setting['value']);
                     }
                     if ($setting['key'] == 'newsletter_subject') {
-                        $subscribe_subject = __('app.'. $setting['value']);
+                        $subscribe_subject = Translate::t($setting['value']);
                     }
                 }
 
@@ -258,14 +259,14 @@ class ContactUs extends Model
 
                 foreach ($settings['custom_settings'] as $setting) {
                     if (isset($setting['key']) && $setting['key'] == 'enquiry_subject') {
-                        $subscribe_subject = __('app.'. $setting['value']);
+                        $subscribe_subject = Translate::t($setting['value']);
                     }
                 }
                 $htmlBody = '';
                 if (isset($settings['email_response'][strtoupper(App::getLocale())])) {
                     $htmlBody = $settings['email_response'][strtoupper(App::getLocale())];
                     if ($this->reference != '') {
-                        $htmlBody = '<br>' . __('app.'. strtolower('Enquiry about property')) . ' (' . __('app.'. strtolower('Ref')) . ' : ' . $this->reference . ')<br><br>' . $htmlBody;
+                        $htmlBody = '<br>' . Translate::t(strtolower('Enquiry about property')) . ' (' . Translate::t(strtolower('Ref')) . ' : ' . $this->reference . ')<br><br>' . $htmlBody;
                     }
                 }
                 $this->saveAccount();
@@ -298,7 +299,7 @@ class ContactUs extends Model
                 if (isset($settings['custom_settings'])) {
                     foreach ($settings['custom_settings'] as $setting) {
                         if (isset($setting['key']) && $setting['key'] == 'enquiry_subject') {
-                            $subscribe_subject = __('app.'. $setting['value']);
+                            $subscribe_subject = Translate::t($setting['value']);
                         }
                     }
                 }
@@ -306,7 +307,7 @@ class ContactUs extends Model
                 if (isset($settings['email_response'][strtoupper(App::getLocale())])) {
                     $htmlBody = $settings['email_response'][strtoupper(App::getLocale())];
                     if ($this->reference != '') {
-                        $htmlBody = '<br>' . __('app.'. strtolower('Enquiry about property')) . ' (' . __('app.'. strtolower('Ref')) . ' : ' . $this->reference . ')<br><br>' . $htmlBody;
+                        $htmlBody = '<br>' . Translate::t(strtolower('Enquiry about property')) . ' (' . Translate::t(strtolower('Ref')) . ' : ' . $this->reference . ')<br><br>' . $htmlBody;
                     }
                 }
 

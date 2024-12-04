@@ -2,6 +2,7 @@
 
 namespace Daz\OptimaClass\Helpers;
 
+use Daz\OptimaClass\Components\Translate;
 use Daz\OptimaClass\Traits\ConfigTrait;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\File;
@@ -405,19 +406,19 @@ class Developments
                 if (is_array($value)) {
                     if (($key == 'kitchens' || $key == 'floors' || $key == 'furniture') && $value != []) {
                         foreach ($value as $val) {
-                            $gen_feature[] = __('app.'.$val);
+                            $gen_feature[] = Translate::t($val);
                             $value = implode(', ', $gen_feature);
                         }
                     }
                 }else{
                     if ($key == 'kitchens' && $value != '') {
-                        $features[] = __('app.kitchens') . ': ' . $value;
+                        $features[] = Translate::t('kitchens') . ': ' . $value;
                     }
                     if ($key == 'floors' && $value != '') {
-                        $features[] = __('app.floors') . ': ' . $value;
+                        $features[] = Translate::t('floors') . ': ' . $value;
                     }
                     if ($key == 'furniture' && $value != 'No') {
-                        $features[] = __('app.furniture') . ': ' . $value;
+                        $features[] = Translate::t('furniture') . ': ' . $value;
                     } else {
                         if ($value == true && $key != 'furniture' && $key != 'kitchens' && $key != 'floors') {
                             $features[] = ucfirst(str_replace('_', ' ', $key));
@@ -493,7 +494,7 @@ class Developments
             if (isset($value->property->title->$lang) && $value->property->title->$lang != '')
                 $data['title'] = $value->property->title->$lang;
             else if (isset($value->property->location))
-                $data['title'] = __('app.'.$value->property->type_one) . ' ' . __('app.in') . ' ' . __('app.'.$value->property->location);
+                $data['title'] = Translate::t($value->property->type_one) . ' ' . Translate::t('in') . ' ' . Translate::t($value->property->location);
             if (isset($value->attachments)) {
                 $attachments = [];
                 foreach ($value->attachments as $pic) {
@@ -569,7 +570,7 @@ class Developments
                 if (isset($value->property->title->$lang) && $value->property->title->$lang != '')
                     $data['title'] = $value->property->title->$lang;
                 else if (isset($value->property->location))
-                    $data['title'] = __('app.'.$value->property->type_one) . ' ' . __('app.in') . ' ' . __('app.'.$value->property->location);
+                    $data['title'] = Translate::t($value->property->type_one) . ' ' . Translate::t('in') . ' ' . Translate::t($value->property->location);
                 if (isset($value->attachments)) {
                     $attachments = [];
                     foreach ($value->attachments as $pic) {

@@ -4,6 +4,7 @@ namespace Daz\OptimaClass\Helpers;
 
 use DateTime;
 use DateTimeZone;
+use Daz\OptimaClass\Components\Translate;
 use Daz\OptimaClass\Traits\ConfigTrait;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\File;
@@ -496,7 +497,7 @@ class CommercialProperties
         } elseif (isset($property['shared_data']['title'][$lang]) && $property['shared_data']['title'][$lang] != '') {
             $f_property['sale_title'] = $property['shared_data']['title'][$lang];
         } else {
-            $f_property['sale_title'] = (isset($property['property_type_one']['value'][$contentLang]) ? __('app.' . $property['property_type_one']['value'][$contentLang]) : '') . ' ' . (isset($property['property_location']['value'][$contentLang]) ? __('app.in') . ' ' . __('app.' . $property['property_location']['value'][$contentLang]) : '');
+            $f_property['sale_title'] = (isset($property['property_type_one']['value'][$contentLang]) ? Translate::t($property['property_type_one']['value'][$contentLang]) : '') . ' ' . (isset($property['property_location']['value'][$contentLang]) ? Translate::t('in') . ' ' . Translate::t($property['property_location']['value'][$contentLang]) : '');
         }
         if (isset($property['description'][$lang]) && $property['description'][$lang] != '') {
             $f_property['sale_description'] = $property['description'][$lang];
@@ -509,7 +510,7 @@ class CommercialProperties
             } elseif (isset($property['shared_data']['rental_external_title'][$lang]) && $property['shared_data']['rental_external_title'][$lang] != '' && isset($property['agency']) && $property['agency'] != self::$agency) {
                 $f_property['rent_title'] = $property['shared_data']['rental_external_title'][$lang];
             } else {
-                $f_property['rent_title'] = (isset($property['property_type_one']['value'][$contentLang]) ? __('app.' . $property['property_type_one']['value'][$contentLang]) : '') . ' ' . (isset($property['property_location']['value'][$contentLang]) ? __('app.in') . ' ' . __('app.' . $property['property_location']['value'][$contentLang]) : '');
+                $f_property['rent_title'] = (isset($property['property_type_one']['value'][$contentLang]) ? Translate::t($property['property_type_one']['value'][$contentLang]) : '') . ' ' . (isset($property['property_location']['value'][$contentLang]) ? Translate::t('in') . ' ' . Translate::t($property['property_location']['value'][$contentLang]) : '');
             }
             if (isset($property['rental_description'][$lang]) && $property['rental_description'][$lang] != '') {
                 $f_property['rent_description'] = $property['rental_description'][$lang];
@@ -522,7 +523,7 @@ class CommercialProperties
             } elseif (isset($property['shared_data']['rental_external_title'][$lang]) && $property['shared_data']['rental_external_title'][$lang] != '' && (isset($property['agency']) && $property['agency'] != self::$agency) && (isset($property['mls']) && $property['mls'] == 1)) {
                 $f_property['rent_title'] = $property['shared_data']['rental_external_title'][$lang];
             } else {
-                $f_property['rent_title'] = (isset($property['property_type_one']['value'][$contentLang]) ? __('app.' . $property['property_type_one']['value'][$contentLang]) : '') . ' ' . (isset($property['property_location']['value'][$contentLang]) ? __('app.in') . ' ' . __('app.' . $property['property_location']['value'][$contentLang]) : '');
+                $f_property['rent_title'] = (isset($property['property_type_one']['value'][$contentLang]) ? Translate::t($property['property_type_one']['value'][$contentLang]) : '') . ' ' . (isset($property['property_location']['value'][$contentLang]) ? Translate::t('in') . ' ' . Translate::t($property['property_location']['value'][$contentLang]) : '');
             }
             if (isset($property['rental_description'][$lang]) && $property['rental_description'][$lang] != '') {
                 $f_property['rent_description'] = $property['rental_description'][$lang];
@@ -532,7 +533,7 @@ class CommercialProperties
         }
 
         if (isset($property['status'])) {
-            $f_property['status'] = __('app.' . $property['status']);
+            $f_property['status'] = Translate::t($property['status']);
         }
         if (isset($property['agency_data']['logo']['name']) && !empty($property['agency_data']['logo']['name'])) {
             $f_property['agency_logo'] = 'https://images.optima-crm.com/agencies/' . (isset($property['agency_data']['_id']) ? $property['agency_data']['_id'] : '') . '/' . (isset($property['agency_data']['logo']['name']) ? $property['agency_data']['logo']['name'] : '');
@@ -615,19 +616,19 @@ class CommercialProperties
         }
 
         if (isset($property['type_one'])) {
-            $f_property['type'] = __('app.' . $property['type_one']);
+            $f_property['type'] = Translate::t($property['type_one']);
         }
 
         if (isset($property['type_one_value'][$contentLang])) {
-            $f_property['type_one'] = __('app.' . $property['type_one_value'][$contentLang]);
+            $f_property['type_one'] = Translate::t($property['type_one_value'][$contentLang]);
         }
 
         if (isset($property['type_two'])) {
-            $f_property['type_two_key'] = __('app.' . $property['type_two']);
+            $f_property['type_two_key'] = Translate::t($property['type_two']);
         }
 
         if (isset($property['type_two_value'][$contentLang])) {
-            $f_property['type_two'] = __('app.' . $property['type_two_value'][$contentLang]);
+            $f_property['type_two'] = Translate::t($property['type_two_value'][$contentLang]);
         }
 
         if (isset($property['address']['formatted_address'])) {
