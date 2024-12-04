@@ -3,7 +3,7 @@
 namespace Daz\OptimaClass\Helpers;
 
 use Daz\OptimaClass\Requests\ContactUsRequest;
-use Daz\OptimaClass\Trait\ConfigTrait;
+use Daz\OptimaClass\Traits\ConfigTrait;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\File;

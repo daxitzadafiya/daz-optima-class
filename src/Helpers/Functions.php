@@ -3,7 +3,7 @@
 namespace Daz\OptimaClass\Helpers;
 
 use Daz\OptimaClass\Requests\ContactUsRequest;
-use Daz\OptimaClass\Trait\ConfigTrait;
+use Daz\OptimaClass\Traits\ConfigTrait;
 use Daz\ReCaptcha\Facades\ReCaptcha;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\File;

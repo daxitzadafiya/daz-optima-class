@@ -1,6 +1,6 @@
 <?php
 
-namespace Daz\OptimaClass\Trait;
+namespace Daz\OptimaClass\Traits;
 
 trait ConfigTrait
 {

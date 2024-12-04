@@ -2,7 +2,7 @@
 
 namespace Daz\OptimaClass\Helpers;
 
-use Daz\OptimaClass\Trait\ConfigTrait;
+use Daz\OptimaClass\Traits\ConfigTrait;
 use Illuminate\Support\Facades\App;
 
 /**
