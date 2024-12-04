@@ -1,8 +1,8 @@
 <?php
 
-namespace Daz\OptimaClass\Helpers;
+namespace Daz\OptimaClass\Trait;
 
-class BaseHelper
+trait ConfigTrait
 {
     protected static $rootUrl;
     protected static $apiUrl;
@@ -24,6 +24,7 @@ class BaseHelper
     protected static $constructions_doc_url;
     protected static $floor_plans_url;
     protected static $img_url;
+    protected static $from_email;
 
     /**
      * Initialize configuration values.
@@ -50,5 +51,6 @@ class BaseHelper
         self::$constructions_doc_url = config('params.constructions_doc_url');
         self::$floor_plans_url = config('params.floor_plans_url');
         self::$img_url = config('params.img_url');
+        self::$from_email = config('params.from_email');
     }
 }

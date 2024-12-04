@@ -2,11 +2,14 @@
 
 namespace Daz\OptimaClass\Helpers;
 
+use Daz\OptimaClass\Trait\ConfigTrait;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Http;
 
-class Dropdowns extends BaseHelper
+class Dropdowns
 {
+    use ConfigTrait;
+
     public static function countries($model_type = '' , $prop_types = [])
     {
         self::initialize();

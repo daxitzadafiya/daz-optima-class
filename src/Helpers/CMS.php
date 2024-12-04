@@ -2,14 +2,17 @@
 
 namespace Daz\OptimaClass\Helpers;
 
+use Daz\OptimaClass\Trait\ConfigTrait;
 use Illuminate\Support\Facades\App;
 
 /**
  * Cms Functions to get CMS data
  *
 */
-class CMS extends BaseHelper
+class CMS
 {
+    use ConfigTrait;
+
     private static $image_url = 'https://images.optima-crm.com/resize/cms_medias/'; // For resize image URLs
     private static $image_url_users = ' https://images.optima-crm.com/resize/users/'; // For getUsers image URLs
     private static $image_url_without_resize = 'https://images.optima-crm.com/cms_medias/'; // For svg images URLs

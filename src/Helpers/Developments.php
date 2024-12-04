@@ -2,12 +2,15 @@
 
 namespace Daz\OptimaClass\Helpers;
 
+use Daz\OptimaClass\Trait\ConfigTrait;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Request;
 
-class Developments extends BaseHelper
+class Developments
 {
+    use ConfigTrait;
+
     public static function findAll($query, $cache = false, $set_query = true, $options = [])
     {
         self::initialize();

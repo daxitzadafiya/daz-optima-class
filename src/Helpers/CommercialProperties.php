@@ -2,13 +2,16 @@
 
 namespace Daz\OptimaClass\Helpers;
 
+use Daz\OptimaClass\Trait\ConfigTrait;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Request;
 
-class CommercialProperties extends BaseHelper
+class CommercialProperties
 {
+    use ConfigTrait;
+
     public static function findAll($page = 1, $page_size = 10, $query = '', $sort = ['current_price' => '-1'], $set_options = [])
     {
         self::initialize();

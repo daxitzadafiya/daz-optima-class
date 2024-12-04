@@ -3,15 +3,18 @@
 namespace Daz\OptimaClass\Helpers;
 
 use Daz\OptimaClass\Requests\ContactUsRequest;
+use Daz\OptimaClass\Trait\ConfigTrait;
 use Daz\ReCaptcha\Facades\ReCaptcha;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\File;
 use Illuminate\View\ViewException;
 use Illuminate\Support\Facades\Http;
-
+use Illuminate\Support\Facades\Mail;
 
 class Functions
 {
+    use ConfigTrait;
+
     public static function directory()
     {
         $webroot = public_path() . '/uploads/';
@@ -66,7 +69,7 @@ class Functions
 
         return ReCaptcha::renderJs($currentAppLanguage, $callback, $onLoadClass);
     }
-    
+
     public static function recaptcha($name = 'reCaptcha', $id = '', $options = [])
     {
         $siteKey = config('services.recaptcha.site_key', env('RECAPTCHA_SITE_KEY', '6Le9fqsUAAAAAN2KL4FQEogpmHZ_GpdJ9TGmYMrT'));
@@ -90,100 +93,106 @@ class Functions
         return '<input type="hidden" name="' . $name . '" id="' . $id . '" value="">';
     }
 
-    // public static function siteSendEmail($object, $redirect_url = null)
-    // {
-    //     $model = new ContactUs();
-    //     $model->fill(request()->all());
-    //     $model->verifyCode = true;
-    //     $model->reCaptcha = request()->get('reCaptcha');
-    //     if ($model->reCaptcha3 = request()->get('reCaptcha3')) {
-    //         $model->scenario = ContactUsRequest::SCENARIO_V3;
-    //     }
+    public static function siteSendEmail($object, $redirect_url = null)
+    {
+        $model = new ContactUs();
+        $model->fill(request()->all());
+        $model->verifyCode = true;
+        $model->reCaptcha = request()->get('reCaptcha');
 
-    //     if (isset($_GET['owner'])) {
-    //         $model->owner = 1;
-    //     }
-    //     if (isset($_GET['friend_name']) && isset($_GET['friend_ser_name']) && isset($_GET['friend_email'])) {
-    //         $message = '';
+        if ($model->reCaptcha3 = request()->get('reCaptcha3')) {
+            $model->scenario = ContactUsRequest::SCENARIO_V3;
+        }
 
-    //         $message .= 'Message: ' . $model->message;
+        if (isset($_GET['owner'])) {
+            $model->owner = 1;
+        }
 
-    //         $model->message = "Friend's Name = " . $_GET['friend_name'] . "\r\n Friend's Ser Name = " . $_GET['friend_ser_name'] . "\r\n Friend's Email = " . $_GET['friend_email'] . "\r\n" . $message;
-    //     }
+        if (isset($_GET['friend_name']) && isset($_GET['friend_ser_name']) && isset($_GET['friend_email'])) {
 
-    //     if (isset($_GET['morning_call']) || isset($_GET['afternoon_call'])) {
-    //         if (isset($_GET['morning_call']) && !isset($_GET['afternoon_call'])) {
-    //             $scedual_msg = 'Call me back in the morning';
-    //         } elseif (isset($_GET['afternoon_call']) && !isset(($_GET['morning_call']))) {
-    //             $scedual_msg = 'Call me back in the afternoon';
-    //         } else {
-    //             $scedual_msg = 'Call me back in the morning.<br>Call me back in the afternoon.';
-    //         }
-    //         $message = '';
+            $message = '';
+            $message .= 'Message: ' . $model->message;
 
-    //         $message .= 'Message: ' . $model->message;
+            $model->message = "Friend's Name = " . $_GET['friend_name'] . "\r\n Friend's Ser Name = " . $_GET['friend_ser_name'] . "\r\n Friend's Email = " . $_GET['friend_email'] . "\r\n" . $message;
+        }
 
-    //         $model->message = "Preferred time = " . $scedual_msg . "\r\n" . $message;
-    //     }
+        if (isset($_GET['morning_call']) || isset($_GET['afternoon_call'])) {
 
-    //     if (!$model->sendMail()) {
-    //         /*if ($model->last_name == 'Request')
-    //         {
-    //             $model->reCaptcha = false;
-    //             Yii::$app->session->setFlash('success', "Thank you for your message!");
-    //         }*/
-    //         $errors = 'Message not sent!';
-    //         if (isset($model->errors) and count($model->errors) > 0) {
-    //             $errs = array();
-    //             foreach ($model->errors as $k => $err) {
-    //                 $errs[] = $err[0];
-    //             }
-    //             $errors = implode(',', $errs);
-    //         }
+            if (isset($_GET['morning_call']) && !isset($_GET['afternoon_call'])) {
+                $scedual_msg = 'Call me back in the morning';
+            } elseif (isset($_GET['afternoon_call']) && !isset(($_GET['morning_call']))) {
+                $scedual_msg = 'Call me back in the afternoon';
+            } else {
+                $scedual_msg = 'Call me back in the morning.<br>Call me back in the afternoon.';
+            }
+            $message = '';
 
-    //         Yii::$app->session->setFlash('failure', $errors);
-    //         if (isset(Yii::$app->params['send_error_mails_to'])) {
-    //             self::sendErrorMail($errors, Yii::$app->params['send_error_mails_to']);
-    //         }
-    //     } else {
-    //         Yii::$app->session->setFlash('success', "Thank you for your message!");
-    //         if ($redirect_url) {
-    //             return $object->redirect($redirect_url);
-    //         }
-    //     }
+            $message .= 'Message: ' . $model->message;
 
-    //     return $object->redirect(Yii::$app->request->referrer);
-    // }
+            $model->message = "Preferred time = " . $scedual_msg . "\r\n" . $message;
+        }
 
-    // public static function sendErrorMail($model, $bcc = [])
-    // {
-    //     $errors = 'Message not sent!';
-    //     if (isset($model->errors) and count($model->errors) > 0) {
-    //         $errs = array();
-    //         foreach ($model->errors as $k => $err) {
-    //             $errs[] = $err[0];
-    //         }
-    //         $errors = implode(',', $errs);
-    //     }
+        try {
+            if (!$model->sendMail()) {
+                $errors = 'Message not sent!';
+                if (isset($model->errors) && count($model->errors) > 0) {
+                    $errors = implode(',', array_map(function ($error) {
+                        return $error[0];
+                    }, $model->errors));
+                }
 
-    //     $message = "";
-    //     $message .= 'Name : ' . $model->first_name . ' ' . $model->last_name . '<br>';
-    //     $message .= 'Email : ' . $model->email . '<br>';
-    //     $message .= 'Phone : ' . $model->phone . '<br>';
-    //     $message .= 'Message : ' . $model->message . '<br><br>';
-    //     $message .= 'Site : ' . Url::home(true) . '<br>';
-    //     $message .= 'Url : ' . Yii::$app->request->referrer . '<br>';
-    //     $message .= 'Errors : ' . $errors . '<br>';
+                session()->flash('failure', $errors);
 
+                if (config('params.send_error_mails_to')) {
+                    self::sendErrorMail($errors, config('params.send_error_mails_to'));
+                }
+                
+            } else {
+                session()->flash('success', "Thank you for your message!");
 
-    //     Yii::$app->mailer->compose()
-    //         ->setFrom($model->email)
-    //         ->setTo('support@optimasys.es')
-    //         ->setBcc($bcc)
-    //         ->setSubject('Leads Error')
-    //         ->setHtmlBody($message)
-    //         ->send();
-    // }
+                if ($redirect_url) {
+                    return redirect($redirect_url);
+                }
+            }
+
+        } catch (\Exception $e) {
+            // Handle unexpected errors
+            session()->flash('failure', "An error occurred: " . $e->getMessage());
+
+            if (config('app.send_error_mails_to')) {
+                self::sendErrorMail($e->getMessage(), config('app.send_error_mails_to'));
+            }
+        }
+
+        return redirect()->back();
+    }
+
+    public static function sendErrorMail($model, $to = ['support@optimasys.es'], $bcc = [])
+    {
+        $errors = 'Message not sent!';
+
+        if (isset($model->errors) && count($model->errors) > 0) {
+            $errors = implode(',', array_map(function ($error) {
+                return $error[0];
+            }, $model->errors));
+        }
+
+        $message = "";
+        $message .= 'Name : ' . $model->first_name . ' ' . $model->last_name . '<br>';
+        $message .= 'Email : ' . $model->email . '<br>';
+        $message .= 'Phone : ' . $model->phone . '<br>';
+        $message .= 'Message : ' . $model->message . '<br><br>';
+        $message .= 'Site : ' . url()->current() . '<br>';
+        $message .= 'Url : ' . url()->previous() . '<br>';
+        $message .= 'Errors : ' . $errors . '<br>';
+
+        Mail::send([], [], function ($mail) use ($to, $bcc, $message) {
+            $mail->to($to)
+                ->bcc($bcc)
+                ->subject('Leads Error');
+            $mail->setBody($message, 'text/html');
+        });
+    }
 
     public static function loadPageDynamically($object)
     {
@@ -222,7 +231,7 @@ class Functions
     {
         $cmsModel = CMS::Slugs('page');
         $url = explode('/', request()->path());
-        $this_page = urldecode(end($url));        
+        $this_page = urldecode(end($url));
         app()->instance('page_data', $page_data = CMS::pageBySlug(request()->input('title')));
         if (isset($cmsModel) && count($cmsModel) > 0) {
             foreach ($cmsModel as $row) {
@@ -248,7 +257,7 @@ class Functions
                 } else {
                     $custom_post_id = '';
                 }
-                app()->instance('page_data',$page_data);
+                app()->instance('page_data', $page_data);
                 return $object->render($page_template, [
                     'page_data' => $page_data,
                     'custom_post_id' => $custom_post_id

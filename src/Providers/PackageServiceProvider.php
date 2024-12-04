@@ -4,7 +4,6 @@ namespace Daz\OptimaClass\Providers;
 
 use Daz\OptimaClass\Requests\ContactUsRequest;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
 class PackageServiceProvider extends ServiceProvider
@@ -22,6 +21,6 @@ class PackageServiceProvider extends ServiceProvider
 
     public function boot()
     {
-        //
+        $this->loadViewsFrom(__DIR__.'/../Views','optima');
     }
 }
