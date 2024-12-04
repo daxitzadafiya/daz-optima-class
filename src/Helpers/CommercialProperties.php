@@ -410,7 +410,7 @@ class CommercialProperties
         $lang = strtoupper(App::getLocale());
         $get = Request::all();
         $contentLang = strtolower(App::getLocale());
-        $cmsLang = config("params.replace_iso_code", []);
+        $cmsLang = self::$replace_iso_code;
 
         if (strtolower(App::getLocale()) == 'es') {
             $contentLang = 'es_AR';
