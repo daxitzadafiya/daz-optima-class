@@ -119,7 +119,7 @@ class Cms
                                 $pageData = self::pageBySlug(null, 'EN', $ch['item']['id']['oid']);
                                 $data['children'][$key]['item']['slug'] = $pageData['slug_all'];
                                 if ($getOtherSettings) {
-                                    $url = isset($pageData['featured_image'][$lang]['name']) ? config('params.cms_img') . '/' . $pageData['_id'] . '/' . $pageData['featured_image'][$lang]['name'] : '';
+                                    $url = isset($pageData['featured_image'][$lang]['name']) ? self::$cms_img . '/' . $pageData['_id'] . '/' . $pageData['featured_image'][$lang]['name'] : '';
                                     $data['children'][$key]['item']['custom_settings'] = ((isset($pageData['custom_settings'][$lang]) && is_array($pageData['custom_settings'][$lang])) ? $pageData['custom_settings'][$lang] : []);
                                     $data['children'][$key]['item']['featured_image'] = isset($pageData['featured_image']) ? $pageData['featured_image'] : '';
                                 }

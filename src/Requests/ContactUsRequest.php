@@ -2,12 +2,15 @@
 
 namespace Daz\OptimaClass\Requests;
 
+use Daz\OptimaClass\Traits\ConfigTrait;
 use Daz\ReCaptcha\Facades\ReCaptcha;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Request;
 
 class ContactUsRequest extends FormRequest
 {
+    use ConfigTrait;
+
     public $name;
     public $first_name;
     public $last_name;
@@ -334,7 +337,8 @@ class ContactUsRequest extends FormRequest
      */
     private function isReCaptchaEnabled(): bool
     {
-        return ReCaptcha::verifyResponse($this->reCaptcha, Request::ip()) && (!empty(config('params.recaptcha_secret_site_key')) && $this->reCaptcha !== 'nulll');
+        self::initialize();
+        return ReCaptcha::verifyResponse($this->reCaptcha, Request::ip()) && (!empty(self::$recaptcha_secret_site_key) && $this->reCaptcha !== 'nulll');
     }
 
     /**

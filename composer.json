@@ -26,6 +26,7 @@
     "minimum-stability": "dev",
     "require": {
         "laravel/framework": "^11.31",
-        "daz/recaptcha": "dev-main"
+        "daz/recaptcha": "dev-main",
+        "cocur/slugify": "dev-main"
     }
 }
