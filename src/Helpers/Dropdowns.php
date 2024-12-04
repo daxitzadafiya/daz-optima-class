@@ -6,6 +6,7 @@ use Daz\OptimaClass\Components\Translate;
 use Daz\OptimaClass\Traits\ConfigTrait;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\View;
 
 class Dropdowns
 {
@@ -883,13 +884,6 @@ class Dropdowns
     */
     public static function html_select($data, $options = [])
     {
-        // $path =  dirname(dirname(__FILE__));
-        // $view = Yii::$app->controller->view;
-
-        // optimaAsset::register($view);
-
-        // $select_html = '';
-        // require($path . '/views/partials/selectDropdown.php');
-        // return $select_html;
+        return View::make('optima::components.select-dropdown', compact('data', 'options'))->render();
     }
 }
