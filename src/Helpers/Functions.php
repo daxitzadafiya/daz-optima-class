@@ -59,8 +59,9 @@ class Functions
 
     public static function renderReCaptchaJs($callback = false, $onLoadClass = 'onloadCallBack')
     {
+        self::initialize();
         $currentAppLanguage = strtolower(App::getLocale());
-        $cmsLang = config("params.replace_iso_code", []);
+        $cmsLang = self::$replace_iso_code;
 
         // Simplify the language exception handling
         if (array_key_exists($currentAppLanguage, $cmsLang)) {
@@ -70,13 +71,13 @@ class Functions
         return ReCaptcha::renderJs($currentAppLanguage, $callback, $onLoadClass);
     }
 
-    public static function recaptcha($name = 'reCaptcha', $id = '', $options = [])
+    public static function recaptcha($name, $id = '', $options = [])
     {
         $siteKey = config('services.recaptcha.site_key', env('RECAPTCHA_SITE_KEY', '6Le9fqsUAAAAAN2KL4FQEogpmHZ_GpdJ9TGmYMrT'));
 
         $defaultOptions = [
             "class" => "g-recaptcha",
-            "name" => $name,
+            "name" => $name ?? 'reCaptcha',
             "data-sitekey" => $siteKey,
             "data-id" => $id
         ];
@@ -95,6 +96,7 @@ class Functions
 
     public static function siteSendEmail($object, $redirect_url = null)
     {
+        self::initialize();
         $model = new ContactUs();
         $model->fill(request()->all());
         $model->verifyCode = true;
@@ -143,8 +145,8 @@ class Functions
 
                 session()->flash('failure', $errors);
 
-                if (config('params.send_error_mails_to')) {
-                    self::sendErrorMail($errors, config('params.send_error_mails_to'));
+                if (self::$send_error_mails_to) {
+                    self::sendErrorMail($errors, self::$send_error_mails_to);
                 }
                 
             } else {
@@ -159,8 +161,8 @@ class Functions
             // Handle unexpected errors
             session()->flash('failure', "An error occurred: " . $e->getMessage());
 
-            if (config('params.send_error_mails_to')) {
-                self::sendErrorMail($e->getMessage(), config('params.send_error_mails_to'));
+            if (self::$send_error_mails_to) {
+                self::sendErrorMail($e->getMessage(), self::$send_error_mails_to);
             }
         }
 
@@ -289,12 +291,12 @@ class Functions
 
     public static function getAgentsList($agent_name = '')
     {
-        $url = config('params.apiUrl') . 'properties/get-assigned-to-listing-agent' . http_build_query([
-            'user_apikey' => config('api_key'),
+        self::initialize();
+        $url = self::$apiUrl . 'properties/get-assigned-to-listing-agent' . http_build_query([
+            'user_apikey' => self::$api_key,
             'search_word' => $agent_name,
         ]);
-        $response = Http::get($url)->json();
-        return $response;
+        return Http::get($url)->json();
     }
 
     public static function getCRMData($url, $cache = true, $fields = array(), $auth = false)

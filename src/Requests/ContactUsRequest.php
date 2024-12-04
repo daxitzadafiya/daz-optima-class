@@ -285,14 +285,13 @@ class ContactUsRequest extends FormRequest
             // 'last_name' => 'required',
             'email' => 'required|email',
             'message' => 'required',
-            'verifyCode' => 'required',
             'accept_cookie' => $this->isAcceptCookie() ? 'required' : 'nullable',
             'resume' => 'nullable|file|mimes:jpg,png,pdf,txt',
             'imageFiles' => 'nullable|file|mimes:jpg,png,jpeg',
             'cv_file' => 'nullable|file',
             'phone' => 'required|regex:/^\d{8,}$/',
             'reCaptcha' => $this->isReCaptchaEnabled() ? 'required' : 'nullable',
-            'verifyCode' => ['captcha', $this->verifyCode !== null ? 'required' : 'nullable'],
+            'verifyCode' => [$this->verifyCode !== null ? 'required' : 'nullable'],
             'reCaptcha3' => $this->isReCaptchaV3Enabled() ? 'required' : 'nullable',
         ];
     }

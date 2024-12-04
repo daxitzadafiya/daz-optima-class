@@ -25,6 +25,8 @@ trait ConfigTrait
     protected static $floor_plans_url;
     protected static $img_url;
     protected static $from_email;
+    protected static $replace_iso_code;
+    protected static $send_error_mails_to;
 
     /**
      * Initialize configuration values.
@@ -52,5 +54,7 @@ trait ConfigTrait
         self::$floor_plans_url = config('params.floor_plans_url');
         self::$img_url = config('params.img_url');
         self::$from_email = config('params.from_email');
+        self::$replace_iso_code = config('params.replace_iso_code');
+        self::$send_error_mails_to = config('params.send_error_mails_to');
     }
 }

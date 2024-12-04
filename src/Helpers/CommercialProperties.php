@@ -75,7 +75,7 @@ class CommercialProperties
             ])->post($node_url, json_encode($post_data));
         }
 
-        $response = json_decode($response->json(), TRUE);
+        $response = $response->json();
 
         $properties = [];
 
@@ -106,7 +106,7 @@ class CommercialProperties
             'Content-Type' => 'application/json',
         ])->post(self::$node_url . 'commercial_properties/view/' . $id . '?user=' . self::$user, $post_data);
 
-        $response = json_decode($response->json(), TRUE);
+        $response = $response->json();
 
         $property = self::formateProperty($response, $set_options);
 
@@ -1267,7 +1267,7 @@ class CommercialProperties
             File::makeDirectory($tempDirectory, 0755, true); // Creates the directory with proper permissions
         }
         if (!$cache) {
-            return json_decode($response, true);
+            return $response;
         }
 
         $file = $tempDirectory . 'commercial_properties-latlang.json';
@@ -1284,20 +1284,22 @@ class CommercialProperties
     public static function getAgencyProperties($transaction_type = 'sale', $id, $options = ['page' => 1, 'limit' => 10])
     {
         self::initialize();
+        
         $post_data['options'] = [
             'page' => $options['page'],
             'limit' => $options['limit'],
             'populate' => ['property_attachments', 'agency_data', 'listing_agency_data']
         ];
+
         $post_data['query'] = [
             'id' => $id
         ];
+
         $node_url = self::$node_url . 'commercial_properties/get-properties-with-transaction-types/' . $transaction_type . '?user=' . self::$user;
         $response = Http::withHeaders([
             'Content-Type' => 'application/json',
         ])->post($node_url, json_encode($post_data))->json();
 
-        $response = json_decode($response, TRUE);
         $properties = [];
         if (isset($response) && isset($response['docs']))
             foreach ($response['docs'] as $property) {
@@ -1352,11 +1354,9 @@ class CommercialProperties
         $node_url = self::$node_url . 'companies/search-company?user=' . self::$user;
 
 
-        $response = Http::withHeaders([
+        return Http::withHeaders([
             'Content-Type' => 'application/json',
         ])->post($node_url, json_encode($post_data))->json();
-
-        return json_decode($response);
     }
 
     public static function findListingAgency($id)
@@ -1372,11 +1372,9 @@ class CommercialProperties
 
         $node_url = self::$node_url . 'companies/company-type-of-agency/' . $id;
 
-        $response = Http::withHeaders([
+        return Http::withHeaders([
             'Content-Type' => 'application/json',
         ])->post($node_url, json_encode($post_data))->json();
-
-        return json_decode($response);
     }
 
     public static function findAnAgency($id)
@@ -1393,11 +1391,9 @@ class CommercialProperties
 
         $node_url = self::$node_url . 'companies/get-agency-data/' . $id;
 
-        $response = Http::withHeaders([
+        return Http::withHeaders([
             'Content-Type' => 'application/json',
         ])->post($node_url, json_encode($post_data))->json();
-
-        return json_decode($response);
     }
 
     public static function createProperty($data)
@@ -1502,18 +1498,16 @@ class CommercialProperties
         if (isset($data['prop_id']) && !empty($data['prop_id'])) {
             $node_url = self::$node_url . 'commercial_properties/update/' . $data['prop_id'] . '?user=' . $data['user_id'];
 
-            $response = Http::withHeaders([
+            return Http::withHeaders([
                 'Content-Type' => 'application/json',
             ])->put($node_url, $fields)->json();
         } else {
             $node_url = self::$node_url . 'commercial_properties/create?user=' . $data['user_id'];
 
-            $response = Http::withHeaders([
+            return Http::withHeaders([
                 'Content-Type' => 'application/json',
             ])->post($node_url, json_encode($fields))->json();
         }
-
-        return json_decode($response);
     }
 
     public static function savePropertyAttachments($id, $images)
@@ -1527,11 +1521,9 @@ class CommercialProperties
             'files' => $images,
         ];
 
-        $response = Http::withHeaders([
+        return  Http::withHeaders([
             'Content-Type' => 'application/json',
         ])->post($node_url, $fields)->json();
-
-        return json_decode($response);
     }
 
     public static function saveCompanyAttachments($company_id, $images, $type)
@@ -1546,11 +1538,9 @@ class CommercialProperties
             'files' => $images,
         ];
 
-        $response = Http::withHeaders([
+        return Http::withHeaders([
             'Content-Type' => 'application/json',
         ])->post($node_url, $fields)->json();
-
-        return json_decode($response);
     }
 
     public static function savePropertyOfInterest($data)
@@ -1568,11 +1558,9 @@ class CommercialProperties
             ],
         ];
 
-        $response = Http::withHeaders([
+        return Http::withHeaders([
             'Content-Type' => 'application/json',
         ])->post($node_url, $fields)->json();
-
-        return json_decode($response);
     }
 
     public static function getAllUserProperties($query, $options = ['page' => 1, 'limit' => 10], $sort = ['current_price' => '-1'])
@@ -1590,11 +1578,9 @@ class CommercialProperties
             "type" => $query['property_type'],
         ];
 
-        $response = Http::withHeaders([
+        return Http::withHeaders([
             'Content-Type' => 'application/json',
         ])->post($node_url, $post_data)->json();
-
-        return json_decode($response);
     }
 
     public static function getCadastralData()
@@ -1626,7 +1612,6 @@ class CommercialProperties
             'Content-Type' => 'application/json',
         ])->post($url, $query)->json();
 
-        $response = json_decode($response, TRUE);
         $properties = [];
 
         if (isset($response) && isset($response['docs'])) {
