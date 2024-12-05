@@ -31,20 +31,12 @@ class PublishCRMRoutesCommand extends Command
     {
         $jsonFile = "rules.json";
 
-        $routePath = base_path('routes');
-
-        if (!File::exists($routePath.'/site.php')) {
-            File::makeDirectory($routePath.'/site.php', 0755, true);
-        }
-
-        file_put_contents($routePath.'/site.php', '');
-
-        if (!file_exists(public_path('uploads/temp/'.$jsonFile))) {
+        if (!File::exists(public_path('uploads/temp/'.$jsonFile))) {
             error("File not found: $jsonFile");
             return Command::FAILURE;
         }
 
-        $jsonRoutes = file_get_contents(asset($jsonFile));
+        $jsonRoutes = file_get_contents(public_path('uploads/temp/'.$jsonFile));
 
         $routes = json_decode($jsonRoutes, true);
 
@@ -85,16 +77,20 @@ class PublishCRMRoutesCommand extends Command
         $routeGroups .= "\nRoute::group(['prefix' => '{locale}', 'middleware' => 'locale'], function() {\n";
 
         foreach ($groupedRoutes as $controller => $routes) {
-            $routeGroups .= "\nRoute::controller($controller::class)->group(function () {\n";
+            $routeGroups .= "    Route::controller($controller::class)->group(function () {\n";
             foreach ($routes as $route) {
-                $routeGroups .= "    Route::get('{$route['pattern']}', '{$route['action']}');\n";
+                $routeGroups .= "        Route::get('{$route['pattern']}', '{$route['action']}');\n";
             }
-            $routeGroups .= "});\n\n";
+            $routeGroups .= "    });\n";
         }
 
         $routeGroups .= "});\n\n";
 
-        file_put_contents($routePath.'/site.php', "\n" . $routeGroups, FILE_APPEND);
+        $filePath = base_path('routes/site.php');
+
+        if (!File::exists($filePath)) {
+            file_put_contents($filePath, "\n" . $routeGroups, FILE_APPEND);
+        }
 
         info('Routes have been successfully added to web.php');
 
