@@ -88,11 +88,13 @@ class PublishCRMRoutesCommand extends Command
 
         $filePath = base_path('routes/site.php');
 
+        File::delete($filePath);
+
         if (!File::exists($filePath)) {
             file_put_contents($filePath, "\n" . $routeGroups, FILE_APPEND);
         }
 
-        info('Routes have been successfully added to web.php');
+        info('Routes have been successfully added to site.php');
 
         return Command::SUCCESS;
     }

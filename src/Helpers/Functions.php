@@ -54,7 +54,7 @@ class Functions
         }
 
         // Finally, delete the root directory
-        return File::rmdir($dirname);
+        return File::deleteDirectory($dirname);
     }
 
     public static function renderReCaptchaJs($callback = false, $onLoadClass = 'onloadCallBack')
