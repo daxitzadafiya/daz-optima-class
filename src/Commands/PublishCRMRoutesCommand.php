@@ -3,6 +3,7 @@
 namespace Daz\OptimaClass\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use function Laravel\Prompts\info;
 use function Laravel\Prompts\error;
@@ -29,9 +30,14 @@ class PublishCRMRoutesCommand extends Command
     public function handle()
     {
         $jsonFile = "rules.json";
-        $webRoutesPath = base_path('routes/web.php');
 
-        file_put_contents($webRoutesPath, '');
+        $routePath = base_path('routes');
+
+        if (!File::exists($routePath.'/site.php')) {
+            File::makeDirectory($routePath.'/site.php', 0755, true);
+        }
+
+        file_put_contents($routePath.'/site.php', '');
 
         if (!file_exists(public_path('uploads/temp/'.$jsonFile))) {
             error("File not found: $jsonFile");
@@ -84,9 +90,10 @@ class PublishCRMRoutesCommand extends Command
             $routeGroups .= "});\n\n";
         }
 
-        file_put_contents($webRoutesPath, "\n" . $routeGroups, FILE_APPEND);
+        file_put_contents($routePath.'/site.php', "\n" . $routeGroups, FILE_APPEND);
 
         info('Routes have been successfully added to web.php');
+        
         return Command::SUCCESS;
     }
 }
