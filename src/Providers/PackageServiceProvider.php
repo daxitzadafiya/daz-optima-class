@@ -16,7 +16,8 @@ class PackageServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->commands([
-            \Daz\OptimaClass\Commands\CreateLocalizationCommand::class
+            \Daz\OptimaClass\Commands\CreateLocalizationCommand::class,
+            \Daz\OptimaClass\Commands\PublishCRMRoutesCommand::class,
         ]);
 
         $this->loadViewsFrom(__DIR__.'/../Views','optima');
