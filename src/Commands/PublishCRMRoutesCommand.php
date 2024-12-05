@@ -15,7 +15,7 @@ class PublishCRMRoutesCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'app:publish-routes-command';
+    protected $signature = 'optima:publish-routes-command';
 
     /**
      * The console command description.
@@ -93,7 +93,7 @@ class PublishCRMRoutesCommand extends Command
         file_put_contents($routePath.'/site.php', "\n" . $routeGroups, FILE_APPEND);
 
         info('Routes have been successfully added to web.php');
-        
+
         return Command::SUCCESS;
     }
 }
