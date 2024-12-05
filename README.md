@@ -20,6 +20,10 @@ use Daz\OptimaClass\Middleware\LocaleMiddleware;
 });
 ```
 
+Include site.php file in your web.php file
+
+- require __DIR__.'/site.php';
+
 ## Usage
 
 Please run below command for publish routes

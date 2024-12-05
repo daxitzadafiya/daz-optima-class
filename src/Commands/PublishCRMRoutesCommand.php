@@ -82,6 +82,8 @@ class PublishCRMRoutesCommand extends Command
             $routeGroups .= "use App\\Http\\Controllers\\$baseController;\n";
         }
 
+        $routeGroups .= "\nRoute::group(['prefix' => '{locale}', 'middleware' => 'locale'], function() {\n";
+
         foreach ($groupedRoutes as $controller => $routes) {
             $routeGroups .= "\nRoute::controller($controller::class)->group(function () {\n";
             foreach ($routes as $route) {
@@ -89,6 +91,8 @@ class PublishCRMRoutesCommand extends Command
             }
             $routeGroups .= "});\n\n";
         }
+
+        $routeGroups .= "});\n\n";
 
         file_put_contents($routePath.'/site.php', "\n" . $routeGroups, FILE_APPEND);
 
