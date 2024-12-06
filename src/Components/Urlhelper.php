@@ -133,18 +133,16 @@ class Urlhelper
     }
 
     /**
-     * get_languages_dropdown($this)
-     * 
-     * @param mixed $object = $this
-     * 
+     * get_languages_dropdown()
+     *
      * @return void
      */
-    public static function get_languages_dropdown($object)
+    public static function get_languages_dropdown()
     {
-        $property = isset($object->params['property']) ? $object->params['property'] : [];
-        $development = isset($object->params['development']) ? $object->params['development'] : [];
-        $post = isset($object->params['post']) ? $object->params['post'] : [];
-        $page_data = isset($object->params['page_data']) ? $object->params['page_data'] : [];
+        $property = App::bound('property') ? App::make('property') : [];
+        $development = App::bound('development') ? App::make('development') : [];
+        $post = App::bound('post') ? App::make('post') : [];
+        $page_data = App::bound('page_data') ? App::make('page_data') : [];
         $languages = Sitehelper::get_languages();
         $cmsModels = Cms::Slugs('page');
 
@@ -160,16 +158,12 @@ class Urlhelper
             }
 
             if (isset($page_data['slug_all']['EN']) && ($page_data['slug_all']['EN'] == 'home' || $page_data['slug_all']['EN'] == 'index')) {
-                $url = ['language' => strtolower($language['key']), '/'];
+                $url = ['language' => strtolower($language['key'])];
             } else {
-                $url = ['language' => strtolower($language['key']), '/' . $slug];
+                $url = ['language' => strtolower($language['key']), 'slug' => $slug];
             }
 
-            if (isset($language['key']) && $language['key'] == 'DK') {
-                $language['key'] = Translate::t($language['key']);
-            }
-
-            $get_params = request()->all() ? request()->all() : [];
+            $get_params = request()->query() ? request()->query() : [];
 
             if (isset($cmsModels) && !empty($cmsModels)) {
                 foreach ($cmsModels as $model) {
@@ -179,9 +173,10 @@ class Urlhelper
                 }
             }
 
-            unset($get_params['slug'], $get_params['title'], $get_params['st_rental'], $get_params['pagename']);
+            unset($get_params['params']['st_rental'], $get_params['params']['pagename']);
 
-            $url_to = array_merge($url, $get_params);
+            $url_to = self::buildUrl(array_merge($url, $get_params));
+
             if ($property) {
                 $url_to = self::getPropertyUrl($property, strtolower($language['key']));
             }
@@ -190,5 +185,74 @@ class Urlhelper
                 echo '<li><a class="dropdown-item" href="' . URL::to($url_to) . '">' . $language['title'] . '</a></li>';
             }
         }
+    }
+
+    public static function parseUrl($url)
+    {
+        // Parse the URL
+        $parsedUrl = parse_url($url);
+
+        // Explode the path by '/' and remove any empty values
+        $pathSegments = array_filter(explode('/', $parsedUrl['path']));
+
+        // Get language, slug, and title
+        $language = $pathSegments[1] ?? null;
+        $slug = $pathSegments[2] ?? null;
+        $title = $pathSegments[3] ?? null;
+
+        // Get query parameters
+        parse_str($parsedUrl['query'] ?? '', $params);
+
+        $result = [];
+
+        // If language is set, include it
+        if ($language) {
+            $result['language'] = $language;
+        }
+
+        // If slug is set, include it
+        if ($slug) {
+            $result['slug'] = $slug;
+        }
+
+        // If title is set, include it
+        if ($title) {
+            $result['title'] = $title;
+        }
+
+        // If query parameters are set, include them
+        if (!empty($params)) {
+            $result['params'] = $params;
+        }
+
+        return $result;
+    }
+
+    public static function buildUrl(array $data)
+    {
+        // Start with the base URL
+        $url = url('/');
+
+        // Append the language
+        if (isset($data['language'])) {
+            $url .= '/' . $data['language'];
+        }
+
+        // Append the slug
+        if (isset($data['slug'])) {
+            $url .= '/' . $data['slug'];
+        }
+
+        // Append the title (if available)
+        if (isset($data['title'])) {
+            $url .= '/' . $data['title'];
+        }
+
+        // Append query parameters (if any)
+        if (isset($data['params']) && !empty($data['params'])) {
+            $url .= '?' . http_build_query($data['params']);
+        }
+
+        return $url;
     }
 }
