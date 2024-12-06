@@ -137,12 +137,12 @@ class Urlhelper
      *
      * @return void
      */
-    public static function get_languages_dropdown()
+    public static function get_languages_dropdown($object)
     {
-        $property = App::bound('property') ? App::make('property') : [];
-        $development = App::bound('development') ? App::make('development') : [];
-        $post = App::bound('post') ? App::make('post') : [];
-        $page_data = App::bound('page_data') ? App::make('page_data') : [];
+        $property = $object->has('property') ? $object->get('property') : [];
+        $development = $object->has('development') ? $object->get('development') : [];
+        $post = $object->has('post') ? $object->get('post') : [];
+        $page_data = $object->has('page_data') ? $object->get('page_data') : [];
         $languages = Sitehelper::get_languages();
         $cmsModels = Cms::Slugs('page');
 
