@@ -175,7 +175,7 @@ class Urlhelper
 
             unset($get_params['params']['st_rental'], $get_params['params']['pagename']);
 
-            $url_to = self::buildUrl(array_merge($url, $get_params));
+            $url_to = self::buildUrl(array_merge($url, ['params' => $get_params]));
 
             if ($property) {
                 $url_to = self::getPropertyUrl($property, strtolower($language['key']));
