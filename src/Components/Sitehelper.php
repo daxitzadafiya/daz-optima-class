@@ -97,13 +97,11 @@ class Sitehelper
      */
     public static function get_settings($object)
     {
-        if (isset($object->params['settings'])) {
-            return $object->params['settings'];
-        } elseif (!empty($object)) {
-            return $object->params['settings'] = Cms::settings();
-        }
+        if(!$object->has('settings')) {
+            $object->set('settings', Cms::settings());
+        } 
 
-        return Cms::settings();
+        return $object->get('settings');
     }
 
     /**
@@ -115,13 +113,11 @@ class Sitehelper
      */
     public static function get_custom_settings($object)
     {
-        if (isset($object->params['custom_settings'])) {
-            return $object->params['custom_settings'];
-        } elseif (!empty($object)) {
-            return $object->params['custom_settings'] = Cms::custom_settings();
-        }
+        if(!$object->has('custom_settings')) {
+            $object->set('custom_settings', Cms::custom_settings());
+        } 
 
-        return Cms::custom_settings();
+        return $object->get('custom_settings');
     }
 
     /**
@@ -133,11 +129,11 @@ class Sitehelper
      */
     public static function get_page_data($object)
     {
-        if (isset($object->params['page_data'])) {
-            return $object->params['page_data'];
-        }
+        if(!$object->has('page_data')) {
+            $object->set('page_data', []);
+        } 
 
-        return [];
+        return $object->get('page_data');
     }
 
     /**
@@ -149,11 +145,17 @@ class Sitehelper
      */
     public static function get_page_custom_settings($object)
     {
-        if (isset($object->params['page_custom_settings'])) {
-            return $object->params['page_custom_settings'];
-        } elseif (isset($object->params['page_data'])) {
-            $page_data = self::get_page_data($object);
-            return $object->params['page_custom_settings'] = Cms::custom_settings($page_data['custom_settings']);
+        if ($object->has('page_custom_settings')) {
+            return $object->get('page_custom_settings');
+        }
+
+        if ($object->has('page_data') && !empty($object->get('page_data'))) {
+            $pageData = self::get_page_data($object);
+            $customSettings = Cms::custom_settings($pageData['custom_settings']);
+        
+            $object->set('page_custom_settings', $customSettings);
+
+            return $customSettings;
         }
 
         return [];
@@ -168,8 +170,8 @@ class Sitehelper
      */
     public static function get_post($object)
     {
-        if (isset($object->params['post'])) {
-            return $object->params['post'];
+        if ($object->has('post')) {
+            return $object->get('post');
         }
 
         return [];
@@ -184,11 +186,14 @@ class Sitehelper
      */
     public static function get_post_custom_settings($object)
     {
-        if (isset($object->params['post_custom_settings'])) {
-            return $object->params['post_custom_settings'];
-        } elseif (isset($object->params['post'])) {
+        if($object->has('post_custom_settings')) {
+            return $object->get('post_custom_settings');
+        } else if($object->has('post')) {
             $post = self::get_post($object);
-            return $object->params['post_custom_settings'] = Cms::custom_settings($post['custom_settings']);
+            $customSettings = Cms::custom_settings($post['custom_settings']);
+            $object->set('post_custom_settings', $customSettings);
+
+            return $customSettings;
         }
 
         return [];
@@ -280,7 +285,10 @@ class Sitehelper
     {
         $custom_settings = Sitehelper::get_custom_settings($object);
         $page_custom_settings = Sitehelper::get_page_custom_settings($object);
-        if ($property = isset($object->params['property']) ? $object->params['property'] : []) {
+        $property = $object->has('property') ? $object->get('property') : [];
+        $development = $object->has('development') ? $object->get('development') : [];
+        $post = $object->has('post') ? $object->get('post') : [];
+        if ($property) {
             // $object->title = isset($property['meta_title']) ? $property['meta_title'] : Yii::$app->translate->t('Real Estate Agency');
             $meta_title = (isset($property['meta_title']) && !empty($property['meta_title'])) ? $property['meta_title'] : ((isset($property['rental_meta_title']) && !empty($property['rental_meta_title'])) ? $property['rental_meta_title'] : Translate::t('Real Estate Agency'));
             $meta_desc = (isset($property['meta_desc']) && !empty($property['meta_desc'])) ? $property['meta_desc'] : ((isset($property['rental_meta_desc']) && !empty($property['rental_meta_desc'])) ? $property['rental_meta_desc'] : '');
@@ -333,7 +341,7 @@ class Sitehelper
                 'name' => 'theme-color',
                 'content' => isset($property['meta_theme_color']) ? $property['meta_theme_color'] : '#1e1e54',
             ]);
-        } elseif ($development = isset($object->params['development']) ? $object->params['development'] : []) {
+        } elseif ($development) {
             $object->title = isset($development['meta_title']) ? $development['meta_title'] : Translate::t('Real Estate Agency');
 
             $object->registerMetaTag([
@@ -384,7 +392,7 @@ class Sitehelper
                 'name' => 'theme-color',
                 'content' => isset($property['meta_theme_color']) ? $property['meta_theme_color'] : '#1e1e54',
             ]);
-        } elseif ($post = isset($object->params['post']) ? $object->params['post'] : []) {
+        } elseif ($post) {
             $object->title = isset($post['meta_title']) ? $post['meta_title'] : Translate::t('Real Estate Agency');
 
             $object->registerMetaTag([
