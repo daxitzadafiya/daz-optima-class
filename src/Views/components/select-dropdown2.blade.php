@@ -1,5 +1,11 @@
 @php
     $options['skip_options'] = isset($options['skip_options']) ? $options['skip_options'] : [];
+    $dataOptions = isset($options['data-option']) ? $options['data-option'] : [];
+
+    $appendOptions = "";
+    foreach ($dataOptions as $key => $value) {
+        $appendOptions .= ' data-' . $key .'="' . $value . '"';
+    }
 @endphp
 
 <select
@@ -13,18 +19,17 @@
     {{ isset($options['disabled']) ? $options['disabled'] : '' }}
     {{ isset($options['multiple']) ? $options['multiple'] : '' }}
     {{ isset($options['required']) ? $options['required'] : '' }}
+    {{ $appendOptions }}
 >
     @foreach ($data as $value)
         @if (!in_array($value['option_key'], $options['skip_options']))
-            @if (isset($value['count']) && !empty($value['count']) && $value['count'] > 0)
-                @php
-                    $option_name = isset($options['get_name']) ? $options['get_name'] : str_replace('[]', '', $options['name']);
-                @endphp
+            @php
+                $option_name = isset($options['get_name']) ? $options['get_name'] : str_replace('[]', '', $options['name']);
+            @endphp
 
-                <option value="{{ $value['option_key'] }}" {{ (is_array(request()->input($option_name)) && in_array($value['option_key'], request()->input($option_name))) || (request()->input($option_name) == $value['option_key']) ? 'selected' : '' }}>
-                    {{ isset($options['noValueTranslation']) ? $value['option_value'] : ucfirst(\Daz\OptimaClass\Components\Translate::t($value['option_value'])) }}
-                </option>
-            @endif
+            <option value="{{ $value['option_key'] }}" {{ (is_array(request()->input($option_name)) && in_array($value['option_key'], request()->input($option_name))) || (request()->input($option_name) == $value['option_key']) ? 'selected' : '' }}>
+                {{ isset($options['noValueTranslation']) ? $value['option_value'] : ucfirst(\Daz\OptimaClass\Components\Translate::t($value['option_value'])) }}
+            </option>
         @endif
     @endforeach
 </select>

@@ -886,4 +886,9 @@ class Dropdowns
     {
         return View::make('optima::components.select-dropdown', compact('data', 'options'))->render();
     }
+    
+    public static function html_select_2($data, $options = [])
+    {
+        return View::make('optima::components.select-dropdown2', compact('data', 'options'))->render();
+    }
 }
