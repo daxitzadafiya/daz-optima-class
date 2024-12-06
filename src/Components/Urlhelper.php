@@ -131,4 +131,64 @@ class Urlhelper
     {
         return URL::to('/' . self::blogDetailsSlug() . '/' . self::getPostTitle($post));
     }
+
+    /**
+     * get_languages_dropdown($this)
+     * 
+     * @param mixed $object = $this
+     * 
+     * @return void
+     */
+    public static function get_languages_dropdown($object)
+    {
+        $property = isset($object->params['property']) ? $object->params['property'] : [];
+        $development = isset($object->params['development']) ? $object->params['development'] : [];
+        $post = isset($object->params['post']) ? $object->params['post'] : [];
+        $page_data = isset($object->params['page_data']) ? $object->params['page_data'] : [];
+        $languages = Sitehelper::get_languages();
+        $cmsModels = Cms::Slugs('page');
+
+        foreach ($languages as $language) {
+            $slug = isset($page_data['slug_all'][$language['key']]) ? $page_data['slug_all'][$language['key']] : (isset($page_data['slug_all']['EN']) && $page_data['slug_all']['EN'] != '' ? $page_data['slug_all']['EN'] : '');
+
+            if ($development) {
+                $title = self::getDevelopmentTitle($development, $language['key']);
+                $slug .= '/' . $title;
+            } elseif ($post) {
+                $title = self::getPostTitle($post, $language['key']);
+                $slug .= '/' . $title;
+            }
+
+            if (isset($page_data['slug_all']['EN']) && ($page_data['slug_all']['EN'] == 'home' || $page_data['slug_all']['EN'] == 'index')) {
+                $url = ['language' => strtolower($language['key']), '/'];
+            } else {
+                $url = ['language' => strtolower($language['key']), '/' . $slug];
+            }
+
+            if (isset($language['key']) && $language['key'] == 'DK') {
+                $language['key'] = Translate::t($language['key']);
+            }
+
+            $get_params = request()->all() ? request()->all() : [];
+
+            if (isset($cmsModels) && !empty($cmsModels)) {
+                foreach ($cmsModels as $model) {
+                    if (isset($model['type']) && ($model['type'] == 'LocationsGroup' || $model['type'] == 'PropertyTypes') && $slug == $model['slug']) {
+                        $get_params = [];
+                    }
+                }
+            }
+
+            unset($get_params['slug'], $get_params['title'], $get_params['st_rental'], $get_params['pagename']);
+
+            $url_to = array_merge($url, $get_params);
+            if ($property) {
+                $url_to = self::getPropertyUrl($property, strtolower($language['key']));
+            }
+
+            if (strtolower($language['key']) != strtolower(App::getLocale())) {
+                echo '<li><a class="dropdown-item" href="' . URL::to($url_to) . '">' . $language['title'] . '</a></li>';
+            }
+        }
+    }
 }
