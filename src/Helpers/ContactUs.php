@@ -357,9 +357,9 @@ class ContactUs extends Model
             $call_rememeber = $this->call_remember;
         }
         if ($this->owner)
-            $url = self::$apiUrl . "owners/index&user_apikey=" . self::$api_key;
+            $url = self::$apiUrl . "owners/index&user_apikey=" . self::$api_key. '&json=1';
         else
-            $url = self::$apiUrl . "accounts/index&user_apikey=" . self::$api_key;
+            $url = self::$apiUrl . "accounts/index&user_apikey=" . self::$api_key. '&json=1';
 
 
         $fields = array(
@@ -459,10 +459,10 @@ class ContactUs extends Model
             'street_number' => isset($this->street_number) ? $this->street_number : null
         );
         
-        $response = Http::asForm()->post($url, $fields);
+        $response = Http::post($url, $fields);
         $res = $response->json();
 
-        return $res->_id;
+        return $res['_id'];
     }
 
     public function saveSenderAccount()
@@ -470,7 +470,7 @@ class ContactUs extends Model
         self::initialize();
         $settings = Cms::settings();
 
-        $url = self::$apiUrl . "accounts/index&user_apikey=" . self::$api_key;
+        $url = self::$apiUrl . "accounts/index&user_apikey=" . self::$api_key. '&json=1';
 
         $fields = array(
             'forename' => isset($this->sender_first_name) ? $this->sender_first_name : null,
@@ -488,7 +488,10 @@ class ContactUs extends Model
             'comments' => isset($call_rememeber) && $call_rememeber != '' ? $call_rememeber : (isset($this->guests) ? 'Number of Guests: ' . $this->guests : null),
         );
 
-        $response = Http::asForm()->post($url, $fields);
+        $response = Http::post($url, $fields);
+        $res = $response->json();
+
+        return $res['_id'];
     }
 
     public function collaboratorEmail()
@@ -496,7 +499,7 @@ class ContactUs extends Model
         self::initialize();
         $settings = Cms::settings();
 
-        $url = self::$apiUrl . "accounts/index&user_apikey=" . self::$api_key;
+        $url = self::$apiUrl . "accounts/index&user_apikey=" . self::$api_key. '&json=1';
 
         $fields = array(
             'forename' => isset($this->first_name) ? $this->first_name : null,
@@ -515,6 +518,9 @@ class ContactUs extends Model
         );
 
         $response = Http::asForm()->post($url, $fields);
+        $res = $response->json();
+
+        return $res['_id'];
     }
 
     public static function loadAccount($token)
@@ -540,7 +546,7 @@ class ContactUs extends Model
     public static function createUserAccount($data)
     {
         self::initialize();
-        $url = self::$apiUrl . 'users/create&user_apikey=' . self::$api_key;
+        $url = self::$apiUrl . 'users/create&user_apikey=' . self::$api_key. '&json=1';
 
         $fields = array(
             'social_id' => isset($data['social_id']) ? $data['social_id'] : null,
@@ -569,7 +575,7 @@ class ContactUs extends Model
             "source" => isset($data['source']) ? $data['source'] : null,
         );
 
-        $response = Http::asForm()->post($url, $fields);
+        $response = Http::post($url, $fields);
 
         return $response->json();
     }
