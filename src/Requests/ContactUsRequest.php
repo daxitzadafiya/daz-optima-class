@@ -3,148 +3,12 @@
 namespace Daz\OptimaClass\Requests;
 
 use Daz\OptimaClass\Components\Translate;
-use Daz\OptimaClass\Traits\ConfigTrait;
 use Daz\ReCaptcha\Facades\ReCaptcha;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Request;
 
 class ContactUsRequest extends FormRequest
 {
-    use ConfigTrait;
-
-    public $name;
-    public $first_name;
-    public $last_name;
-    public $lead_status;
-    public $email;
-    public $phone;
-    public $home_phone;
-    public $call_remember;
-    public $message;
-    public $redirect_url;
-    public $url;
-    public $attach;
-    public $reference;
-    public $agency_set_ref;
-    public $verifyCode;
-    public $transaction;
-    public $property_type;
-    public $bedrooms;
-    public $bathrooms;
-    public $pool;
-    public $address;
-    public $house_area;
-    public $plot_area;
-    public $price;
-    public $price_reduced;
-    public $close_to_sea;
-    public $sea_view;
-    public $exclusive_property;
-    public $to_email;
-    public $owner;
-    public $source;
-    public $accept_cookie_text;
-    public $accept_cookie;
-    public $get_updates;
-    public $html_content;
-    public $booking_period;
-    public $guests;
-    public $transaction_types;
-    public $subscribe;
-    public $booking_enquiry;
-    public $sender_first_name;
-    public $sender_last_name;
-    public $sender_email;
-    public $sender_phone;
-    public $assigned_to;
-    public $news_letter;
-    public $arrival_date;
-    public $buy_price_from;
-    public $buy_price_to;
-    public $ltrent_from_date;
-    public $ltrent_price_from;
-    public $ltrent_price_to;
-    public $strent_price_from;
-    public $strent_price_to;
-    public $departure_date;
-    public $contact_check_1;
-    public $contact_check_2;
-    public $contact_check_3;
-    public $gdpr_status;
-    public $cv_file;
-    public $language;
-    public $listing_agency_email;
-    public $listing_agency_id;
-    public $user_id;
-    public $buyer;
-    public $mobile_phone;
-    public $lgroups;
-    public $reCaptcha;
-    public $reCaptcha3;
-    public $resume;
-    public $imageFiles;
-    public $application;
-    public $feet_setting;
-    public $feet_views;
-    public $sub_types;
-    public $feet_categories;
-    public $parking;
-    public $office;
-    public $p_type;
-    public $year_built_from;
-    public $year_built_to;
-    public $built_size_from;
-    public $built_size_to;
-    public $plot_size_from;
-    public $plot_size_to;
-    public $usefull_area_from;
-    public $usefull_area_to;
-    public $building_style;
-    public $gated_comunity;
-    public $elevator;
-    public $settings;
-    public $orientation;
-    public $views;
-    public $garden;
-    public $only_golf_properties;
-    public $only_off_plan;
-    public $buy_from_date;
-    public $condition;
-    public $countries;
-    public $regions;
-    public $provinces;
-    public $cities;
-    public $locations;
-    public $urbanization;
-    public $furniture;
-    public $occupancy_status;
-    public $legal_status;
-    public $total_floors;
-    public $mooring_type;
-    public $only_projects;
-    public $only_holiday_homes;
-    public $only_bank_repossessions;
-    public $own;
-    public $custom_categories;
-    public $account_alert;
-    public $min_sleeps;
-    public $id_number;
-    public $country;
-    public $postal_code;
-    public $infants;
-    public $appt;
-    public $visit_date;
-    public $title;
-    public $work_phone;
-    public $only_investments;
-    public $only_urgent_sales;
-    public $from_source;
-    public $collaborator;
-    public $classification;
-    public $street_address;
-    public $street_number;
-    public $city_town;
-
     const SCENARIO_V3 = 'v3validation';
 
     public function scenarios()
@@ -286,7 +150,7 @@ class ContactUsRequest extends FormRequest
             'street_number' => '',
             'city_town' => '',
             'first_name' => 'required',
-            // 'last_name' => 'required',
+            'last_name' => 'required',
             'email' => 'required|email',
             'message' => 'required',
             'accept_cookie' => $this->isAcceptCookie() ? 'required' : 'nullable',
@@ -294,7 +158,7 @@ class ContactUsRequest extends FormRequest
             'imageFiles' => 'nullable|file|mimes:jpg,png,jpeg',
             'cv_file' => 'nullable|file',
             'phone' => 'required|regex:/^\d{8,}$/',
-            'reCaptcha' => $this->isReCaptchaEnabled() ? 'required' : 'nullable',
+            // 'reCaptcha' => $this->isReCaptchaEnabled() ? 'required' : 'nullable',
             'verifyCode' => [$this->verifyCode !== null ? 'required' : 'nullable'],
             'reCaptcha3' => $this->isReCaptchaV3Enabled() ? 'required' : 'nullable',
         ];
@@ -308,7 +172,9 @@ class ContactUsRequest extends FormRequest
             'email.required' => Translate::t('email cannot be blank.'),
             'message.required' => Translate::t('message cannot be blank.'),
             'verifyCode.required' => Translate::t('the verification code is incorrect.'),
+            'phone.required' => Translate::t('phone cannot be blank.'),
             'phone.regex' => Translate::t('please enter the valid phone number.'),
+            'reCaptcha.required' => Translate::t('please confirm you are not a robot by completing the reCAPTCHA!'),
         ];
     }
 
@@ -338,8 +204,8 @@ class ContactUsRequest extends FormRequest
      */
     private function isReCaptchaEnabled(): bool
     {
-        self::initialize();
-        return ReCaptcha::verifyResponse($this->reCaptcha, Request::ip()) && (!empty(self::$recaptcha_secret_site_key) && $this->reCaptcha !== 'nulll');
+        $recaptcha_secret_site_key = config('params.recaptcha_secret_site_key');
+        return ReCaptcha::verifyResponse($this->reCaptcha, Request::ip()) && (!empty($recaptcha_secret_site_key) && $this->reCaptcha !== 'null');
     }
 
     /**
