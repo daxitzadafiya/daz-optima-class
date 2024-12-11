@@ -15,7 +15,7 @@ class PublishCRMRoutesCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'optima:publish-routes-command';
+    protected $signature = 'optima:publish-routes';
 
     /**
      * The console command description.
@@ -74,24 +74,18 @@ class PublishCRMRoutesCommand extends Command
             $routeGroups .= "use App\\Http\\Controllers\\$baseController;\n";
         }
 
-        $routeGroups .= "\nRoute::group(['prefix' => '{locale}', 'middleware' => 'locale'], function() {\n";
-
         foreach ($groupedRoutes as $controller => $routes) {
-            $routeGroups .= "    Route::controller($controller::class)->group(function () {\n";
+            $routeGroups .= "\nRoute::controller($controller::class)->group(function () {\n";
             foreach ($routes as $route) {
-                $routeGroups .= "        Route::get('{$route['pattern']}', '{$route['action']}');\n";
+                $routeGroups .= "    Route::get('{$route['pattern']}', '{$route['action']}');\n";
             }
-            $routeGroups .= "    });\n";
+            $routeGroups .= "});\n";
         }
-
-        $routeGroups .= "});\n\n";
 
         $filePath = base_path('routes/site.php');
 
-        File::delete($filePath);
-
-        if (!File::exists($filePath)) {
-            file_put_contents($filePath, "\n" . $routeGroups, FILE_APPEND);
+        if (File::exists($filePath)) {
+            file_put_contents($filePath, "\n" . $routeGroups);
         }
 
         info('Routes have been successfully added to site.php');
