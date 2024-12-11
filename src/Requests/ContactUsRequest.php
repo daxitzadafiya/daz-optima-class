@@ -184,6 +184,13 @@ class ContactUsRequest extends FormRequest
             if ($this->first_name === $this->last_name) {
                 $validator->errors()->add('first_name', Translate::t('first name and last name cannot be the same.'));
             }
+
+            if(isset($this->reCaptcha) && !empty($this->reCaptcha)) {
+                $recaptcha_secret_site_key = config('params.recaptcha_secret_site_key');
+                if(!(ReCaptcha::verifyResponse($this->reCaptcha, Request::ip()) && (!empty($recaptcha_secret_site_key) && $this->reCaptcha !== 'null'))) {
+                    $validator->errors()->add('reCaptcha', Translate::t('invalid reCAPTCHA!'));
+                }
+            }
         });
     }
 
@@ -204,8 +211,7 @@ class ContactUsRequest extends FormRequest
      */
     private function isReCaptchaEnabled(): bool
     {
-        $recaptcha_secret_site_key = config('params.recaptcha_secret_site_key');
-        return ReCaptcha::verifyResponse($this->reCaptcha, Request::ip()) && (!empty($recaptcha_secret_site_key) && $this->reCaptcha !== 'null');
+        return isset($this->reCaptcha);
     }
 
     /**
