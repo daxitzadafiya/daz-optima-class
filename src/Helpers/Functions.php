@@ -80,7 +80,7 @@ class Functions
 
     public static function recaptcha($name, $id = '', $options = [])
     {
-        $siteKey = config('services.recaptcha.site_key', env('RECAPTCHA_SITE_KEY', '6Le9fqsUAAAAAN2KL4FQEogpmHZ_GpdJ9TGmYMrT'));
+        $siteKey = config('params.recaptcha_site_key', env('RECAPTCHA_SITE_KEY'));
 
         $defaultOptions = [
             "class" => "g-recaptcha",
@@ -99,7 +99,7 @@ class Functions
 
     public static function reCaptcha3($name = 'recaptcha_token', $id = 'recaptchaToken', $options = [])
     {
-        $siteKey = config('services.recaptcha.site_key', env('RECAPTCHA_SITE_KEY', '6Le9fqsUAAAAAN2KL4FQEogpmHZ_GpdJ9TGmYMrT'));
+        $siteKey = config('params.recaptcha_site_key', env('RECAPTCHA_SITE_KEY'));
 
         return '<input type="hidden" name="' . $name . '" id="' . $id . '" value="">';
     }
