@@ -393,6 +393,11 @@ class Sitehelper
         }
     }
 
+    public static function get_title($object)
+    {
+        return isset($object->title) && !empty($object->title) ? $object->title : env("APP_NAME") ;
+    }
+
     public static function get_locations_properties_count($country = '1')
     {
         $locationGroups = Dropdowns::locations([], false, [], $country);
