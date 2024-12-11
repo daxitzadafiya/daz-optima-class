@@ -2,6 +2,7 @@
 
 namespace Daz\OptimaClass\Helpers;
 
+use Daz\OptimaClass\Components\Routehelper;
 use Daz\OptimaClass\Traits\ConfigTrait;
 use Illuminate\Support\Facades\App;
 
@@ -681,6 +682,12 @@ class Cms
             $file_data = json_encode($rules);
 
             file_put_contents($file, $file_data);
+
+            $groupedRoutes = Routehelper::groupRoutes($rules);
+
+            $routeDefinitions = Routehelper::generateRouteDefinitions($groupedRoutes);
+
+            Routehelper::writeRoutesToFile($routeDefinitions);
         } else {
             $file_data = file_get_contents($file);
         }

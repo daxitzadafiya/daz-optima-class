@@ -2,9 +2,9 @@
 
 namespace Daz\OptimaClass\Commands;
 
+use Daz\OptimaClass\Components\Routehelper;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
-use Illuminate\Support\Str;
 use function Laravel\Prompts\info;
 use function Laravel\Prompts\error;
 
@@ -29,64 +29,25 @@ class PublishCRMRoutesCommand extends Command
      */
     public function handle()
     {
-        $jsonFile = "rules.json";
+        $jsonFilePath = public_path('uploads/temp/rules.json');
 
-        if (!File::exists(public_path('uploads/temp/'.$jsonFile))) {
-            error("File not found: $jsonFile");
+        if (!File::exists($jsonFilePath)) {
+            error("File not found: rules.json");
             return Command::FAILURE;
         }
 
-        $jsonRoutes = file_get_contents(public_path('uploads/temp/'.$jsonFile));
+        $routes = Routehelper::parseJsonFile($jsonFilePath);
 
-        $routes = json_decode($jsonRoutes, true);
-
-        if (!$routes) {
+        if ($routes === null) {
             error('Invalid JSON data.');
             return Command::FAILURE;
         }
 
-        $groupedRoutes = [];
-        foreach ($routes as $route) {
-            $pattern = $route['pattern'];
+        $groupedRoutes = Routehelper::groupRoutes($routes);
 
-            $controllerAction = explode('/', $route['route']);
+        $routeDefinitions = Routehelper::generateRouteDefinitions($groupedRoutes);
 
-            list($controllerName, $action) = $controllerAction;
-
-            $controller = ucfirst($controllerName) . 'Controller';
-
-            $pattern = preg_replace('/<(\w+)>/', '{$1}', $pattern);
-
-            $uniqueKey = "$controller|$pattern|$action";
-
-            $groupedRoutes[$controller][$uniqueKey] = [
-                'pattern' => $pattern,
-                'action' => Str::studly($action)
-            ];
-        }
-
-        $routeGroups = "";
-
-        $routeGroups .= "<?php \n\n";
-        $routeGroups .= "use Illuminate\Support\Facades\Route;\n";
-
-        foreach (array_keys($groupedRoutes) as $baseController) {
-            $routeGroups .= "use App\\Http\\Controllers\\$baseController;\n";
-        }
-
-        foreach ($groupedRoutes as $controller => $routes) {
-            $routeGroups .= "\nRoute::controller($controller::class)->group(function () {\n";
-            foreach ($routes as $route) {
-                $routeGroups .= "    Route::get('{$route['pattern']}', '{$route['action']}');\n";
-            }
-            $routeGroups .= "});\n";
-        }
-
-        $filePath = base_path('routes/site.php');
-
-        if (File::exists($filePath)) {
-            file_put_contents($filePath, "\n" . $routeGroups);
-        }
+        Routehelper::writeRoutesToFile($routeDefinitions);
 
         info('Routes have been successfully added to site.php');
 
