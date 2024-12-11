@@ -2,7 +2,9 @@
 
 namespace Daz\OptimaClass\Helpers;
 
+use Daz\OptimaClass\Components\Translate;
 use Daz\OptimaClass\Requests\ContactUsRequest;
+use Daz\OptimaClass\Service\ParamsContainer;
 use Daz\OptimaClass\Traits\ConfigTrait;
 use Daz\ReCaptcha\Facades\ReCaptcha;
 use Illuminate\Support\Facades\App;
@@ -71,16 +73,24 @@ class Functions
         return ReCaptcha::renderJs($currentAppLanguage, $callback, $onLoadClass);
     }
 
+    public static function prepareCustomFields($id, $name)
+    {
+        echo '<input type="hidden" id="'. $id .'" name="'. $name .'">';
+    }
+
     public static function recaptcha($name, $id = '', $options = [])
     {
         $siteKey = config('services.recaptcha.site_key', env('RECAPTCHA_SITE_KEY', '6Le9fqsUAAAAAN2KL4FQEogpmHZ_GpdJ9TGmYMrT'));
 
         $defaultOptions = [
             "class" => "g-recaptcha",
-            "name" => $name ?? 'reCaptcha',
             "data-sitekey" => $siteKey,
-            "data-id" => $id
+            "data-input-id" => $id,
+            "id" => $id ."-". ($name ?? 'reCaptcha'),
+            "data-form-id" => "",
         ];
+
+        self::prepareCustomFields($id, $name ?? 'reCaptcha');
 
         $mergedOptions = self::mergeOptions($defaultOptions, $options);
 
@@ -143,14 +153,14 @@ class Functions
                     }, $model->errors));
                 }
 
-                session()->flash('failure', $errors);
+                session()->put(['success' => false, 'message' => $errors]);
 
                 if (self::$send_error_mails_to) {
                     self::sendErrorMail($errors, self::$send_error_mails_to);
                 }
-                
+
             } else {
-                session()->flash('success', "Thank you for your message!");
+                session()->put(['success' => true, 'message' => Translate::t('thank you for your message!')]);
 
                 if ($redirect_url) {
                     return redirect($redirect_url);
@@ -159,7 +169,7 @@ class Functions
 
         } catch (\Exception $e) {
             // Handle unexpected errors
-            session()->flash('failure', "An error occurred: " . $e->getMessage());
+            session()->put(['success' => false, 'message' => "An error occurred: " . $e->getMessage()]);
 
             if (self::$send_error_mails_to) {
                 self::sendErrorMail($e->getMessage(), self::$send_error_mails_to);
@@ -200,9 +210,8 @@ class Functions
     {
         $slug = request()->input('slug', '');
         if ($slug) {
-            app()->instance('page_data', $page_data = Cms::getPage(['slug' => $slug, 'lang' => App::getLocale()]));
-            // } else {
-            //     app()->instance('page_data', $page_data = Cms::getPage(['slug' => request()->input('title'), 'lang' => strtoupper(App::getLocale())]));
+            $page_data = Cms::getPage(['slug' => $slug, 'lang' => App::getLocale()]);
+            App::instance('params', new ParamsContainer(['page_data' => $page_data]));
         }
 
         // redirect if there is no page_data is available
@@ -234,7 +243,8 @@ class Functions
         $cmsModel = Cms::Slugs('page');
         $url = explode('/', request()->path());
         $this_page = urldecode(end($url));
-        app()->instance('page_data', $page_data = Cms::pageBySlug(request()->input('title')));
+        $page_data = Cms::pageBySlug(request()->input('title'));
+        App::instance('params', new ParamsContainer(['page_data' => $page_data]));
         if (isset($cmsModel) && count($cmsModel) > 0) {
             foreach ($cmsModel as $row) {
                 if (isset($row['slug_all'][strtoupper(App::getLocale())]) and $row['slug_all'][strtoupper(App::getLocale())] == $this_page) {
@@ -259,7 +269,7 @@ class Functions
                 } else {
                     $custom_post_id = '';
                 }
-                app()->instance('page_data', $page_data);
+                App::instance('params', new ParamsContainer(['page_data' => $page_data]));
                 return $object->render($page_template, [
                     'page_data' => $page_data,
                     'custom_post_id' => $custom_post_id
@@ -277,12 +287,13 @@ class Functions
                 if (!isset($page_data_404) || !isset($page_data_404['slug_all']['EN'])) {
                     die('Please create 404 page with slug "404" in CMS');
                 }
-                app()->instance('page_data', $page_data = Cms::pageBySlug('404'));
+                $page_data = Cms::pageBySlug('404');
+                App::instance('params', new ParamsContainer(['page_data' => $page_data]));
                 return $object->render('404', [
                     'page_data' => isset($page_data) ? $page_data : ''
                 ]);
             }
-            app()->instance('page_data', $page_data);
+            App::instance('params', new ParamsContainer(['page_data' => $page_data]));
             return $object->render('page', [
                 'page_data' => isset($page_data) ? $page_data : ''
             ]);
