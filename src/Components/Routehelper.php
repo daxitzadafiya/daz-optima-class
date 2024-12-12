@@ -27,6 +27,8 @@ class Routehelper
         foreach ($routes as $route) {
             $pattern = preg_replace('/<(\w+)>/', '{$1}', $route['pattern']);
 
+            $lang = $route['lang'];
+
             list($controllerName, $action) = explode('/', $route['route']);
 
             $controller = ucfirst($controllerName) . 'Controller';
@@ -35,9 +37,9 @@ class Routehelper
 
             $uniqueKey = "$controller|$pattern|$action";
 
-            $groupedRoutes[$controller][$uniqueKey] = [
+            $groupedRoutes[$controller][$lang][$uniqueKey] = [
                 'pattern' => $pattern,
-                'action' => $actionName,
+                'action' => $actionName
             ];
         }
 
@@ -59,8 +61,14 @@ class Routehelper
         foreach ($groupedRoutes as $controller => $routes) {
             $definitions .= "\nRoute::controller($controller::class)->group(function () {\n";
 
-            foreach ($routes as $route) {
-                $definitions .= "    Route::get('{$route['pattern']}', '{$route['action']}');\n";
+            foreach($routes as $lang => $siteRoutes) {
+                $definitions .= "    Route::prefix('$lang')->group(function () {\n";
+
+                    foreach ($siteRoutes as $route) {
+                        $definitions .= "        Route::get('{$route['pattern']}', '{$route['action']}');\n";
+                    }
+
+                $definitions .= "    });\n";
             }
 
             $definitions .= "});\n";

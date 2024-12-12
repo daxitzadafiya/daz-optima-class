@@ -626,6 +626,7 @@ class Cms
                                 if ($val) {
                                     $rules[] = [
                                         'pattern'  => $val . $row['template']['template_pattern'],
+                                        'lang' => strtolower($key),
                                         'route'    => $row['template']['template_action'],
                                         'defaults' => ['slug' => $val],
                                     ];
@@ -643,6 +644,7 @@ class Cms
                                 if ($val) {
                                     $rules[] = [
                                         'pattern'  => $val . '/<title>',
+                                        'lang' => strtolower($key),
                                         'route'    => $row['template']['template_action'],
                                         'defaults' => ['slug' => $val],
                                     ];
@@ -657,6 +659,7 @@ class Cms
                                 if ($val) {
                                     $rules[] = [
                                         'pattern'  => $val,
+                                        'lang' => strtolower($key),
                                         'route'    => $row['template']['template_action'],
                                         'defaults' => ['slug' => $val],
                                     ];
@@ -668,6 +671,7 @@ class Cms
                             if ($val) {
                                 $rules[] = [
                                     'pattern'  => $val,
+                                    'lang' => strtolower($key),
                                     'route'    => 'site/page',
                                     'defaults' => ['slug' => $val],
                                 ];
@@ -688,7 +692,7 @@ class Cms
         } else {
             $file_data = file_get_contents($file);
         }
-        
+
         $rules = json_decode($file_data, true);
 
         return $rules;
