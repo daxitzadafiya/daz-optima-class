@@ -1,6 +1,6 @@
 <?php
 
-namespace Daz\OptimaClass\Components;
+namespace Daxit\OptimaClass\Components;
 
 use Illuminate\Support\Facades\File;
 
@@ -68,7 +68,7 @@ class Translate
         return <<<EOT
             <?php
 
-            use Daz\OptimaClass\Helpers\Cms;
+            use Daxit\OptimaClass\Helpers\Cms;
 
             \$translations = Cms::getTranslations();
             \$returnData = [];

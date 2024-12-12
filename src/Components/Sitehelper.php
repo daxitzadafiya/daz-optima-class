@@ -1,11 +1,11 @@
 <?php
 
-namespace Daz\OptimaClass\Components;
+namespace Daxit\OptimaClass\Components;
 
-use Daz\OptimaClass\Helpers\Cms;
-use Daz\OptimaClass\Helpers\Dropdowns;
-use Daz\OptimaClass\Helpers\Functions;
-use Daz\OptimaClass\Traits\ConfigTrait;
+use Daxit\OptimaClass\Helpers\Cms;
+use Daxit\OptimaClass\Helpers\Dropdowns;
+use Daxit\OptimaClass\Helpers\Functions;
+use Daxit\OptimaClass\Traits\ConfigTrait;
 use DOMDocument;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Http;

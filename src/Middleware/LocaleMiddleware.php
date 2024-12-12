@@ -1,9 +1,9 @@
 <?php
 
-namespace Daz\OptimaClass\Middleware;
+namespace Daxit\OptimaClass\Middleware;
 
 use Closure;
-use Daz\OptimaClass\Helpers\Cms;
+use Daxit\OptimaClass\Helpers\Cms;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Config;

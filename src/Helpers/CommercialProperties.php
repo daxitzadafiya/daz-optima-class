@@ -1,11 +1,11 @@
 <?php
 
-namespace Daz\OptimaClass\Helpers;
+namespace Daxit\OptimaClass\Helpers;
 
 use DateTime;
 use DateTimeZone;
-use Daz\OptimaClass\Components\Translate;
-use Daz\OptimaClass\Traits\ConfigTrait;
+use Daxit\OptimaClass\Components\Translate;
+use Daxit\OptimaClass\Traits\ConfigTrait;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Http;

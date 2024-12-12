@@ -3,12 +3,12 @@
 
 Register Provider in bootstrap/providers.php
 
-- Daz\OptimaClass\Providers\PackageServiceProvider::class
+- Daxit\OptimaClass\Providers\PackageServiceProvider::class
 
 Add middleware in bootstrap/app.php inside withMiddleware
 
 ```php
-use Daz\OptimaClass\Middleware\LocaleMiddleware;
+use Daxit\OptimaClass\Middleware\LocaleMiddleware;
 
 ->withMiddleware(function (Middleware $middleware) {
     $middleware->use([

@@ -1,8 +1,8 @@
 <?php
 
-namespace Daz\OptimaClass\Commands;
+namespace Daxit\OptimaClass\Commands;
 
-use Daz\OptimaClass\Components\Routehelper;
+use Daxit\OptimaClass\Components\Routehelper;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
 use function Laravel\Prompts\info;

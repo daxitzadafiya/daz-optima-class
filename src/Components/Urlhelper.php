@@ -1,9 +1,9 @@
 <?php
 
-namespace Daz\OptimaClass\Components;
+namespace Daxit\OptimaClass\Components;
 
 use Cocur\Slugify\Slugify;
-use Daz\OptimaClass\Helpers\Cms;
+use Daxit\OptimaClass\Helpers\Cms;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\URL;
 

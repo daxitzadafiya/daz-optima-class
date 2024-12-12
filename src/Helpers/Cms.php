@@ -1,9 +1,9 @@
 <?php
 
-namespace Daz\OptimaClass\Helpers;
+namespace Daxit\OptimaClass\Helpers;
 
-use Daz\OptimaClass\Components\Routehelper;
-use Daz\OptimaClass\Traits\ConfigTrait;
+use Daxit\OptimaClass\Components\Routehelper;
+use Daxit\OptimaClass\Traits\ConfigTrait;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Request;
 

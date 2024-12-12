@@ -1,9 +1,9 @@
 <?php
 
-namespace Daz\OptimaClass\Requests;
+namespace Daxit\OptimaClass\Requests;
 
-use Daz\OptimaClass\Components\Translate;
-use Daz\ReCaptcha\Facades\ReCaptcha;
+use Daxit\OptimaClass\Components\Translate;
+use Daxit\ReCaptcha\Facades\ReCaptcha;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Request;
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace Daz\OptimaClass\Service;
+namespace Daxit\OptimaClass\Service;
 
 class ParamsContainer
 {

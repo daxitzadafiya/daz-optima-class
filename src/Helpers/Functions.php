@@ -1,12 +1,12 @@
 <?php
 
-namespace Daz\OptimaClass\Helpers;
+namespace Daxit\OptimaClass\Helpers;
 
-use Daz\OptimaClass\Components\Translate;
-use Daz\OptimaClass\Requests\ContactUsRequest;
-use Daz\OptimaClass\Service\ParamsContainer;
-use Daz\OptimaClass\Traits\ConfigTrait;
-use Daz\ReCaptcha\Facades\ReCaptcha;
+use Daxit\OptimaClass\Components\Translate;
+use Daxit\OptimaClass\Requests\ContactUsRequest;
+use Daxit\OptimaClass\Service\ParamsContainer;
+use Daxit\OptimaClass\Traits\ConfigTrait;
+use Daxit\ReCaptcha\Facades\ReCaptcha;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\File;
 use Illuminate\View\ViewException;

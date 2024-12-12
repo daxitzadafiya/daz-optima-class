@@ -1,6 +1,6 @@
 <?php
 
-namespace Daz\OptimaClass\Components;
+namespace Daxit\OptimaClass\Components;
 
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;

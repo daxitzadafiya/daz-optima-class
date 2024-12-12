@@ -1,10 +1,10 @@
 <?php
 
-namespace Daz\OptimaClass\Helpers;
+namespace Daxit\OptimaClass\Helpers;
 
-use Daz\OptimaClass\Components\Translate;
-use Daz\OptimaClass\Requests\ContactUsRequest;
-use Daz\OptimaClass\Traits\ConfigTrait;
+use Daxit\OptimaClass\Components\Translate;
+use Daxit\OptimaClass\Requests\ContactUsRequest;
+use Daxit\OptimaClass\Traits\ConfigTrait;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\File;

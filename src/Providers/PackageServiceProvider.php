@@ -1,6 +1,6 @@
 <?php
 
-namespace Daz\OptimaClass\Providers;
+namespace Daxit\OptimaClass\Providers;
 
 use Illuminate\Support\ServiceProvider;
 
@@ -8,7 +8,7 @@ class PackageServiceProvider extends ServiceProvider
 {
     public function register()
     {
-        $this->app->register('Daz\ReCaptcha\ReCaptchaServiceProvider');
+        $this->app->register('Daxit\ReCaptcha\ReCaptchaServiceProvider');
 
         $this->app->bind('page_data', fn() => null);
     }
@@ -16,8 +16,8 @@ class PackageServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->commands([
-            \Daz\OptimaClass\Commands\CreateLocalizationCommand::class,
-            \Daz\OptimaClass\Commands\PublishCRMRoutesCommand::class,
+            \Daxit\OptimaClass\Commands\CreateLocalizationCommand::class,
+            \Daxit\OptimaClass\Commands\PublishCRMRoutesCommand::class,
         ]);
 
         $this->loadViewsFrom(__DIR__.'/../Views','optima');

@@ -1,8 +1,8 @@
 <?php
 
-namespace Daz\OptimaClass\Commands;
+namespace Daxit\OptimaClass\Commands;
 
-use Daz\OptimaClass\Components\Translate;
+use Daxit\OptimaClass\Components\Translate;
 use Illuminate\Console\Command;
 use function Laravel\Prompts\text;
 use function Laravel\Prompts\info;

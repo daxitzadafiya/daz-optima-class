@@ -1,6 +1,6 @@
 <?php
 
-namespace Daz\OptimaClass\Actions;
+namespace Daxit\OptimaClass\Actions;
 
 class OptimaErrorAction
 {
