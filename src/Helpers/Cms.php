@@ -5,6 +5,7 @@ namespace Daz\OptimaClass\Helpers;
 use Daz\OptimaClass\Components\Routehelper;
 use Daz\OptimaClass\Traits\ConfigTrait;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Request;
 
 /**
  * Cms Functions to get CMS data
@@ -494,13 +495,9 @@ class Cms
     */
     public static function setParams()
     {
-        if (isset($_SERVER['PATH_INFO'])) {
-            $url_array = explode('/', $_SERVER['PATH_INFO']);
-        } elseif (isset($_SERVER['REQUEST_URI'])) {
-            $url_array = explode('/', $_SERVER['REQUEST_URI']);
-        }
+        $locale = Request::has('locale') ? Request::input('locale') : 'en';
 
-        App::setLocale(isset($url_array[1]) ? $url_array[1] : 'en');
+        App::setLocale($locale);
     }
 
     public static function Slugs($name)
