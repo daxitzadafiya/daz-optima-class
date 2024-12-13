@@ -7,8 +7,9 @@ use Illuminate\Support\Facades\File;
 class Translate
 { 
     public static function t($str)
-    {
-       return __('app.' . strtolower($str));
+    {  
+        $str = strtolower($str);
+        return __('app.' . $str) === 'app.' . $str ? $str : __('app.' . $str);
     }
 
     public static function createDefaultLocale(array $locales = ["en", "es"])
