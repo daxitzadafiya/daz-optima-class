@@ -2,6 +2,7 @@
 
 namespace Daxit\OptimaClass\Components;
 
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 
@@ -54,8 +55,25 @@ class Routehelper
         $definitions = "<?php\n\n";
         $definitions .= "use Illuminate\\Support\\Facades\\Route;\n";
 
-        foreach (array_keys($groupedRoutes) as $controller) {
-            $definitions .= "use App\\Http\\Controllers\\$controller;\n";
+        foreach ($groupedRoutes as $controller => $routes) {
+            $controllerNamespace = "App\\Http\\Controllers\\$controller";
+            $controllerPath = app_path("Http/Controllers/{$controller}.php");
+
+            if (!File::exists($controllerPath)) {
+                Artisan::call("make:controller {$controller}");
+            }
+
+            $definitions .= "use $controllerNamespace;\n";
+
+            foreach ($routes as $lang => $siteRoutes) {
+                foreach ($siteRoutes as $route) {
+                    $methodName = $route['action'];
+
+                    if (!self::methodExistsInController($controllerPath, $methodName)) {
+                        self::addMethodToController($controllerPath, $methodName);
+                    }
+                }
+            }
         }
 
         foreach ($groupedRoutes as $controller => $routes) {
@@ -64,9 +82,9 @@ class Routehelper
             foreach($routes as $lang => $siteRoutes) {
                 $definitions .= "    Route::prefix('$lang')->group(function () {\n";
 
-                    foreach ($siteRoutes as $route) {
-                        $definitions .= "        Route::get('{$route['pattern']}', '{$route['action']}');\n";
-                    }
+                foreach ($siteRoutes as $route) {
+                    $definitions .= "        Route::get('{$route['pattern']}', '{$route['action']}');\n";
+                }
 
                 $definitions .= "    });\n";
             }
@@ -75,6 +93,37 @@ class Routehelper
         }
 
         return $definitions;
+    }
+
+    protected static function methodExistsInController(string $controllerPath, string $methodName): bool
+    {
+        $fileContent = File::get($controllerPath);
+
+        return preg_match("/function\s+{$methodName}\s*\(/", $fileContent) === 1;
+    }
+
+    protected static function addMethodToController(string $controllerPath, string $methodName): void
+    {
+        $template = <<<METHOD
+                /**
+                 * Handle the {$methodName} request.
+                 */
+                public function {$methodName}()
+                {
+                    // TODO: Implement {$methodName} logic
+                }
+            METHOD;
+
+        $fileContent = File::get($controllerPath);
+
+        // Insert the method before the last closing bracket of the class
+        $fileContent = preg_replace(
+            '/}\s*$/',
+            "$template\n}",
+            $fileContent
+        );
+
+        File::put($controllerPath, $fileContent);
     }
 
     /**
