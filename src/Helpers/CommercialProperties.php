@@ -73,7 +73,7 @@ class CommercialProperties
             $response = Http::withHeaders([
                 'Content-Type' => 'application/json',
                 'Content-Length' => strlen(json_encode($post_data)),
-            ])->post($node_url, json_encode($post_data));
+            ])->post($node_url, $post_data);
         }
 
         $response = $response->json();

@@ -464,9 +464,13 @@ class Sitehelper
         foreach ($locationGroups as $key => $value) {
             $finalFormatedSelectArray[$key]['option_key'] = $value[$key_system];
             if (isset($value[$key_system])) {
+
                 $finalFormatedSelectArray[$key]['option_value'] = (is_array($value[$lg_value]) ? (isset($value[$lg_value][$lang]) && !empty($value[$lg_value][$lang]) ? $value[$lg_value][$lang] : Translate::t($value[$lg_value]['en'])) : $value[$lg_value]);
-                $finalFormatedSelectArray[$key]['top_level_category'] = (is_array($value[$top_level_category]) ? (isset($value[$top_level_category][$lang]) && !empty($value[$top_level_category][$lang]) ? $value[$top_level_category][$lang] : Translate::t($value[$top_level_category]['en'])) : $value[$top_level_category]);
-                $finalFormatedSelectArray[$key]['sequence'] = (is_array($value[$sequence]) ? (isset($value[$sequence][$lang]) && !empty($value[$sequence][$lang]) ? $value[$sequence][$lang] : Translate::t($value[$sequence]['en'])) : $value[$sequence]);
+
+                $finalFormatedSelectArray[$key]['top_level_category'] = isset($value[$top_level_category]) && !empty($value[$top_level_category]) ? ((is_array($value[$top_level_category]) ? (isset($value[$top_level_category][$lang]) && !empty($value[$top_level_category][$lang]) ? $value[$top_level_category][$lang] : Translate::t($value[$top_level_category]['en'])) : $value[$top_level_category])) : [];
+
+                $finalFormatedSelectArray[$key]['sequence'] = isset($value[$sequence]) && !empty($value[$sequence]) ? ((is_array($value[$sequence]) ? (isset($value[$sequence][$lang]) && !empty($value[$sequence][$lang]) ? $value[$sequence][$lang] : Translate::t($value[$sequence]['en'])) : $value[$sequence])) : 0;
+
             } else {
                 $finalFormatedSelectArray[$key]['option_value'] = isset($value[$lang]) ? (isset($value[$lang]) && !empty($value[$lang]) ? $value[$lang] : Translate::t($value['en'])) : '';
             }
