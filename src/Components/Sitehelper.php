@@ -298,7 +298,9 @@ class Sitehelper
             $meta_desc = (isset($property['meta_desc']) && !empty($property['meta_desc'])) ? $property['meta_desc'] : ((isset($property['rental_meta_desc']) && !empty($property['rental_meta_desc'])) ? $property['rental_meta_desc'] : '');
             $object->title = $meta_title;
 
-            $propertyMeta = isset($meta_desc) && !empty($meta_desc) ? '<meta name="description" content="'. $meta_desc .'">' : '';
+            $propertyMeta = '<meta name="csrf-token" content="{{ csrf_token() }}">';
+
+            $propertyMeta .= isset($meta_desc) && !empty($meta_desc) ? '<meta name="description" content="'. $meta_desc .'">' : '';
 
             $propertyMeta .= isset($property['meta_keywords']) && !empty($property['meta_keywords']) ? '<meta name="keywords" content="'. $property['meta_keywords'] .'">' : '';
 
@@ -321,7 +323,9 @@ class Sitehelper
         } elseif ($development) {
             $object->title = isset($development['meta_title']) && !empty($development['meta_title']) ? $development['meta_title'] : Translate::t('Real Estate Agency');
 
-            $developmentMeta = isset($development['meta_desc']) && !empty($development['meta_desc']) ? '<meta name="description" content="'. $development['meta_desc'] .'">' : '';
+            $developmentMeta = '<meta name="csrf-token" content="{{ csrf_token() }}">';
+
+            $developmentMeta .= isset($development['meta_desc']) && !empty($development['meta_desc']) ? '<meta name="description" content="'. $development['meta_desc'] .'">' : '';
 
             $developmentMeta .= isset($development['keywords']) && !empty($development['keywords']) ? '<meta name="keywords" content="'. $development['keywords'] .'">' : '';
 
@@ -346,7 +350,9 @@ class Sitehelper
         } elseif ($post) {
             $object->title = isset($post['meta_title']) && !empty($post['meta_title']) ? $post['meta_title'] : Translate::t('Real Estate Agency');
 
-            $postMeta = isset($post['meta_desc']) && !empty($post['meta_desc']) ? '<meta name="description" content="'. $post['meta_desc'] .'">' : '';
+            $postMeta = '<meta name="csrf-token" content="{{ csrf_token() }}">';
+
+            $postMeta .= isset($post['meta_desc']) && !empty($post['meta_desc']) ? '<meta name="description" content="'. $post['meta_desc'] .'">' : '';
 
             $postMeta .= isset($post['meta_keywords']) && !empty($post['meta_keywords']) ? '<meta name="keywords" content="'. $post['meta_keywords'] .'">' : '';
 
@@ -371,7 +377,9 @@ class Sitehelper
         } else {
             $object->title = isset(Sitehelper::get_page_data($object)['meta_title']) && !empty(Sitehelper::get_page_data($object)['meta_title']) ? self::get_page_data($object)['meta_title'] : Translate::t('Real Estate Agency');
 
-            $meta = isset(Sitehelper::get_page_data($object)['meta_desc']) && !empty(Sitehelper::get_page_data($object)['meta_desc']) ? '<meta name="description" content="'. Sitehelper::get_page_data($object)['meta_desc'] .'">' : '';
+            $meta = '<meta name="csrf-token" content="{{ csrf_token() }}">';
+
+            $meta .= isset(Sitehelper::get_page_data($object)['meta_desc']) && !empty(Sitehelper::get_page_data($object)['meta_desc']) ? '<meta name="description" content="'. Sitehelper::get_page_data($object)['meta_desc'] .'">' : '';
 
             $meta .= isset(Sitehelper::get_page_data($object)['meta_keywords']) && !empty(Sitehelper::get_page_data($object)['meta_keywords']) ? '<meta name="keywords" content="'. Sitehelper::get_page_data($object)['meta_keywords'] .'">' : '';
 
