@@ -18,6 +18,24 @@ class LocaleMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
+
+        $excludedPaths = ['css', 'js', 'images', 'assets', 'fonts', '_debugbar'];
+        $excludedExtensions = ['css', 'js', 'png', 'jpg', 'jpeg', 'gif', 'svg', 'webp', 'woff', 'woff2', 'ttf', 'otf'];
+
+        $path = $request->path();
+
+        foreach ($excludedPaths as $excludedPath) {
+            if (str_starts_with($path, $excludedPath)) {
+                return $next($request);
+            }
+        }
+
+        foreach ($excludedExtensions as $extension) {
+            if (str_ends_with($path, '.' . $extension)) {
+                return $next($request);
+            }
+        }
+
         $locale = $request->segment(1);
 
         $availableLocales = Cms::siteLanguages();
