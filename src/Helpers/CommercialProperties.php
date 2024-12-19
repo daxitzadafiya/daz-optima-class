@@ -302,7 +302,7 @@ class CommercialProperties
             $query['location'] = ['$in' => $intArray];
         }
 
-        if (isset($get['lg_by_key']) && !empty($get['lg_by_key'])) {
+        if (isset($get['lg_by_key']) && !empty(array_filter($get['lg_by_key']))) {
             $intArray = array();
             foreach ($get['lg_by_key'] as $int_val) {
                 $intArray[] = (int) $int_val;
