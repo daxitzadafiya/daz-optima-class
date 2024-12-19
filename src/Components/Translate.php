@@ -9,7 +9,10 @@ class Translate
     public static function t($str)
     {  
         $str = strtolower($str);
-        return __('app.' . $str) === 'app.' . $str ? $str : __('app.' . $str);
+
+        $translate = __('app.' . $str) === 'app.' . $str ? $str : __('app.' . $str);
+
+        return nl2br($translate);
     }
 
     public static function createDefaultLocale(array $locales = ["en", "es"])
