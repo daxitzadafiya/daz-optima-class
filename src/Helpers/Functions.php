@@ -7,6 +7,7 @@ use Daxit\OptimaClass\Requests\ContactUsRequest;
 use Daxit\OptimaClass\Service\ParamsContainer;
 use Daxit\OptimaClass\Traits\ConfigTrait;
 use Daxit\ReCaptcha\Facades\ReCaptcha;
+use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\File;
 use Illuminate\View\ViewException;
@@ -108,7 +109,7 @@ class Functions
     {
         self::initialize();
         $model = new ContactUs();
-        $model->fill(request()->all());
+        $model->fill(self::mergeRequest($_GET));
         $model->verifyCode = true;
         $model->reCaptcha = request()->input('reCaptcha');
 
@@ -393,5 +394,11 @@ class Functions
         }
 
         return $defaultOptions;
+    }
+    public static function mergeRequest(array $mergeArray)
+    {
+        Request::merge($mergeArray);
+
+        return Request::all() ?? [];
     }
 }

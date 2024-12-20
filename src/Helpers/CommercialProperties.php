@@ -6,6 +6,7 @@ use DateTime;
 use DateTimeZone;
 use Daxit\OptimaClass\Components\Translate;
 use Daxit\OptimaClass\Traits\ConfigTrait;
+use Daxit\OptimaClass\Helpers\Functions;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Http;
@@ -27,7 +28,7 @@ class CommercialProperties
             ]
         ];
 
-        $get = Request::merge($_GET);
+        $get = Functions::mergeRequest( $_GET ?? []);
 
         if (Request::has('orderby') && is_array(Request::get('orderby')) && count(Request::get('orderby')) == 2) {
             $sort = [Request::get('orderby')[0] => Request::get('orderby')[1]];
@@ -116,7 +117,7 @@ class CommercialProperties
 
     public static function setQuery()
     {
-        $get = Request::merge($_GET);
+        $get = Functions::mergeRequest( $_GET ?? []);
 
         $query = [];
         if (isset($get['auction_price_from']) && !empty($get['auction_price_from']) || isset($get['auction_price_to']) && !empty($get['auction_price_to'])) {
@@ -409,7 +410,7 @@ class CommercialProperties
         self::initialize();
         $settings = Cms::settings();
         $lang = strtoupper(App::getLocale());
-        $get = Request::merge($_GET);
+        $get = Functions::mergeRequest( $_GET ?? []);
         $contentLang = strtolower(App::getLocale());
         $cmsLang = self::$replace_iso_code;
 
@@ -1216,7 +1217,7 @@ class CommercialProperties
             ]
         ];
 
-        Request::merge($_GET);
+        Functions::mergeRequest( $_GET ?? []);
 
         if (Request::has('orderby') && is_array(Request::get('orderby')) && count(Request::get('orderby')) == 2) {
             $sort = [Request::get('orderby')[0] => Request::get('orderby')[1]];

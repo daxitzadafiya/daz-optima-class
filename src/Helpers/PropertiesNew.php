@@ -5,6 +5,7 @@ namespace Daxit\OptimaClass\Helpers;
 use Carbon\Carbon;
 use Daxit\OptimaClass\Components\Translate;
 use Daxit\OptimaClass\Traits\ConfigTrait;
+use Daxit\OptimaClass\Helpers\Functions;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Http;
@@ -87,7 +88,7 @@ class PropertiesNew
         $settings = Cms::settings();
 
         try {
-            $get = request()->all();
+            $get = Functions::mergeRequest($_GET ?? []);
         } catch (\Throwable $th) {
             $get = [];
         }
@@ -2535,7 +2536,7 @@ class PropertiesNew
     {
         self::initialize();
         $cms_settings = Cms::settings();
-        $get = request()->all();
+        $get = Functions::mergeRequest($_GET ?? []);
         $query = '';
         if (isset(self::$status) && !empty(self::$status)) {
             foreach (self::$status as $status) {
