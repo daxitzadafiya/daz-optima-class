@@ -674,9 +674,9 @@ class Developments
             $query .= '&bathrooms[]=' . $get["bathrooms"] . '&bathrooms[]=50';
         }
 
-        if (isset($get["orderby"]) && $get["orderby"] != "") {
+        if (isset($get["orderby"]) && !empty($get["orderby"]) && is_array($get["orderby"])) {
             foreach ($get['orderby'] as $order) {
-                $query .= '&orderby[]=phase_low_price_from&orderby[]=' . $order;
+                $query .= '&orderby[]=phase_low_price_from&orderby[]=ASC';
             }
         }
 
