@@ -27,13 +27,13 @@ class CommercialProperties
             ]
         ];
 
+        $get = Request::merge($_GET);
+
         if (Request::has('orderby') && is_array(Request::get('orderby')) && count(Request::get('orderby')) == 2) {
             $sort = [Request::get('orderby')[0] => Request::get('orderby')[1]];
         }
 
         $options['sort'] = $sort;
-
-        $get = Request::all();
 
         if (isset($get['favorite_ids']) && !empty($get['favorite_ids'])) {
             $query_array["archived"] = [
@@ -116,7 +116,7 @@ class CommercialProperties
 
     public static function setQuery()
     {
-        $get = Request::all();
+        $get = Request::merge($_GET);
 
         $query = [];
         if (isset($get['auction_price_from']) && !empty($get['auction_price_from']) || isset($get['auction_price_to']) && !empty($get['auction_price_to'])) {
@@ -409,7 +409,7 @@ class CommercialProperties
         self::initialize();
         $settings = Cms::settings();
         $lang = strtoupper(App::getLocale());
-        $get = Request::all();
+        $get = Request::merge($_GET);
         $contentLang = strtolower(App::getLocale());
         $cmsLang = self::$replace_iso_code;
 
@@ -1215,6 +1215,8 @@ class CommercialProperties
                 'match' => ['document' => ['$ne' => true], 'publish_status' => ['$ne' => false]],
             ]
         ];
+
+        Request::merge($_GET);
 
         if (Request::has('orderby') && is_array(Request::get('orderby')) && count(Request::get('orderby')) == 2) {
             $sort = [Request::get('orderby')[0] => Request::get('orderby')[1]];

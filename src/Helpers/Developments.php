@@ -167,7 +167,7 @@ class Developments
         $langugesSystem = Cms::SystemLanguages();
         $lang = strtoupper(App::getLocale());
         $agency = self::$agency;
-        $get = Request::all();
+        $get = Request::merge($_GET);
         $contentLang = $lang;
 
         foreach ($langugesSystem as $sysLang) {
@@ -632,7 +632,7 @@ class Developments
 
     public static function setQuery()
     {
-        $get = Request::all();
+        $get = Request::merge($_GET);
         $query = '';
 
         if (isset($get["province"]) && $get["province"] != "") {

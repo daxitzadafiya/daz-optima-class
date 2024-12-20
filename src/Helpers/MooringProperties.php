@@ -364,7 +364,7 @@ class MooringProperties
 
     public static function setQuery()
     {
-        $get = Request::all();
+        $get = Request::merge($_GET);
         $query = [];
 
         if (isset($get['price_from']) && $get['price_from']) {
