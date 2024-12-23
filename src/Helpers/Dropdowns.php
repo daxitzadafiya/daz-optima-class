@@ -482,7 +482,7 @@ class Dropdowns
                 'Content-Length' => strlen(json_encode($post_data))
             ])->post(self::$node_url . 'commercial_types?user_apikey=' . self::$api_key, $post_data);
 
-            file_put_contents($file, $response->json());
+            file_put_contents($file, $response);
         }else{
             $response = file_get_contents($file);
         }

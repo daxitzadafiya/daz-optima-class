@@ -465,7 +465,7 @@ class Sitehelper
             $finalFormatedSelectArray[$key]['option_key'] = $value[$key_system];
             if (isset($value[$key_system])) {
 
-                $finalFormatedSelectArray[$key]['option_value'] = (is_array($value[$lg_value]) ? (isset($value[$lg_value][$lang]) && !empty($value[$lg_value][$lang]) ? $value[$lg_value][$lang] : Translate::t($value[$lg_value]['en'])) : $value[$lg_value]);
+                $finalFormatedSelectArray[$key]['option_value'] = (is_array($value[$lg_value]) ? (isset($value[$lg_value][$lang]) && !empty($value[$lg_value][$lang]) ? $value[$lg_value][$lang] : (isset($value[$lg_value]['en']) && !empty($value[$lg_value]['en']) ? Translate::t($value[$lg_value]['en']) : $value[$lg_value])) : $value[$lg_value]);
 
                 $finalFormatedSelectArray[$key]['top_level_category'] = isset($value[$top_level_category]) && !empty($value[$top_level_category]) ? ((is_array($value[$top_level_category]) ? (isset($value[$top_level_category][$lang]) && !empty($value[$top_level_category][$lang]) ? $value[$top_level_category][$lang] : Translate::t($value[$top_level_category]['en'])) : $value[$top_level_category])) : [];
 
@@ -671,15 +671,15 @@ class Sitehelper
         exit;
     }
 
-    public static function get_location_groups_with_properties($types = "", $selected_groups = [], $country = [], $provinces = [], $city = [])
+    public static function get_location_groups_with_properties($types = "", $selected_groups = [], $country = [], $provinces = [], $city = [], $options = [])
     {
         self::initialize();
         $lang = App::getLocale() == 'es' ? 'es_AR' : App::getLocale();
         $file = Functions::directory() . 'location_groups_with_properties_' . implode('-', $selected_groups) . "_" . implode('-', $country) . "_" . implode('-', $provinces) . "_" . implode('-', $city) . "_" . $lang . '.json';
 
         $query = [
-            "sort" => $lang,
-            "order" => "DESC", // DESC , ASC
+            "sort" => isset($options["sort"]) && !empty($options["sort"]) ? $options["sort"] : $lang,
+            "order" => isset($options["order"]) && !empty($options["order"]) ? $options["order"] : "ASC", // DESC , ASC
             "prop_status" => isset(self::$status) && !empty(self::$status) ? self::$status : ['Available', 'Under Offer']
         ];
 
@@ -741,15 +741,15 @@ class Sitehelper
         return $finalFormatedSelectArray;
     }
 
-    public static function locations_key_by_value($selected_groups = [], $country = [], $provinces = [], $city = [])
+    public static function locations_key_by_value($selected_groups = [], $country = [], $provinces = [], $city = [], $options = [])
     {
         self::initialize();
         $lang = App::getLocale() == 'es' ? 'es_AR' : App::getLocale();
         $file = Functions::directory() . 'object_locations_' . implode('-', $selected_groups) . "_" . implode('-', $country) . "_" . implode('-', $provinces) . "_" . implode('-', $city) . "_" . $lang . '.json';
 
         $query = [
-            "sort" => $lang,
-            "order" => "DESC", // DESC , ASC
+            "sort" => isset($options["sort"]) && !empty($options["sort"]) ? $options["sort"] : $lang,
+            "order" => isset($options["order"]) && !empty($options["order"]) ? $options["order"] : "ASC", // DESC , ASC            
             "frontend_api" => 1,
             "prop_status" => isset(self::$status) && !empty(self::$status) ? self::$status : ['Available', 'Under Offer']
         ];
