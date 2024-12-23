@@ -4,8 +4,11 @@ namespace Daxit\OptimaClass\Requests;
 
 use Daxit\OptimaClass\Components\Translate;
 use Daxit\ReCaptcha\Facades\ReCaptcha;
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redirect;
 
 class ContactUsRequest extends FormRequest
 {
@@ -17,6 +20,15 @@ class ContactUsRequest extends FormRequest
         $scenarios[self::SCENARIO_V3] = ['reCaptcha3'];
 
         return $scenarios;
+    }
+
+    protected function failedValidation(Validator $validator)
+    {
+        $formType = request()->has('type') ? request()->input('type') : 'default';
+
+        throw new HttpResponseException(
+            Redirect::back()->withErrors($validator->errors(), $formType)->withInput()
+        );
     }
 
     public function authorize()
