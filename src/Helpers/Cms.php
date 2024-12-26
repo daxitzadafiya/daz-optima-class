@@ -678,6 +678,22 @@ class Cms
                             }
                         }
                     }
+                }else{
+                    $post_type_route = config('params.post_type_route', []);
+                    if(isset($post_type_route) && !empty($post_type_route)){
+                        if (isset($row['type']) && is_array($post_type_route) && in_array($row['type'], array_keys($post_type_route)) && isset($row['slug']) && is_array($row['slug'])) {
+                            foreach ($row['slug'] as $key => $val) {
+                                if ($val) {
+                                    $rules[] = [
+                                        'pattern'  => $val,
+                                        'lang' => strtolower($key),
+                                        'route'    => $post_type_route[$row['type']],
+                                        'defaults' => ['slug' => $val],
+                                    ];
+                                }
+                            }
+                        }
+                    }
                 }
             }
             $file_data = json_encode($rules);
