@@ -408,6 +408,7 @@ class CommercialProperties
     public static function formateProperty($property, $set_options = [])
     {
         self::initialize();
+        $agency_data = self::getAgency();
         $settings = Cms::settings();
         $lang = strtoupper(App::getLocale());
         $get = Functions::mergeRequest( $_GET ?? []);
@@ -609,7 +610,7 @@ class CommercialProperties
         }
 
         if (isset($property['created_at']) && !empty($property['created_at'])) {
-            $f_property['created_at'] = strtotime($property['created_at']);
+            $f_property['created_at'] = is_numeric($property['created_at']) ? $property['created_at'] : strtotime($property['created_at']);
         }
 
         if (isset($property['featured'])) {
@@ -790,7 +791,11 @@ class CommercialProperties
             $attachments_alt = [];
             foreach ($property['property_attachments'] as $pic) {
                 if (isset($pic["publish_status"]) && !empty($pic["publish_status"])) {
-                    if (isset($pic['document']) && $pic['document'] != 1 && isset($set_options['image_size']) && !empty($set_options['image_size'])) {
+                    if(isset($pic['document']) && $pic['document'] != 1 && isset($agency_data['watermark_image']['show_onweb']) && $agency_data['watermark_image']['show_onweb'] == 1) {
+                        $image_size = isset($set_options['image_size']) && !empty($set_options['image_size']) ? $set_options['image_size'] : 1200;
+                        $wm_size = isset($set_options['wm_size']) && !empty($set_options['wm_size']) ? $set_options['wm_size'] : 100;
+                        $attachments[] = self::$com_img . '/' . $agency . '/' . $wm_size . '/' . $pic['model_id'] . '/' . $image_size . '/' . $pic['file_md5_name'];
+                    }elseif (isset($pic['document']) && $pic['document'] != 1 && isset($set_options['image_size']) && !empty($set_options['image_size'])) {
                         $attachments[] = self::$property_img_resize_link . '/' . $pic['model_id'] . '/' . $set_options['image_size'] . '/' .  urldecode($pic['file_md5_name']);
                     } elseif (isset($pic['document']) && $pic['document'] != 1) {
                         $attachments[] = self::$com_img . '/' . $pic['model_id'] . '/' .  urldecode($pic['file_md5_name']);
@@ -807,7 +812,10 @@ class CommercialProperties
             $attachments_alt = [];
             foreach ($property['attachments'] as $pic) {
                 if (isset($pic["publish_status"]) && !empty($pic["publish_status"])) {
-                    if (isset($pic['document']) && $pic['document'] != 1 && isset($set_options['image_size']) && !empty($set_options['image_size'])) {
+                    if(isset($pic['document']) && $pic['document'] != 1 && isset($agency_data['watermark_image']['show_onweb']) && $agency_data['watermark_image']['show_onweb'] == 1) {
+                        $image_size = isset($set_options['image_size']) && !empty($set_options['image_size']) ? $set_options['image_size'] : 1200;
+                        $attachments[] = self::$img_url . '/' . $pic['model_id'] . '/' . $image_size . '/' . $pic['file_md5_name'];
+                    }elseif (isset($pic['document']) && $pic['document'] != 1 && isset($set_options['image_size']) && !empty($set_options['image_size'])) {
                         // $attachments[] = self::$mls_img_url'] . (isset($property['agency']) ? $property['agency'] : '') . '/' . $pic['model_id'] . '/' . $set_options['image_size'] . '/' .  urldecode($pic['file_md5_name']);
                         $attachments[] = self::$img_url_without_wm . '/' . $pic['model_id'] . '/' . $set_options['image_size'] . '/' .  urldecode($pic['file_md5_name']);
                     } elseif (isset($pic['document']) && $pic['document'] != 1) {
@@ -1627,5 +1635,20 @@ class CommercialProperties
         }
 
         return $response;
+    }
+
+    public static function getAgency()
+    {
+        $file = Functions::directory() . 'agency' . '.json';
+        $url = self::$apiUrl . 'properties/agency&user_apikey=' . self::$api_key;
+        if (!file_exists($file) || (file_exists($file) && time() - filemtime($file) > 2 * 3600)) {
+            $file_data = Functions::getCRMData($url);
+            if ($file_data) {
+                file_put_contents($file, $file_data);
+            }
+        } else {
+            $file_data = file_get_contents($file);
+        }
+        return json_decode($file_data, true);
     }
 }
