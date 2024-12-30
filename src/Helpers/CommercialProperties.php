@@ -267,7 +267,7 @@ class CommercialProperties
             $query['built'] = ['$gte' => (int)$get['max_built']];
         }
 
-        if (isset($get['categories']) && !empty($get['categories'])) {
+        if (isset($get['categories']) && !empty(array_filter($get['categories']))) {
             $intArray = array();
             foreach ($get['categories'] as $int_val) {
                 $intArray[] = (int) $int_val;
@@ -275,7 +275,7 @@ class CommercialProperties
             $query['shared_categories'] = ['$in' => $intArray];
         }
 
-        if (isset($get['custom_categories']) && !empty($get['custom_categories'])) {
+        if (isset($get['custom_categories']) && !empty(array_filter($get['custom_categories']))) {
             $intArray = array();
             foreach ($get['custom_categories'] as $int_val) {
                 $intArray[] = (int) $int_val;
@@ -287,7 +287,7 @@ class CommercialProperties
             $query['country'] = (int) $get['country'];
         }
 
-        if (isset($get['city']) && $get['city']) {
+        if (isset($get['city']) && !empty(array_filter($get['city']))) {
             $intArray = array();
             foreach ($get['city'] as $int_val) {
                 $intArray[] = (int) $int_val;
@@ -295,7 +295,7 @@ class CommercialProperties
             $query['city'] = ['$in' => $intArray];
         }
 
-        if (isset($get['location']) && !empty($get['location'])) {
+        if (isset($get['location']) && !empty(array_filter($get['location']))) {
             $intArray = array();
             foreach ($get['location'] as $int_val) {
                 $intArray[] = (int) $int_val;
@@ -311,7 +311,7 @@ class CommercialProperties
             $query['lg_by_key'] = ['$in' => $intArray];
         }
 
-        if (isset($get['province']) && !empty($get['province'])) {
+        if (isset($get['province']) && !empty(array_filter($get['province']))) {
             $intArray = array();
             foreach ($get['province'] as $int_val) {
                 $intArray[] = (int) $int_val;
@@ -319,7 +319,7 @@ class CommercialProperties
             $query['province'] = ['$in' => $intArray];
         }
 
-        if (isset($get['cp_features']) && !empty($get['cp_features'])) {
+        if (isset($get['cp_features']) && !empty(array_filter($get['cp_features']))) {
             foreach ($_GET['cp_features'] as $features) {
                 if (isset($features) && count($features) > 1) {
                     $group_feature['$or'] = $features;
@@ -395,7 +395,7 @@ class CommercialProperties
         if (isset($get['remove_count']) && $get['remove_count']) {
             $query['remove_count'] = $get['remove_count'];
         }
-        if (isset($get["listing_agent"]) && $get["listing_agent"]) {
+        if (isset($get["listing_agent"]) && !empty(array_filter($get["listing_agent"]))) {
             $intArray = array();
             foreach ($get['listing_agent'] as $int_val) {
                 $intArray[] = $int_val;
@@ -494,6 +494,7 @@ class CommercialProperties
         if (isset($property['reference'])) {
             $f_property['id'] = $property['reference'];
         }
+
         if (isset($property['title'][$lang]) && $property['title'][$lang] != '') {
             $f_property['sale_title'] = $property['title'][$lang];
         } elseif (isset($property['shared_data']['title'][$lang]) && $property['shared_data']['title'][$lang] != '') {
@@ -501,11 +502,13 @@ class CommercialProperties
         } else {
             $f_property['sale_title'] = (isset($property['property_type_one']['value'][$contentLang]) ? Translate::t($property['property_type_one']['value'][$contentLang]) : '') . ' ' . (isset($property['property_location']['value'][$contentLang]) ? Translate::t('in') . ' ' . Translate::t($property['property_location']['value'][$contentLang]) : '');
         }
+
         if (isset($property['description'][$lang]) && $property['description'][$lang] != '') {
             $f_property['sale_description'] = $property['description'][$lang];
         } elseif (isset($property['shared_data']['description'][$lang]) && $property['shared_data']['description'][$lang] != ''  && (isset($property['agency']) && $property['agency'] != self::$agency) && (isset($property['mls']) && $property['mls'] == 1)) {
             $f_property['sale_description'] = $property['shared_data']['description'][$lang];
         }
+
         if (self::$agency == '6110fa9b8334050aac21e779') { // For ImmoMarket
             if (isset($property['rental_title'][$lang]) && $property['rental_title'][$lang] != '') {
                 $f_property['rent_title'] = $property['rental_title'][$lang];
@@ -904,6 +907,10 @@ class CommercialProperties
 
         if (isset($property['kilowatt']) && $property['kilowatt'] != '') {
             $f_property['kilowatt'] = $property['kilowatt'];
+        }
+
+        if (isset($property['co2']) && $property['co2'] != '') {
+            $f_property['co2'] = $property['co2'];
         }
 
         if (isset($property['miscellaneous_tax']) && $property['miscellaneous_tax'] != '') {
