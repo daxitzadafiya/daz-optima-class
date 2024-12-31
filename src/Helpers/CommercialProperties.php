@@ -414,6 +414,7 @@ class CommercialProperties
         $get = Functions::mergeRequest( $_GET ?? []);
         $contentLang = strtolower(App::getLocale());
         $cmsLang = self::$replace_iso_code;
+        $image_label = array (0 => "unknown",1 => "bathroom",2 => "kitchen",3 => "details",4 => "bedroom",5 => "facade",6 => "garage",7 => "garden",8 => "plan",9 => "living",10 => "terrace",11 => "views",12 => "pool",13 => "waitingroom",14 => "hall",15 => "entrance/exit",16 => "room",17 => "communalareas",18 => "reception",19 => "storage",20 => "archive",21 => "warehouse",22 => "mates",23 => "mooring",24 => "land",25 => "parking");
 
         if (strtolower(App::getLocale()) == 'es') {
             $contentLang = 'es_AR';
@@ -792,6 +793,7 @@ class CommercialProperties
         if (isset($property['property_attachments']) && count($property['property_attachments']) > 0 && !isset($property['from_residential'])) {
             $attachments = [];
             $attachments_alt = [];
+            $attachments_label = [];
             foreach ($property['property_attachments'] as $pic) {
                 if (isset($pic["publish_status"]) && !empty($pic["publish_status"])) {
                     if(isset($pic['document']) && $pic['document'] != 1 && isset($agency_data['watermark_image']['show_onweb']) && $agency_data['watermark_image']['show_onweb'] == 1) {
@@ -803,16 +805,23 @@ class CommercialProperties
                     } elseif (isset($pic['document']) && $pic['document'] != 1) {
                         $attachments[] = self::$com_img . '/' . $pic['model_id'] . '/' .  urldecode($pic['file_md5_name']);
                     }
-                    if (isset($pic['alt_description'][$lang]) && !empty($pic['alt_description'][$lang])) {
+                    if (isset($pic['document']) && $pic['document'] != 1 && isset($pic['alt_description'][$lang]) && !empty($pic['alt_description'][$lang])) {
                         $attachments_alt[] = $pic['alt_description'][$lang];
                     }
+
+                    if (isset($pic['document']) && $pic['document'] != 1) {
+                        $attachments_label[] = isset($pic['image_label']) && !empty($pic['image_label']) && isset($image_label[$pic['image_label']]) && !empty($image_label[$pic['image_label']]) ? $image_label[$pic['image_label']] : '';
+                    }
+
                 }
             }
             $f_property['attachments'] = $attachments;
             $f_property['attachments_alt'] = $attachments_alt;
+            $f_property['attachments_label'] = $attachments_label;
         } elseif (isset($property['attachments']) && count($property['attachments']) > 0 && isset($property['from_residential']) && $property['from_residential'] == 1) {
             $attachments = [];
             $attachments_alt = [];
+            $attachments_label = [];
             foreach ($property['attachments'] as $pic) {
                 if (isset($pic["publish_status"]) && !empty($pic["publish_status"])) {
                     if(isset($pic['document']) && $pic['document'] != 1 && isset($agency_data['watermark_image']['show_onweb']) && $agency_data['watermark_image']['show_onweb'] == 1) {
@@ -824,13 +833,18 @@ class CommercialProperties
                     } elseif (isset($pic['document']) && $pic['document'] != 1) {
                         $attachments[] = self::$img_url_without_wm . '/' . $pic['model_id'] . '/1200/' .  urldecode($pic['file_md5_name']);
                     }
-                    if (isset($pic['alt_description'][$lang]) && !empty($pic['alt_description'][$lang])) {
+                    if (isset($pic['document']) && $pic['document'] != 1 && isset($pic['alt_description'][$lang]) && !empty($pic['alt_description'][$lang])) {
                         $attachments_alt[] = $pic['alt_description'][$lang];
+                    }
+
+                    if (isset($pic['document']) && $pic['document'] != 1) {
+                        $attachments_label[] = isset($pic['image_label']) && !empty($pic['image_label']) && isset($image_label[$pic['image_label']]) && !empty($image_label[$pic['image_label']]) ? $image_label[$pic['image_label']] : '';
                     }
                 }
             }
             $f_property['attachments'] = $attachments;
             $f_property['attachments_alt'] = $attachments_alt;
+            $f_property['attachments_label'] = $attachments_label;
         }
 
         if (isset($property['property_attachments']) && count($property['property_attachments']) > 0 && !isset($property['from_residential'])) {
