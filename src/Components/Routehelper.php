@@ -132,8 +132,10 @@ class Routehelper
     public static function writeRoutesToFile(string $routeDefinitions): void
     {
         $filePath = base_path('routes/site.php');
-        
-        file_put_contents($filePath, "");
+
+        if(!File::exists($filePath)){
+            file_put_contents($filePath, "");
+        }
 
         if (File::exists($filePath)) {
             file_put_contents($filePath, "\n" . $routeDefinitions);
