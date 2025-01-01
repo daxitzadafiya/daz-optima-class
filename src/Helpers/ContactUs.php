@@ -94,7 +94,8 @@ class ContactUs extends Model
             $from_email = self::$from_email;
         }
 
-        if ($this->validate($this->toArray()) && isset($ae_array)) {
+        // if ($this->validate($this->toArray()) && isset($ae_array)) {
+        if (isset($ae_array)) {
             if (isset($this->attach) && $this->attach == 1) {
                 $webroot = public_path();
 

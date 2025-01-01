@@ -31,6 +31,20 @@ class ContactUsRequest extends FormRequest
         );
     }
 
+     /**
+     * Clean the input data before validation.
+     */
+    public function prepareForValidation()
+    {
+        $this->merge([
+            'phone' => str_replace(["(", ")", "-", "+", " "], '', $this->phone),  
+            'mobile_phone' => str_replace(["(", ")", "-", "+", " "], '', $this->mobile_phone),  
+            'home_phone' => str_replace(["(", ")", "-", "+", " "], '', $this->home_phone),  
+            'sender_phone' => str_replace(["(", ")", "-", "+", " "], '', $this->sender_phone),  
+            'work_phone' => str_replace(["(", ")", "-", "+", " "], '', $this->work_phone),  
+        ]);
+    }
+
     public function authorize()
     {
         return true;
@@ -41,7 +55,7 @@ class ContactUsRequest extends FormRequest
         return [
             'name' => '',
             'mobile_phone' => '',
-            'phone' => '',
+            'phone' => 'required|regex:/^\d{8,}$/',
             'home_phone' => '',
             'office' => '',
             'infants' => '',
@@ -60,6 +74,7 @@ class ContactUsRequest extends FormRequest
             'attach' => '',
             'postal_code' => '',
             'reference' => '',
+            'other_reference' => '',
             'transaction' => '',
             'property_type' => '',
             'bedrooms' => '',
@@ -73,7 +88,7 @@ class ContactUsRequest extends FormRequest
             'close_to_sea' => '',
             'sea_view' => '',
             'exclusive_property' => '',
-            'accept_cookie' => '',
+            // 'accept_cookie' => '',
             'accept_cookie_text' => '',
             'get_updates' => '',
             'booking_period' => '',
@@ -100,10 +115,10 @@ class ContactUsRequest extends FormRequest
             'contact_check_1' => '',
             'contact_check_2' => '',
             'contact_check_3' => '',
-            'resume' => '',
-            'imageFiles' => '',
+            // 'resume' => '',
+            // 'imageFiles' => '',
             'application' => '',
-            'cv_file' => '',
+            // 'cv_file' => '',
             'gdpr_status' => '',
             'buyer' => '',
             'listing_agency_email' => '',
@@ -162,14 +177,14 @@ class ContactUsRequest extends FormRequest
             'street_number' => '',
             'city_town' => '',
             'first_name' => 'required',
-            'last_name' => 'required',
+            // 'last_name' => 'required',
             'email' => 'required|email',
             'message' => 'required',
             'accept_cookie' => $this->isAcceptCookie() ? 'required' : 'nullable',
             'resume' => 'nullable|file|mimes:jpg,png,pdf,txt',
             'imageFiles' => 'nullable|file|mimes:jpg,png,jpeg',
             'cv_file' => 'nullable|file',
-            'phone' => 'required|regex:/^\d{8,}$/',
+            // 'phone' => 'required|regex:/^\d{8,}$/',
             'reCaptcha' => $this->isReCaptchaEnabled() ? 'required' : 'nullable',
             'verifyCode' => [$this->verifyCode !== null ? 'required' : 'nullable'],
             'reCaptcha3' => $this->isReCaptchaV3Enabled() ? 'required' : 'nullable',
