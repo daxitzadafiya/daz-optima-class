@@ -1284,11 +1284,15 @@ class CommercialProperties
             $post_data["query"] =  $query_array;
         }
 
+        if(isset($post_data["query"]["remove_count"]) && !empty($post_data["query"]["remove_count"])){
+            unset($post_data["query"]["remove_count"]);
+        }
+
         $post_data["query"] = isset($map_query['ids']) && !empty($map_query['ids']) ? array_merge($post_data["query"], ["id"  => $map_query['ids']]) : $post_data["query"];
 
         $response = Http::withHeaders([
             'Content-Type' => 'application/json',
-        ])->post($node_url, json_encode($post_data))->json();
+        ])->post($node_url, $post_data)->json();
 
         if (!File::exists($webroot)) {
             File::makeDirectory($webroot, 0755, true); // Creates the directory with proper permissions
@@ -1331,7 +1335,7 @@ class CommercialProperties
         $node_url = self::$node_url . 'commercial_properties/get-properties-with-transaction-types/' . $transaction_type . '?user=' . self::$user;
         $response = Http::withHeaders([
             'Content-Type' => 'application/json',
-        ])->post($node_url, json_encode($post_data))->json();
+        ])->post($node_url, $post_data)->json();
 
         $properties = [];
         if (isset($response) && isset($response['docs']))
@@ -1389,7 +1393,7 @@ class CommercialProperties
 
         return Http::withHeaders([
             'Content-Type' => 'application/json',
-        ])->post($node_url, json_encode($post_data))->json();
+        ])->post($node_url, $post_data)->json();
     }
 
     public static function findListingAgency($id)
@@ -1407,7 +1411,7 @@ class CommercialProperties
 
         return Http::withHeaders([
             'Content-Type' => 'application/json',
-        ])->post($node_url, json_encode($post_data))->json();
+        ])->post($node_url, $post_data)->json();
     }
 
     public static function findAnAgency($id)
@@ -1426,7 +1430,7 @@ class CommercialProperties
 
         return Http::withHeaders([
             'Content-Type' => 'application/json',
-        ])->post($node_url, json_encode($post_data))->json();
+        ])->post($node_url, $post_data)->json();
     }
 
     public static function createProperty($data)
