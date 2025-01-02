@@ -36,13 +36,31 @@ class ContactUsRequest extends FormRequest
      */
     public function prepareForValidation()
     {
-        $this->merge([
-            'phone' => str_replace(["(", ")", "-", "+", " "], '', $this->phone),  
-            'mobile_phone' => str_replace(["(", ")", "-", "+", " "], '', $this->mobile_phone),  
-            'home_phone' => str_replace(["(", ")", "-", "+", " "], '', $this->home_phone),  
-            'sender_phone' => str_replace(["(", ")", "-", "+", " "], '', $this->sender_phone),  
-            'work_phone' => str_replace(["(", ")", "-", "+", " "], '', $this->work_phone),  
-        ]);
+        if(isset($this->phone) && !empty($this->phone)){
+            $this->merge([
+                'phone' => str_replace(["(", ")", "-", "+", " "], '', $this->phone),
+            ]);
+        }
+        if(isset($this->mobile_phone) && !empty($this->mobile_phone)){
+            $this->merge([
+                'mobile_phone' => str_replace(["(", ")", "-", "+", " "], '', $this->mobile_phone),
+            ]);
+        }
+        if(isset($this->home_phone) && !empty($this->home_phone)){
+            $this->merge([
+                'home_phone' => str_replace(["(", ")", "-", "+", " "], '', $this->home_phone),
+            ]);
+        }
+        if(isset($this->sender_phone) && !empty($this->sender_phone)){
+            $this->merge([
+                'sender_phone' => str_replace(["(", ")", "-", "+", " "], '', $this->sender_phone),
+            ]);
+        }
+        if(isset($this->work_phone) && !empty($this->work_phone)){
+            $this->merge([
+                'work_phone' => str_replace(["(", ")", "-", "+", " "], '', $this->work_phone),
+            ]);
+        }
     }
 
     public function authorize()
