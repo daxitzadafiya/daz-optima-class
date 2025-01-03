@@ -68,9 +68,51 @@ class Urlhelper
      * 
      * @return url
      */
-    public static function getPropertyUrl($property)
+    public static function getPropertyUrl($property, $lang = "en")
     {
-        return URL::to('/' . self::propertyDetailsSlug() . '/' . self::getPropertyTitle($property));
+        return URL::to($lang . '/' . self::propertyDetailsSlug() . '/' . self::getPropertyTitle($property,App::getlocale()));
+    }
+
+    /**
+     * Urlhelper::getCommercialPropertyUrl($property)
+     * 
+     * @param mixed $property
+     * 
+     * @return url
+     */
+    public static function getCommercialPropertyUrl($property, $language)
+    {
+        $sale_slug = Urlhelper::slug('Sale Details');
+        $holiday_slug = Cms::getSlugByTagName('Rent Details');
+        $rent_slug = Cms::getSlugByTagName('Holiday Details');
+        $development_slug = Cms::getSlugByTagName('New Development Details');
+        $auction_slug = Urlhelper::slug('auction_tag');
+
+        $params = App::bound('params') ? App::make('params') : [];        
+        $slug = !empty($params->get('slug')) ? $params->get('slug') : "";
+        
+        $urlProperty = '';
+        if (in_array($slug, array($rent_slug, $holiday_slug))) {
+            if (isset($property['urls']['rent_url']) && !empty($property['urls']['rent_url'])) {
+                $urlProperty = $property["urls"]["rent_url"][$language];
+                if($slug == $holiday_slug){
+                    $urlProperty = str_replace($rent_slug, $holiday_slug, $urlProperty);
+                }
+            }
+        } else if ($slug == $auction_slug) {
+            if (isset($property['urls']) && !empty($property['urls'])) {
+                $urlProperty = isset($property['urls']['sale_url'][$language]) ? $property['urls']['sale_url'][$language] : '';
+                $urlProperty = str_replace($sale_slug, $auction_slug, $urlProperty);
+            }
+        } else {            
+            if (isset($property['urls']['sale_url']) && !empty($property['urls']['sale_url'])) {
+                $urlProperty = $property['urls']['sale_url'][$language];
+                if($slug == $development_slug){
+                    $urlProperty = str_replace($sale_slug, $development_slug, $urlProperty);
+                }
+            }
+        }
+        return $urlProperty;
     }
 
     /**
@@ -97,9 +139,9 @@ class Urlhelper
      * 
      * @return url
      */
-    public static function getDevelopmentUrl($development)
+    public static function getDevelopmentUrl($development, $lang = "en")
     {
-        return URL::to('/' . self::developmentDetailsSlug() . '/' . self::getDevelopmentTitle($development));
+        return URL::to($lang . '/' . self::developmentDetailsSlug() . '/' . self::getDevelopmentTitle($development));
     }
 
     /**
@@ -127,9 +169,9 @@ class Urlhelper
      * 
      * @return url
      */
-    public static function getBlogUrl($post)
+    public static function getBlogUrl($post, $lang = "en")
     {
-        return URL::to('/' . self::blogDetailsSlug() . '/' . self::getPostTitle($post));
+        return URL::to($lang . '/' . self::blogDetailsSlug() . '/' . self::getPostTitle($post));
     }
 
     /**
