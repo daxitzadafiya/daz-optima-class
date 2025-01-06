@@ -94,7 +94,7 @@ class Urlhelper
         $urlProperty = '';
         if (in_array($slug, array($rent_slug, $holiday_slug))) {
             if (isset($property['urls']['rent_url']) && !empty($property['urls']['rent_url'])) {
-                $urlProperty = $property["urls"]["rent_url"][$language];
+                $urlProperty = isset($property["urls"]["rent_url"][$language]) ? $property["urls"]["rent_url"][$language] : '';
                 if($slug == $holiday_slug){
                     $urlProperty = str_replace($rent_slug, $holiday_slug, $urlProperty);
                 }
@@ -106,7 +106,7 @@ class Urlhelper
             }
         } else {            
             if (isset($property['urls']['sale_url']) && !empty($property['urls']['sale_url'])) {
-                $urlProperty = $property['urls']['sale_url'][$language];
+                $urlProperty = isset($property['urls']['sale_url'][$language]) ? $property['urls']['sale_url'][$language] : '';
                 if($slug == $development_slug){
                     $urlProperty = str_replace($sale_slug, $development_slug, $urlProperty);
                 }
