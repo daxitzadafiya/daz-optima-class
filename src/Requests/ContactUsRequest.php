@@ -9,6 +9,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Response;
 
 class ContactUsRequest extends FormRequest
 {
@@ -26,9 +27,15 @@ class ContactUsRequest extends FormRequest
     {
         $formType = request()->has('type') ? request()->input('type') : 'default';
 
-        throw new HttpResponseException(
-            Redirect::back()->withErrors($validator->errors(), $formType)->withInput()
-        );
+        if (request()->ajax()) {
+            throw new HttpResponseException(
+                Response::json(['success' => false, 'errors' => $validator->errors()], 422)
+            );
+        } else {
+            throw new HttpResponseException(
+                Redirect::back()->withErrors($validator->errors(), $formType)->withInput()
+            );
+        }
     }
 
      /**

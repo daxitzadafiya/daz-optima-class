@@ -819,4 +819,17 @@ class Sitehelper
             return $referrerUrl;
         }
     }
+
+    public static function removeRequestParams($remove_params = [])
+    {
+        //start remove from request()
+        $remove_request_data = request()->all();  
+        unset($remove_request_data['resale'], $remove_request_data['project']);
+        request()->replace($remove_request_data);
+        //end remove from request()
+        
+        unset($_GET["resale"], $_GET["project"]);
+        unset($_POST["resale"], $_POST["project"]);
+
+    }
 }
