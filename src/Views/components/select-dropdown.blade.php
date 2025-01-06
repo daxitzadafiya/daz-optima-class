@@ -16,7 +16,7 @@
 >
     @foreach ($data as $value)
         @if (!in_array($value['option_key'], $options['skip_options']))
-            @if (isset($value['count']) && !empty($value['count']) && $value['count'] > 0)
+            {{-- @if (isset($value['count']) && !empty($value['count']) && $value['count'] > 0) --}}
                 @php
                     $option_name = isset($options['get_name']) ? $options['get_name'] : str_replace('[]', '', $options['name']);
                 @endphp
@@ -24,7 +24,7 @@
                 <option value="{{ $value['option_key'] }}" {{ (is_array(request()->input($option_name)) && in_array($value['option_key'], request()->input($option_name))) || (request()->input($option_name) == $value['option_key']) ? 'selected' : '' }}>
                     {{ isset($options['noValueTranslation']) ? $value['option_value'] : ucfirst(\Daxit\OptimaClass\Components\Translate::t($value['option_value'])) }}
                 </option>
-            @endif
+            {{-- @endif --}}
         @endif
     @endforeach
 </select>
