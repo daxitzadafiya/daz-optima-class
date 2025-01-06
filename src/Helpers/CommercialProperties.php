@@ -139,11 +139,11 @@ class CommercialProperties
         }
 
         if (isset($get['resale']) && !empty($get['resale'])) {
-            $query['$and'] = [['project' => ['$ne' => true]]];
+            $query['$and'] = array_merge($query['$and'] ?? [], [['project' => ['$ne' => true]]]);
         }
 
         if (isset($get['project_on']) && !empty($get['project_on'])) {
-            $query['$or'] = [["own" => false], ['own' => ['$exists' => false]]];
+            $query['$or'] = array_merge($query['$or'] ?? [], [["own" => false], ['own' => ['$exists' => false]]]);
         }
 
         if (isset($get['own']) && !empty($get['own']) && $get['own']) {
@@ -332,7 +332,7 @@ class CommercialProperties
                     }
                 }
             }
-            $query['$and'] = $search_feature;
+            $query['$and'] = array_merge($query['$and'] ?? [], $search_feature);
         }
 
         if (isset($get['sale']) && !empty($get['sale'])) {
