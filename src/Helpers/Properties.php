@@ -28,7 +28,6 @@ class Properties
     public $address;
     public $latitude;
     public $longitude;
-    public $status;
 
     public function rules()
     {
