@@ -567,7 +567,7 @@ class Sitehelper
 
     public static function html_select_2($data, $options = [])
     {
-        return Dropdowns::html_select_2($data, $options = []);
+        return Dropdowns::html_select_2($data, $options);
     }
 
     public static function make_dropdown_array($raw_array = [])
