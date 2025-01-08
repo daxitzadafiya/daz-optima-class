@@ -650,8 +650,12 @@ class Sitehelper
     {
         $lang = App::getLocale() == 'es' ? 'es_AR' : App::getLocale();
         $selected_location_groups = isset($post["location_groups"]) && !empty($post["location_groups"]) ? $post["location_groups"] : [];
+        $selected_country = isset($post["country"]) && !empty($post["country"]) ? $post["country"] : [];
+        $selected_provinces = isset($post["provinces"]) && !empty($post["provinces"]) ? $post["provinces"] : [];
+        $selected_city = isset($post["city"]) && !empty($post["city"]) ? $post["city"] : [];
 
-        $locationGroups = self::get_location_groups_with_properties("allow_cities", $selected_location_groups);
+        $locationGroups = self::get_location_groups_with_properties("allow_cities", $selected_location_groups, $selected_country, $selected_provinces, $selected_city);
+        
         $cities = [];
         $lang = strtolower(App::getLocale()) == 'es' ? 'es_AR' : strtolower(App::getLocale());
 
@@ -671,11 +675,11 @@ class Sitehelper
         exit;
     }
 
-    public static function get_location_groups_with_properties($types = "", $selected_groups = [], $country = [], $provinces = [], $city = [], $options = [])
+    public static function get_location_groups_with_properties($types = "", $selected_groups = [], $country = [], $provinces = [], $city = [], $options = []): mixed
     {
         self::initialize();
         $lang = App::getLocale() == 'es' ? 'es_AR' : App::getLocale();
-        $file = Functions::directory() . 'location_groups_with_properties_' . implode('-', $selected_groups) . "_" . implode('-', $country) . "_" . implode('-', $provinces) . "_" . implode('-', $city) . "_" . $lang . '.json';
+        $file = Functions::directory() . 'location_groups_with_properties_' . $types . '_' . implode('-groups-', $selected_groups) . "_" . implode('-country-', $country) . "_" . implode('-provinces-', $provinces) . "_" . implode('-city-', $city) . "_" . $lang . '.json';
 
         $query = [
             "sort" => isset($options["sort"]) && !empty($options["sort"]) ? $options["sort"] : $lang,
@@ -696,7 +700,7 @@ class Sitehelper
         }
 
         if (isset($provinces) && !empty($provinces)) {
-            $query["provinces"] = ['$in' => array_map('intval', $provinces)];
+            $query["province"] = ['$in' => array_map('intval', $provinces)];
         }
 
         if (isset($city) && !empty($city)) {
@@ -708,7 +712,8 @@ class Sitehelper
             $url = self::$node_url . 'locationgroups/get-location-groups-with-properties?user=' . self::$user;
             $response = Http::withHeaders([
                 'Content-Type' => 'application/json',
-                'Content-Length' => strlen(json_encode($post_data))
+                'Content-Length' => strlen(json_encode($post_data)),
+                'Cache-Control' => 'no-cache'
             ])->post($url, $post_data);
 
             file_put_contents($file, $response);
@@ -831,5 +836,32 @@ class Sitehelper
         unset($_GET["resale"], $_GET["project"]);
         unset($_POST["resale"], $_POST["project"]);
 
+    }
+
+    public static function get_geography_available($post, $types = "allow_cities")
+    {
+        $lang = App::getLocale() == 'es' ? 'es_AR' : App::getLocale();
+
+        $selected_location_groups = isset($post["location_groups"]) && !empty($post["location_groups"]) ? $post["location_groups"] : [];
+        $selected_country = isset($post["country"]) && !empty($post["country"]) ? $post["country"] : [];
+        $selected_provinces = isset($post["provinces"]) && !empty($post["provinces"]) ? $post["provinces"] : [];
+        $selected_city = isset($post["city"]) && !empty($post["city"]) ? $post["city"] : [];
+
+        $locationGroups = self::get_location_groups_with_properties($types, $selected_location_groups, $selected_country, $selected_provinces, $selected_city);
+        $geographies = [];
+        $lang = strtolower(App::getLocale()) == 'es' ? 'es_AR' : strtolower(App::getLocale());
+
+        if (isset($locationGroups["docs"]) && !empty($locationGroups["docs"])) {
+            foreach ($locationGroups['docs'] as $locationGroup) {
+                if (isset($locationGroup) && !empty($locationGroup)) {
+                    $geographies[$locationGroup['key']]['option_key'] = isset($locationGroup['key']) && !empty($locationGroup['key']) ? $locationGroup['key'] : '';
+                    $geographies[$locationGroup['key']]['option_value'] = isset($locationGroup["value"][$lang]) && !empty($locationGroup["value"][$lang]) ? $locationGroup["value"][$lang] : (isset($locationGroup["value"]["en"]) && !empty($locationGroup["value"]["en"]) ? $locationGroup["value"]["en"] : "");
+                }
+            }
+        }
+
+        $geography = array_unique($geographies, SORT_REGULAR);
+        usort($geography, "self::sortedLocation");
+        return $geography;
     }
 }
