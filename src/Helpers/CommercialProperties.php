@@ -74,6 +74,7 @@ class CommercialProperties
             $response = Http::withHeaders([
                 'Content-Type' => 'application/json',
                 'Content-Length' => strlen(json_encode($post_data)),
+                'Cache-Control' => 'no-cache'
             ])->post($node_url, $post_data);
         }
 
@@ -106,6 +107,7 @@ class CommercialProperties
 
         $response = Http::withHeaders([
             'Content-Type' => 'application/json',
+            'Cache-Control' => 'no-cache'
         ])->post(self::$node_url . 'commercial_properties/view/' . $id . '?user=' . self::$user, $post_data);
 
         $response = $response->json();
@@ -265,6 +267,12 @@ class CommercialProperties
             $query['built'] = ['$lte' => (int)$get['min_built']];
         } elseif (isset($get['max_built']) && !empty($get['max_built'])) {
             $query['built'] = ['$gte' => (int)$get['max_built']];
+        }
+
+        if (isset($get['min_plot']) && !empty($get['min_plot'])) {
+            $query['plot'] = ['$lte' => (int)$get['min_plot']];
+        } elseif (isset($get['max_plot']) && !empty($get['max_plot'])) {
+            $query['plot'] = ['$gte' => (int)$get['max_plot']];
         }
 
         if (isset($get['categories']) && !empty(array_filter($get['categories']))) {
@@ -1219,8 +1227,9 @@ class CommercialProperties
 
             $file_data = Http::withHeaders([
                 'Content-Type' => 'application/json',
-                'Content-Length' => strlen(json_encode($query))
-            ])->post($url, json_encode($query))->json();
+                'Content-Length' => strlen(json_encode($query)),
+                'Cache-Control' => 'no-cache'
+            ])->post($url, $query)->json();
 
             file_put_contents($file, $file_data);
         } else {
@@ -1292,6 +1301,7 @@ class CommercialProperties
 
         $response = Http::withHeaders([
             'Content-Type' => 'application/json',
+            'Cache-Control' => 'no-cache'
         ])->post($node_url, $post_data)->json();
 
         if (!File::exists($webroot)) {
@@ -1335,6 +1345,7 @@ class CommercialProperties
         $node_url = self::$node_url . 'commercial_properties/get-properties-with-transaction-types/' . $transaction_type . '?user=' . self::$user;
         $response = Http::withHeaders([
             'Content-Type' => 'application/json',
+            'Cache-Control' => 'no-cache'
         ])->post($node_url, $post_data)->json();
 
         $properties = [];
@@ -1393,6 +1404,7 @@ class CommercialProperties
 
         return Http::withHeaders([
             'Content-Type' => 'application/json',
+            'Cache-Control' => 'no-cache'
         ])->post($node_url, $post_data)->json();
     }
 
@@ -1411,6 +1423,7 @@ class CommercialProperties
 
         return Http::withHeaders([
             'Content-Type' => 'application/json',
+            'Cache-Control' => 'no-cache'
         ])->post($node_url, $post_data)->json();
     }
 
@@ -1430,6 +1443,7 @@ class CommercialProperties
 
         return Http::withHeaders([
             'Content-Type' => 'application/json',
+            'Cache-Control' => 'no-cache'
         ])->post($node_url, $post_data)->json();
     }
 
@@ -1537,13 +1551,15 @@ class CommercialProperties
 
             return Http::withHeaders([
                 'Content-Type' => 'application/json',
+                'Cache-Control' => 'no-cache'
             ])->put($node_url, $fields)->json();
         } else {
             $node_url = self::$node_url . 'commercial_properties/create?user=' . $data['user_id'];
 
             return Http::withHeaders([
                 'Content-Type' => 'application/json',
-            ])->post($node_url, json_encode($fields))->json();
+                'Cache-Control' => 'no-cache'
+            ])->post($node_url, $fields)->json();
         }
     }
 
@@ -1560,6 +1576,7 @@ class CommercialProperties
 
         return  Http::withHeaders([
             'Content-Type' => 'application/json',
+            'Cache-Control' => 'no-cache'
         ])->post($node_url, $fields)->json();
     }
 
@@ -1577,6 +1594,7 @@ class CommercialProperties
 
         return Http::withHeaders([
             'Content-Type' => 'application/json',
+            'Cache-Control' => 'no-cache'
         ])->post($node_url, $fields)->json();
     }
 
@@ -1597,6 +1615,7 @@ class CommercialProperties
 
         return Http::withHeaders([
             'Content-Type' => 'application/json',
+            'Cache-Control' => 'no-cache'
         ])->post($node_url, $fields)->json();
     }
 
@@ -1616,7 +1635,8 @@ class CommercialProperties
         ];
 
         return Http::withHeaders([
-            'Content-Type' => 'application/json',
+            'Content-Type' => 'application/json',,
+            'Cache-Control' => 'no-cache'
         ])->post($node_url, $post_data)->json();
     }
 
@@ -1647,6 +1667,7 @@ class CommercialProperties
 
         $response = Http::withHeaders([
             'Content-Type' => 'application/json',
+            'Cache-Control' => 'no-cache'
         ])->post($url, $query)->json();
 
         $properties = [];

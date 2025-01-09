@@ -35,8 +35,9 @@ class MooringProperties
 
         $response = Http::withHeaders([
             'Content-Type' => 'application/json',
-            'Content-Length' => strlen(json_encode($query_array))
-        ])->post($node_url, json_encode($query_array))->json();
+            'Content-Length' => strlen(json_encode($query_array)),
+            'Cache-Control' => 'no-cache'
+        ])->post($node_url, $query_array)->json();
 
         $properties = [];
 

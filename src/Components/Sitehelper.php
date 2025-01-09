@@ -499,7 +499,8 @@ class Sitehelper
         if (!file_exists($file) || (file_exists($file) && time() - filemtime($file) > 2 * 3600)) {
             $response = Http::withHeaders([
                     'Content-Type' => 'application/json',
-                    'Content-Length' => strlen(json_encode($post_data))
+                    'Content-Length' => strlen(json_encode($post_data)),
+                    'Cache-Control' => 'no-cache'
                 ])->withBody(json_encode($post_data), 'application/json')
             ->post(self::$node_url . 'commercial_types?user_apikey=' . self::$api_key);
 
@@ -781,7 +782,8 @@ class Sitehelper
 
             $response = Http::withHeaders([
                 'Content-Type' => 'application/json',
-                'Content-Length' => strlen(json_encode($post_data))
+                'Content-Length' => strlen(json_encode($post_data)),
+                'Cache-Control' => 'no-cache'
             ])->post($url, $post_data);
 
             file_put_contents($file, $response);

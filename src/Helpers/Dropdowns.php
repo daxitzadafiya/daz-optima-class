@@ -75,7 +75,8 @@ class Dropdowns
 
             $response = Http::withHeaders([
                 'Content-Type' => 'application/json',
-                'Content-Length' => strlen(json_encode($post_data, JSON_NUMERIC_CHECK))
+                'Content-Length' => strlen(json_encode($post_data, JSON_NUMERIC_CHECK)),
+                'Cache-Control' => 'no-cache'
             ])->post(self::$node_url . 'regions?user='. self::$user, $post_data);
 
             $data = $response->json();
@@ -140,7 +141,8 @@ class Dropdowns
 
             $response = Http::withHeaders([
                 'Content-Type' => 'application/json',
-                'Content-Length' => strlen(json_encode($post_data, JSON_NUMERIC_CHECK))
+                'Content-Length' => strlen(json_encode($post_data, JSON_NUMERIC_CHECK)),
+                'Cache-Control' => 'no-cache'
             ])->post(self::$node_url . 'provinces?user=' . self::$user, $post_data);
 
             $data = $response->json();
@@ -223,7 +225,8 @@ class Dropdowns
 
             $response = Http::withHeaders([
                 'Content-Type' => 'application/json',
-                'Content-Length' => strlen(json_encode($post_data, JSON_NUMERIC_CHECK))
+                'Content-Length' => strlen(json_encode($post_data, JSON_NUMERIC_CHECK)),
+                'Cache-Control' => 'no-cache'
             ])->post(self::$node_url . 'cities?user=' . self::$user, $post_data);
 
             $data = $response->json();
@@ -322,7 +325,8 @@ class Dropdowns
 
             $response = Http::withHeaders([
                 'Content-Type' => 'application/json',
-                'Content-Length' => strlen(json_encode($post_data, JSON_NUMERIC_CHECK))
+                'Content-Length' => strlen(json_encode($post_data, JSON_NUMERIC_CHECK)),
+                'Cache-Control' => 'no-cache'
             ])->post(self::$node_url . 'locations?user=' . self::$user, $post_data);
 
             $data = $response->json();
@@ -347,7 +351,8 @@ class Dropdowns
 
             $response = Http::withHeaders([
                 'Content-Type' => 'application/json',
-                'Content-Length' => strlen(json_encode($post_data))
+                'Content-Length' => strlen(json_encode($post_data)),
+                'Cache-Control' => 'no-cache'
             ])->post(self::$node_url . 'urbanisations/dropdown?user=' . self::$user, $post_data);
 
             $data = $response->json();
@@ -385,7 +390,8 @@ class Dropdowns
 
             $response = Http::withHeaders([
                 'Content-Type' => 'application/json',
-                'Content-Length' => strlen(json_encode($post_data, JSON_NUMERIC_CHECK))
+                'Content-Length' => strlen(json_encode($post_data, JSON_NUMERIC_CHECK)),
+                'Cache-Control' => 'no-cache'
             ])->post(self::$node_url . 'urbanisations/dropdown?user=' . self::$user, $post_data);
 
             $data = $response->json();
@@ -419,7 +425,8 @@ class Dropdowns
 
         $response = Http::withHeaders([
             'Content-Type' => 'application/json',
-            'Content-Length' => strlen(json_encode([]))
+            'Content-Length' => strlen(json_encode([])),
+            'Cache-Control' => 'no-cache'
         ])->post(self::$node_url . 'mooring_types/all?user_apikey=' . self::$api_key, []);
 
         $return_data = $response->json();
@@ -479,7 +486,8 @@ class Dropdowns
         if (!file_exists($file) || (file_exists($file) && time() - filemtime($file) > 2 * 3600)) {
             $response = Http::withHeaders([
                 'Content-Type' => 'application/json',
-                'Content-Length' => strlen(json_encode($post_data))
+                'Content-Length' => strlen(json_encode($post_data)),
+                'Cache-Control' => 'no-cache'
             ])->post(self::$node_url . 'commercial_types?user_apikey=' . self::$api_key, $post_data);
 
             file_put_contents($file, $response);

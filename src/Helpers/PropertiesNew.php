@@ -3633,11 +3633,13 @@ class PropertiesNew
             $node_url = self::$node_url . 'commercial_properties/update/' . $data['prop_id'] . '?user=' . self::$user;
             $response = Http::withHeaders([
                 'Content-Type' => 'application/json',
+                'Cache-Control' => 'no-cache'
             ])->withBody(json_encode($fields), 'application/json')->put($node_url);
         } else {
             $node_url = self::$node_url . 'commercial_properties/create?user=' . self::$user;
             $response = Http::withHeaders([
-                'Content-Type' => 'application/json',
+                'Content-Type' => 'application/json',,
+                'Cache-Control' => 'no-cache'
             ])->withBody(json_encode($fields), 'application/json')->post($node_url);
         }
 
