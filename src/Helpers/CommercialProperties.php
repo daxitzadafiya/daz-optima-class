@@ -1635,7 +1635,7 @@ class CommercialProperties
         ];
 
         return Http::withHeaders([
-            'Content-Type' => 'application/json',,
+            'Content-Type' => 'application/json',
             'Cache-Control' => 'no-cache'
         ])->post($node_url, $post_data)->json();
     }
