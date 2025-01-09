@@ -89,7 +89,7 @@ class Urlhelper
         $auction_slug = Urlhelper::slug('auction_tag');
 
         $params = App::bound('params') ? App::make('params') : [];        
-        $slug = !empty($params->get('slug')) ? $params->get('slug') : "";
+        $slug = isset($params->slug) && !empty($params->slug) ? $params->slug : "";
         
         $urlProperty = '';
         if (in_array($slug, array($rent_slug, $holiday_slug))) {
