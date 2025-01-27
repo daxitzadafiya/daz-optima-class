@@ -125,7 +125,17 @@ class CommercialProperties
         if (isset($get['auction_price_from']) && !empty($get['auction_price_from']) || isset($get['auction_price_to']) && !empty($get['auction_price_to'])) {
             $query['starting_price'] = ['$gte' => (int) $get['auction_price_from'], '$lte' => isset($get['auction_price_to']) && !empty($get['auction_price_to']) ?  (int) $get['auction_price_to'] : ''];
         } elseif (isset($get['price_from']) && !empty($get['price_from']) || isset($get['price_to']) && !empty($get['price_to'])) {
-            $query['current_price'] = ['$gte' => (int) $get['price_from'], '$lte' => isset($get['price_to']) && !empty($get['price_to']) ?  (int) $get['price_to'] : ''];
+            $current_price = [];
+
+            if(isset($get['price_from']) && !empty($get['price_from'])){
+                $current_price['$gte'] = (int) $get['price_from'];
+            }
+            
+            if(isset($get['price_to']) && !empty($get['price_to'])){
+                $current_price['$lte'] = (int) $get['price_to'];
+            }
+
+            $query['current_price'] = $current_price;
         }
 
         if (isset($get['reference']) && !empty($get['reference'])) {
