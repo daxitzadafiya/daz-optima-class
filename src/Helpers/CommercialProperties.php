@@ -1297,6 +1297,10 @@ class CommercialProperties
         }
         if (isset($query) && $query != '' && is_array($query)) {
             if (!count($query)) {
+                // if(Request::has('prop_ids') && Request::input('prop_ids') == "false"){
+                    unset($_GET["prop_ids"]);
+                    Request::replace(Request::except('prop_ids'));
+                // }
                 $query = self::setQuery();
             }
             if (count($query)) {
