@@ -144,7 +144,7 @@ class ContactUsRequest extends FormRequest
             // 'imageFiles' => '',
             'application' => '',
             // 'cv_file' => '',
-            'gdpr_status' => '',
+            'gdpr_status' => 'required',
             'buyer' => '',
             'listing_agency_email' => '',
             'listing_agency_id' => '',
@@ -227,6 +227,7 @@ class ContactUsRequest extends FormRequest
             'phone.required' => Translate::t('phone cannot be blank.'),
             'phone.regex' => Translate::t('please enter the valid phone number.'),
             'reCaptcha.required' => Translate::t('please confirm you are not a robot by completing the reCAPTCHA!'),
+            'gdpr_status.required' => Translate::t('please check privacy policy'),
         ];
     }
 
