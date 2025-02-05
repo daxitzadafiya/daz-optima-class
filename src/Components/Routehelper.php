@@ -80,10 +80,10 @@ class Routehelper
             $definitions .= "\nRoute::controller($controller::class)->group(function () {\n";
 
             foreach($routes as $lang => $siteRoutes) {
-                $definitions .= "    Route::prefix('$lang')->group(function () {\n";
+                $definitions .= "    Route::prefix(\"$lang\")->group(function () {\n";
 
                 foreach ($siteRoutes as $route) {
-                    $definitions .= "        Route::get('{$route['pattern']}', '{$route['action']}');\n";
+                    $definitions .= "        Route::get(\"{$route['pattern']}\", \"{$route['action']}\");\n";
                 }
 
                 $definitions .= "    });\n";
