@@ -680,7 +680,7 @@ class Sitehelper
     {
         self::initialize();
         $lang = App::getLocale() == 'es' ? 'es_AR' : App::getLocale();
-        $file = Functions::directory() . 'location_groups_with_properties_' . $types . '_' . implode('-groups-', $selected_groups) . "_" . implode('-country-', $country) . "_" . implode('-provinces-', $provinces) . "_" . implode('-city-', $city) . "_" . $lang . '.json';
+        $file = Functions::directory() . 'location_groups_with_properties_' . $types . '_g' . implode('', $selected_groups) . "_c" . implode('', $country) . "_p" . implode('', $provinces) . "_t" . implode('', $city) . "_" . $lang . '.json';
 
         $query = [
             "sort" => isset($options["sort"]) && !empty($options["sort"]) ? $options["sort"] : $lang,
