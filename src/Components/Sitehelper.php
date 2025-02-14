@@ -398,6 +398,16 @@ class Sitehelper
         return isset($object->title) && !empty($object->title) ? $object->title : env("APP_NAME") ;
     }
 
+    public static function get_script($object)
+    {
+        return isset($object->params["settings"]["header"]["google_analytics"]) && !empty($object->params["settings"]["header"]["google_analytics"]) ? $object->params["settings"]["header"]["google_analytics"] : "" ;
+    }
+    
+    public static function get_body_script($object)
+    {
+        return isset($object->params["settings"]["header"]["google_analytics_body"]) && !empty($object->params["settings"]["header"]["google_analytics_body"]) ? $object->params["settings"]["header"]["google_analytics_body"] : "" ;
+    }
+
     public static function get_locations_properties_count($country = '1')
     {
         $locationGroups = Dropdowns::locations([], false, [], $country);
