@@ -37,7 +37,7 @@ class LocaleMiddleware
             }
         }
         $browserLocale = Str::lower(substr($request->getPreferredLanguage(), 0, 2));
-        $locale = $browserLocale ?: $request->segment(1);
+        $locale = $request->segment(1) ?: $browserLocale;
 
         $availableLocales = Cms::siteLanguages();
 
