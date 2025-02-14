@@ -50,7 +50,7 @@ class LocaleMiddleware
         if (isset($locale) && in_array($locale, $availableLocales)) {
             App::setLocale($locale);
         } else {
-            App::setLocale("en");
+            App::setLocale(Config::get('app.fallback_locale', 'en'));
             return redirect('/' . App::getLocale() . '/' . ltrim($request->path(), '/'));
         }
 
