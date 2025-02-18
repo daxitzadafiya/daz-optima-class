@@ -690,7 +690,8 @@ class Sitehelper
     {
         self::initialize();
         $lang = App::getLocale() == 'es' ? 'es_AR' : App::getLocale();
-        $file = Functions::directory() . 'location_groups_with_properties_' . $types . '_g' . implode('', $selected_groups) . "_c" . implode('', $country) . "_p" . implode('', $provinces) . "_t" . implode('', $city) . "_" . $lang . '.json';
+        $filename = $types . '_g' . implode('', $selected_groups) . "_c" . implode('', $country) . "_p" . implode('', $provinces) . "_t" . implode('', $city) . "_" . $lang;
+        $file = Functions::directory() . 'location_groups_with_properties_' . md5($filename) . '.json';
 
         $query = [
             "sort" => isset($options["sort"]) && !empty($options["sort"]) ? $options["sort"] : $lang,
@@ -761,7 +762,8 @@ class Sitehelper
     {
         self::initialize();
         $lang = App::getLocale() == 'es' ? 'es_AR' : App::getLocale();
-        $file = Functions::directory() . 'object_locations_' . implode('-', $selected_groups) . "_" . implode('-', $country) . "_" . implode('-', $provinces) . "_" . implode('-', $city) . "_" . $lang . '.json';
+        $filename = implode('-', $selected_groups) . "_" . implode('-', $country) . "_" . implode('-', $provinces) . "_" . implode('-', $city) . "_" . $lang;
+        $file = Functions::directory() . 'object_locations_' . md5($filename) . '.json';
 
         $query = [
             "sort" => isset($options["sort"]) && !empty($options["sort"]) ? $options["sort"] : $lang,
