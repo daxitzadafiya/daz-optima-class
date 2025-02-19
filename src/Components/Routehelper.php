@@ -80,7 +80,7 @@ class Routehelper
         $post_routes = config('params.post_route', []);
         $post_routes_pattern = [];
         foreach($post_routes as $key => $value){
-            $post_routes_pattern[] = Cms::getSlugByTagNameInAllLocales($value);
+            $post_routes_pattern = array_merge($post_routes_pattern, Cms::getSlugByTagNameInAllLocales($value));
         }
 
         foreach ($groupedRoutes as $controller => $routes) {
@@ -90,12 +90,8 @@ class Routehelper
                 $definitions .= "    Route::prefix(\"$lang\")->group(function () {\n";
 
                 foreach ($siteRoutes as $route) {
-                    $exists = array_reduce($post_routes_pattern, function ($carry, $item) use ($route) {
-                        return $carry || in_array($route['pattern'], $item);
-                    }, false);
-
-                    if($exists) {
-                        $definitions .= "        Route::post(\"{$route['pattern']}\", \"{$route['action']}\");\n";
+                    if(in_array($route['pattern'], $post_routes_pattern)) {
+                        $definitions .= "        Route::any(\"{$route['pattern']}\", \"{$route['action']}\");\n";
                     } else {
                         $definitions .= "        Route::get(\"{$route['pattern']}\", \"{$route['action']}\");\n";
                     }
