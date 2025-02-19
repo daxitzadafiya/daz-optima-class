@@ -603,6 +603,23 @@ class Cms
         return 'tag-not-found';
     }
 
+    public static function getSlugByTagNameInAllLocales($tag)
+    {
+        $locales = self::siteLanguages();
+        $file_data = self::getSlugs();
+        $slugs = [];
+
+        foreach ($file_data as $data) {
+            if (isset($data['tags'][0]) && $data['tags'][0] == $tag) {
+                foreach($locales as $locale) {
+                    $slugs[] = isset($data['slug'][strtoupper($locale)]) ? $data['slug'][strtoupper($locale)] : $data['slug']['EN'];
+                }
+            }
+        }
+
+        return $slugs;
+    }
+
     /**
      * Get Rules for web
      *

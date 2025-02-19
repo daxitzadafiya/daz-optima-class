@@ -2,6 +2,7 @@
 
 namespace Daxit\OptimaClass\Components;
 
+use Daxit\OptimaClass\Helpers\Cms;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
@@ -76,6 +77,12 @@ class Routehelper
             }
         }
 
+        $post_routes = config('params.post_route', []);
+        $post_routes_pattern = [];
+        foreach($post_routes as $key => $value){
+            $post_routes_pattern[] = Cms::getSlugByTagNameInAllLocales($value);
+        }
+
         foreach ($groupedRoutes as $controller => $routes) {
             $definitions .= "\nRoute::controller($controller::class)->group(function () {\n";
 
@@ -83,7 +90,15 @@ class Routehelper
                 $definitions .= "    Route::prefix(\"$lang\")->group(function () {\n";
 
                 foreach ($siteRoutes as $route) {
-                    $definitions .= "        Route::get(\"{$route['pattern']}\", \"{$route['action']}\");\n";
+                    $exists = array_reduce($post_routes_pattern, function ($carry, $item) use ($route) {
+                        return $carry || in_array($route['pattern'], $item);
+                    }, false);
+
+                    if($exists) {
+                        $definitions .= "        Route::post(\"{$route['pattern']}\", \"{$route['action']}\");\n";
+                    } else {
+                        $definitions .= "        Route::get(\"{$route['pattern']}\", \"{$route['action']}\");\n";
+                    }
                 }
 
                 $definitions .= "    });\n";
