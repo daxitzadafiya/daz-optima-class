@@ -294,8 +294,9 @@ class Sitehelper
 
         if ($property) {
             // $object->title = isset($property['meta_title']) ? $property['meta_title'] : Yii::$app->translate->t('Real Estate Agency');
-            $meta_title = (isset($property['meta_title']) && !empty($property['meta_title'])) ? $property['meta_title'] : ((isset($property['rental_meta_title']) && !empty($property['rental_meta_title'])) ? $property['rental_meta_title'] : Translate::t('Real Estate Agency'));
-            $meta_desc = (isset($property['meta_desc']) && !empty($property['meta_desc'])) ? $property['meta_desc'] : ((isset($property['rental_meta_desc']) && !empty($property['rental_meta_desc'])) ? $property['rental_meta_desc'] : '');
+            $meta_title = (isset($property['meta_title']) && !empty($property['meta_title'])) ? $property['meta_title'] : ((isset($property['rental_meta_title']) && !empty($property['rental_meta_title'])) ? $property['rental_meta_title'] : (isset(Sitehelper::get_page_data($object)['meta_title']) && !empty(Sitehelper::get_page_data($object)['meta_title']) ? Sitehelper::get_page_data($object)['meta_title'] : Translate::t('Real Estate Agency')));
+            
+            $meta_desc = (isset($property['meta_desc']) && !empty($property['meta_desc'])) ? $property['meta_desc'] : ((isset($property['rental_meta_desc']) && !empty($property['rental_meta_desc'])) ? $property['rental_meta_desc'] : (isset(Sitehelper::get_page_data($object)['meta_desc']) && !empty(Sitehelper::get_page_data($object)['meta_desc']) ? Sitehelper::get_page_data($object)['meta_desc'] : ""));
             $object->title = $meta_title;
 
             $propertyMeta = isset($meta_desc) && !empty($meta_desc) ? '<meta name="description" content="'. $meta_desc .'">' : '';
@@ -319,9 +320,9 @@ class Sitehelper
             return $propertyMeta;
 
         } elseif ($development) {
-            $object->title = isset($development['meta_title']) && !empty($development['meta_title']) ? $development['meta_title'] : Translate::t('Real Estate Agency');
+            $object->title = isset($development['meta_title']) && !empty($development['meta_title']) ? $development['meta_title'] : (isset(Sitehelper::get_page_data($object)['meta_title']) && !empty(Sitehelper::get_page_data($object)['meta_title']) ? Sitehelper::get_page_data($object)['meta_title'] : Translate::t('Real Estate Agency'));
 
-            $developmentMeta = isset($development['meta_desc']) && !empty($development['meta_desc']) ? '<meta name="description" content="'. $development['meta_desc'] .'">' : '';
+            $developmentMeta = isset($development['meta_desc']) && !empty($development['meta_desc']) ? '<meta name="description" content="'. $development['meta_desc'] .'">' : (isset(Sitehelper::get_page_data($object)['meta_desc']) && !empty(Sitehelper::get_page_data($object)['meta_desc']) ? Sitehelper::get_page_data($object)['meta_desc'] : "");
 
             $developmentMeta .= isset($development['keywords']) && !empty($development['keywords']) ? '<meta name="keywords" content="'. $development['keywords'] .'">' : '';
 
@@ -344,9 +345,9 @@ class Sitehelper
             return $developmentMeta;
 
         } elseif ($post) {
-            $object->title = isset($post['meta_title']) && !empty($post['meta_title']) ? $post['meta_title'] : Translate::t('Real Estate Agency');
+            $object->title = isset($post['meta_title']) && !empty($post['meta_title']) ? $post['meta_title'] : (isset(Sitehelper::get_page_data($object)['meta_title']) && !empty(Sitehelper::get_page_data($object)['meta_title']) ? Sitehelper::get_page_data($object)['meta_title'] : Translate::t('Real Estate Agency'));
 
-            $postMeta = isset($post['meta_desc']) && !empty($post['meta_desc']) ? '<meta name="description" content="'. $post['meta_desc'] .'">' : '';
+            $postMeta = isset($post['meta_desc']) && !empty($post['meta_desc']) ? '<meta name="description" content="'. $post['meta_desc'] .'">' : (isset(Sitehelper::get_page_data($object)['meta_desc']) && !empty(Sitehelper::get_page_data($object)['meta_desc']) ? Sitehelper::get_page_data($object)['meta_desc'] : "");
 
             $postMeta .= isset($post['meta_keywords']) && !empty($post['meta_keywords']) ? '<meta name="keywords" content="'. $post['meta_keywords'] .'">' : '';
 

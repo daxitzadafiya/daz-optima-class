@@ -2,6 +2,8 @@
 
 namespace Daxit\OptimaClass\Service;
 
+use Illuminate\Support\Facades\App;
+
 class ParamsContainer
 {
     public $params = [];
@@ -54,5 +56,16 @@ class ParamsContainer
     public function remove(string $key): void
     {
         unset($this->params[$key]);
+    }
+
+    public static function addAppInstance($arrayToMerge = [],  $mergeKey = "params"){
+
+        $params = App::bound($mergeKey) ? App::make($mergeKey) : [];
+
+        $finalArray = array_merge_recursive((array) ($params->$mergeKey ?? []), $arrayToMerge);
+
+        App::instance($mergeKey, new ParamsContainer($finalArray));  
+        
+        return $finalArray;
     }
 }

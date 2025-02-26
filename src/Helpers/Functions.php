@@ -212,7 +212,7 @@ class Functions
         $slug = request()->input('slug', '');
         if ($slug) {
             $page_data = Cms::getPage(['slug' => $slug, 'lang' => App::getLocale()]);
-            App::instance('params', new ParamsContainer(['page_data' => $page_data]));
+            ParamsContainer::addAppInstance(['page_data' => $page_data]);
         }
 
         // redirect if there is no page_data is available
@@ -245,7 +245,7 @@ class Functions
         $url = explode('/', request()->path());
         $this_page = urldecode(end($url));
         $page_data = Cms::pageBySlug(request()->input('title'));
-        App::instance('params', new ParamsContainer(['page_data' => $page_data]));
+        ParamsContainer::addAppInstance(['page_data' => $page_data]);
         if (isset($cmsModel) && count($cmsModel) > 0) {
             foreach ($cmsModel as $row) {
                 if (isset($row['slug_all'][strtoupper(App::getLocale())]) and $row['slug_all'][strtoupper(App::getLocale())] == $this_page) {
@@ -270,7 +270,7 @@ class Functions
                 } else {
                     $custom_post_id = '';
                 }
-                App::instance('params', new ParamsContainer(['page_data' => $page_data]));
+                ParamsContainer::addAppInstance(['page_data' => $page_data]);
                 return $object->render($page_template, [
                     'page_data' => $page_data,
                     'custom_post_id' => $custom_post_id
@@ -289,12 +289,12 @@ class Functions
                     die('Please create 404 page with slug "404" in CMS');
                 }
                 $page_data = Cms::pageBySlug('404');
-                App::instance('params', new ParamsContainer(['page_data' => $page_data]));
+                ParamsContainer::addAppInstance(['page_data' => $page_data]);
                 return $object->render('404', [
                     'page_data' => isset($page_data) ? $page_data : ''
                 ]);
             }
-            App::instance('params', new ParamsContainer(['page_data' => $page_data]));
+            ParamsContainer::addAppInstance(['page_data' => $page_data]);
             return $object->render('page', [
                 'page_data' => isset($page_data) ? $page_data : ''
             ]);
