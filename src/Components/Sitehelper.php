@@ -295,7 +295,7 @@ class Sitehelper
         if ($property) {
             // $object->title = isset($property['meta_title']) ? $property['meta_title'] : Yii::$app->translate->t('Real Estate Agency');
             $meta_title = (isset($property['meta_title']) && !empty($property['meta_title'])) ? $property['meta_title'] : ((isset($property['rental_meta_title']) && !empty($property['rental_meta_title'])) ? $property['rental_meta_title'] : (isset(Sitehelper::get_page_data($object)['meta_title']) && !empty(Sitehelper::get_page_data($object)['meta_title']) ? Sitehelper::get_page_data($object)['meta_title'] : Translate::t('Real Estate Agency')));
-            
+
             $meta_desc = (isset($property['meta_desc']) && !empty($property['meta_desc'])) ? $property['meta_desc'] : ((isset($property['rental_meta_desc']) && !empty($property['rental_meta_desc'])) ? $property['rental_meta_desc'] : (isset(Sitehelper::get_page_data($object)['meta_desc']) && !empty(Sitehelper::get_page_data($object)['meta_desc']) ? Sitehelper::get_page_data($object)['meta_desc'] : ""));
             $object->title = $meta_title;
 
@@ -403,7 +403,7 @@ class Sitehelper
     {
         return isset($object->params["settings"]["header"]["google_analytics"]) && !empty($object->params["settings"]["header"]["google_analytics"]) ? $object->params["settings"]["header"]["google_analytics"] : "" ;
     }
-    
+
     public static function get_body_script($object)
     {
         return isset($object->params["settings"]["header"]["google_analytics_body"]) && !empty($object->params["settings"]["header"]["google_analytics_body"]) ? $object->params["settings"]["header"]["google_analytics_body"] : "" ;
@@ -667,7 +667,7 @@ class Sitehelper
         $selected_city = isset($post["city"]) && !empty($post["city"]) ? $post["city"] : [];
 
         $locationGroups = self::get_location_groups_with_properties("allow_cities", $selected_location_groups, $selected_country, $selected_provinces, $selected_city);
-        
+
         $cities = [];
         $lang = strtolower(App::getLocale()) == 'es' ? 'es_AR' : strtolower(App::getLocale());
 
@@ -697,7 +697,8 @@ class Sitehelper
         $query = [
             "sort" => isset($options["sort"]) && !empty($options["sort"]) ? $options["sort"] : $lang,
             "order" => isset($options["order"]) && !empty($options["order"]) ? $options["order"] : "ASC", // DESC , ASC
-            "prop_status" => isset(self::$status) && !empty(self::$status) ? self::$status : ['Available', 'Under Offer']
+            "prop_status" => isset(self::$status) && !empty(self::$status) ? self::$status : ['Available', 'Under Offer'],
+            "similar_commercials" => config('params.similar_commercials', 'only_similar')
         ];
 
         if (isset($types) && !empty($types)) {
@@ -768,7 +769,7 @@ class Sitehelper
 
         $query = [
             "sort" => isset($options["sort"]) && !empty($options["sort"]) ? $options["sort"] : $lang,
-            "order" => isset($options["order"]) && !empty($options["order"]) ? $options["order"] : "ASC", // DESC , ASC            
+            "order" => isset($options["order"]) && !empty($options["order"]) ? $options["order"] : "ASC", // DESC , ASC
             "frontend_api" => 1,
             "prop_status" => isset(self::$status) && !empty(self::$status) ? self::$status : ['Available', 'Under Offer']
         ];
@@ -843,11 +844,11 @@ class Sitehelper
     public static function removeRequestParams($remove_params = [])
     {
         //start remove from request()
-        $remove_request_data = request()->all();  
+        $remove_request_data = request()->all();
         unset($remove_request_data['resale'], $remove_request_data['project']);
         request()->replace($remove_request_data);
         //end remove from request()
-        
+
         unset($_GET["resale"], $_GET["project"]);
         unset($_POST["resale"], $_POST["project"]);
 
