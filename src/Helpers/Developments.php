@@ -188,9 +188,16 @@ class Developments
             $url .= '&model='.$get['model'];
         }
 
+        // only_similar (only similar/with their units), exclude_similar (one per group + all not part of group), include_similar (all properties)
+        if(isset($get['similar_commercials']) && !empty($get['similar_commercials'])) {
+            $url .= '&similar_commercials='.$get['similar_commercials'];
+        } else {
+            $url .= '&similar_commercials='.config('params.similar_commercials', 'include_similar');
+        }
+
         $JsonData = Functions::getCRMData($url, false);
         $property = json_decode($JsonData);
-        
+
         $return_data = [];
         $attachments = [];
         $floor_plans = [];
@@ -217,7 +224,7 @@ class Developments
             $return_data['title'] = $property->property->title->$lang;
         else
             $return_data['title'] = 'N/A';
-            
+
         if (isset($property->property->city) && $property->property->city != '')
             $return_data['city'] = $property->property->city;
 
@@ -246,7 +253,7 @@ class Developments
         }
         if (isset($property->property->province)) {
             $return_data['province'] = $property->property->province;
-        }      
+        }
         if (isset($property->property->bedrooms_from) && $property->property->bedrooms_from > 0) {
             $return_data['bedrooms_from'] = $property->property->bedrooms_from;
         }
@@ -286,7 +293,7 @@ class Developments
         if (isset($property->property->videos) && $property->property->videos > 0) {
             $return_data['videos'] = $property->property->videos;
         }
-        
+
         if (isset($property->property->own) && $property->property->own == true && isset($property->agency_logo) && !empty($property->agency_logo)) {
             $return_data['agency_logo'] = 'https://images.optima-crm.com/agencies/' . (isset(self::$agency) ? self::$agency : '') . '/' . (isset($property->agency_logo->logo->name) ? $property->agency_logo->logo->name : '');
         } elseif (isset($property->agency_logo) && !empty($property->agency_logo)) {
@@ -327,7 +334,7 @@ class Developments
                 }
             }
             $return_data['home_staging'] = $home_staging;
-        }  
+        }
 
         if (isset($property->documents) && count($property->documents) > 0) {
             foreach ($property->documents as $pic) {
@@ -341,7 +348,7 @@ class Developments
                         );
                     }
                 }
-              
+
             }
 
             $return_data['floor_plans'] = $floor_plans;
@@ -434,8 +441,8 @@ class Developments
                 $data['sale'] = $value->property->sale;
             if (isset($value->property->rent) && $value->property->rent == 1)
                 $data['rent'] = $value->property->rent;
-            if (isset($value->property->oldprice->price_on_demand) && $value->property->oldprice->price_on_demand == true) 
-                $data['price_on_demand'] = true;     
+            if (isset($value->property->oldprice->price_on_demand) && $value->property->oldprice->price_on_demand == true)
+                $data['price_on_demand'] = true;
             if (isset($value->property->currentprice) && $value->property->currentprice > 0)
                 $data['currentprice'] = str_replace(',', '.', (number_format((int) ($value->property->currentprice))));
             if (isset($value->property->price_from) && $value->property->price_from > 0)
@@ -504,7 +511,7 @@ class Developments
             }
             $properties[] = $data;
         }
-        // commercial properties 
+        // commercial properties
         $commercial_properties = [];
         if(isset($get['model']) && !empty($get['model'])){
             foreach ($property->properties as $key => $value) {
@@ -626,7 +633,7 @@ class Developments
         $return_data['property_features']['distances'] = $distances;
         $return_data['properties'] = $properties;
         $return_data['commercial_properties'] = $commercial_properties;
-        
+
         return $return_data;
     }
 

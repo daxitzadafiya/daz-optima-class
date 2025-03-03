@@ -156,7 +156,7 @@ class CommercialProperties
     
             if (isset($get['resale']) && !empty($get['resale'])) {
                 // $query['$and'] = array_merge($query['$and'] ?? [], [['project' => ['$ne' => true]]]); //change --25-01-27
-                $query['$and'] = array_merge($query['$and'] ?? [], [['$or' => [['$and' => [['project' => ['$ne' => true]],['categories.new_construction' => false]]],['categories.resale' => true]]]]);            
+                $query['$and'] = array_merge($query['$and'] ?? [], [['$or' => [['$and' => [['project' => ['$ne' => true]],['categories.new_construction' => false]]],['categories.resale' => true]]]]);
             }
         }
 
@@ -426,6 +426,14 @@ class CommercialProperties
             }
             $query['listing_agent'] = ['$in' => $intArray];
         }
+
+        // only_similar (only similar/with their units), exclude_similar (one per group + all not part of group), include_similar (all properties)
+        if(isset($get['similar_commercials']) && !empty($get['similar_commercials'])) {
+            $query['similar_commercials'] = $get['similar_commercials'];
+        } else {
+            $query['similar_commercials'] = config('params.similar_commercials', 'only_similar');
+        }
+
         return $query;
     }
 
@@ -1351,7 +1359,7 @@ class CommercialProperties
     public static function getAgencyProperties($transaction_type = 'sale', $id, $options = ['page' => 1, 'limit' => 10])
     {
         self::initialize();
-        
+
         $post_data['options'] = [
             'page' => $options['page'],
             'limit' => $options['limit'],

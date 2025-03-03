@@ -41,7 +41,7 @@ class PropertiesNew
      * @property string $query    query for properties search.
      * @property bool   $wm       send true for wm server.
      * @property bool   $cache    send true for cache response.
-     * @property array  $options  options for data response e.g. 
+     * @property array  $options  options for data response e.g.
      *                            'images_size' => 1200
      *                            'watermark_size' => 100   range is 100 - 500
      *
@@ -1121,7 +1121,7 @@ class PropertiesNew
                 if (isset($property->property->$title->$contentLang) && $property->property->$title->$contentLang != '') {
                     $return_data['title'] = $property->property->$title->$contentLang;
                 } else {
-                    //if 'default_title' in params.php is set to 'EN'. in case current language dont have title it will show title in 'EN' 
+                    //if 'default_title' in params.php is set to 'EN'. in case current language dont have title it will show title in 'EN'
                     if (isset(self::$default_title) && !empty(self::$default_title) && self::$default_title == 'EN' && isset($property->property->$title)) {
                         $lang = 'EN';
                         $return_data['title'] = isset($property->property->$title->$lang) ? $property->property->$title->$lang : '';
@@ -3038,6 +3038,13 @@ class PropertiesNew
             $query['project'] = true;
         }
 
+        // only_similar (only similar/with their units), exclude_similar (one per group + all not part of group), include_similar (all properties)
+        if(isset($get['similar_commercials']) && !empty($get['similar_commercials'])) {
+            $query['similar_commercials'] = $get['similar_commercials'];
+        } else {
+            $query['similar_commercials'] = config('params.similar_commercials', 'only_similar');
+        }
+
         return $query;
     }
 
@@ -3102,7 +3109,7 @@ class PropertiesNew
         if (!empty($type)) {
             $type = '&type=' . $type;
         }
-        
+
         $url = self::$apiUrl . 'properties/properties-with-latlang&user_apikey=' . self::$api_key . $type;
 
         if (!file_exists($file) || (file_exists($file) && time() - filemtime($file) > 2 * 3600)) {
@@ -3230,10 +3237,10 @@ class PropertiesNew
 
     /**
      * calculations
-     * @depricated don't use anywhere 
+     * @depricated don't use anywhere
      */
     public static function calculations($pref, $date_from, $date_to, $nosleeps)
-    {        
+    {
         Carbon::now('Europe/Paris');
         $agency = PropertiesNew::getAgency();
         $rental_prices = [];
@@ -3423,7 +3430,7 @@ class PropertiesNew
             $_SESSION["pricerate"] = 1;
         }
     }
-    
+
     public static function getPropertyRentalPrice($property, $arrival, $departure)
     {
         self::initialize();
@@ -3472,7 +3479,7 @@ class PropertiesNew
         } else {
             $file_data = file_get_contents($file);
         }
-        
+
         return json_decode($file_data, TRUE);
     }
 
