@@ -16,20 +16,6 @@ class PropertiesNew
 {
     use ConfigTrait;
 
-    public $type_one;
-    public $type_two;
-    public $bedrooms;
-    public $bathrooms;
-    public $currentprice;
-    public $address_comments;
-    public $own;
-    public $sale;
-    public $owner_id;
-    public $address;
-    public $latitude;
-    public $longitude;
-    public $status;
-
     public function rules()
     {
         return [[['type_one', 'type_two', 'bedrooms', 'bathrooms', 'status', 'currentprice', 'address', 'latitude', 'longitude', 'address_comments', 'sale', 'owner_id', 'own'], 'safe']];
@@ -78,7 +64,7 @@ class PropertiesNew
         }
 
 
-        $JsonData = $cache ? self::DoCache($query, $url) : Http::get(urlencode($url));
+        $JsonData = $cache ? self::DoCache($query, $url) : Http::get($url);
 
         if (strpos($query, '&latlng=true') !== false || strpos($query, '&just_external_reference=true') !== false ||  strpos($query, '&just_agency_reference=true') !== false || strpos($query, '&just_reference=true') !== false) {
             return json_decode($JsonData, true); // Decode and return early
@@ -923,6 +909,11 @@ class PropertiesNew
                     $data['property_features']['pool_size'] = $pool_size;
                     $data['property_features']['condition'] = $condition;
                     $data['property_features']['videos'] = $videos;
+
+                    if (isset($property->property->similar_commercials) && !empty($property->property->similar_commercials)) {
+                        $data['similar_commercials'] = $property->property->similar_commercials;
+                    }
+
                     $return_data[] = $data;
                 }
             }
@@ -983,7 +974,11 @@ class PropertiesNew
                 }
             }
 
-            $property = Http::get(urlencode($url))->json();
+
+            $property = Http::get($url);
+
+            $property = json_decode($property);
+
 
             if (isset($property->property->reference)) {
                 $settings = Cms::settings();
@@ -1321,7 +1316,7 @@ class PropertiesNew
                 }
 
                 if (isset($property->property->floors) && !empty($property->property->floors)) {
-                    $return_data['floors'] = $property->property->floors->toArray();
+                    $return_data['floors'] = (array) $property->property->floors;
                 }
 
                 if (isset($property->view_count) && !empty($property->view_count)) {
@@ -2497,6 +2492,10 @@ class PropertiesNew
                     }
                 }
 
+                if (isset($property->property->similar_commercials) && !empty($property->property->similar_commercials)) {
+                    $return_data['similar_commercials'] = $property->property->similar_commercials;
+                }
+
                 $return_data['property_features'] = [];
                 $return_data['property_features']['condition'] = $condition;
                 $return_data['property_features']['categories'] = $categories;
@@ -3035,14 +3034,14 @@ class PropertiesNew
         }
 
         if (isset($get['new_construction']) && !empty($get['new_construction'])) {
-            $query['project'] = true;
+            $query .= '&project=true';
         }
 
         // only_similar (only similar/with their units), exclude_similar (one per group + all not part of group), include_similar (all properties)
         if(isset($get['similar_commercials']) && !empty($get['similar_commercials'])) {
-            $query['similar_commercials'] = $get['similar_commercials'];
+            $query .= '&similar_commercials=' . $get['similar_commercials'];
         } else {
-            $query['similar_commercials'] = config('params.similar_commercials', 'only_similar');
+            $query .= '&similar_commercials=' . config('params.similar_commercials', 'only_similar');
         }
 
         return $query;

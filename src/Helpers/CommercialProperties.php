@@ -130,7 +130,7 @@ class CommercialProperties
             if(isset($get['price_from']) && !empty($get['price_from'])){
                 $current_price['$gte'] = (int) $get['price_from'];
             }
-            
+
             if(isset($get['price_to']) && !empty($get['price_to'])){
                 $current_price['$lte'] = (int) $get['price_to'];
             }
@@ -153,7 +153,7 @@ class CommercialProperties
                 // $query['$and'] = [['project' => ['$exists' => true]], ["project" => (bool) $get['project']]]; //change --25-01-27
                 $query['$and'] = [['$or' => [['project' => true], ['categories.new_construction' => true]]]];
             }
-    
+
             if (isset($get['resale']) && !empty($get['resale'])) {
                 // $query['$and'] = array_merge($query['$and'] ?? [], [['project' => ['$ne' => true]]]); //change --25-01-27
                 $query['$and'] = array_merge($query['$and'] ?? [], [['$or' => [['$and' => [['project' => ['$ne' => true]],['categories.new_construction' => false]]],['categories.resale' => true]]]]);
@@ -1219,6 +1219,10 @@ class CommercialProperties
         if (isset($property['year_built']) && $property['year_built']) {
             $year_built_date = new DateTime($property['year_built'], new DateTimeZone('UTC'));
             $f_property['year_built'] = $year_built_date->format('d-m-Y');
+        }
+
+        if (isset($property['similar_commercials']) && !empty($property['similar_commercials'])) {
+            $f_property['similar_commercials'] = $property['similar_commercials'];
         }
 
         return $f_property;
