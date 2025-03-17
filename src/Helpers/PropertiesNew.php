@@ -3041,7 +3041,7 @@ class PropertiesNew
         if(isset($get['similar_commercials']) && !empty($get['similar_commercials'])) {
             $query .= '&similar_commercials=' . $get['similar_commercials'];
         } else {
-            $query .= '&similar_commercials=' . config('params.similar_commercials', 'only_similar');
+            $query .= '&similar_commercials=' . config('params.similar_commercials', 'include_similar');
         }
 
         return $query;

@@ -468,7 +468,7 @@ class Dropdowns
         $transaction_types = isset($params['transaction_types']) ? $params['transaction_types'] : [];
         $query = isset($transaction_types) && !empty($transaction_types) ? array_merge($query, $transaction_types) : $query;
         $query['prop_status'] = isset(self::$status) && !empty(self::$status) ? self::$status : ['Available','Under Offer','Sold'];
-        $query['similar_commercials'] = config('params.similar_commercials', 'only_similar');
+        $query['similar_commercials'] = config('params.similar_commercials', 'include_similar');
 
         if(isset($types) && !empty($types)){
             foreach($types as $p_type){

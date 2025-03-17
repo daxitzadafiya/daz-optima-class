@@ -698,7 +698,7 @@ class Sitehelper
             "sort" => isset($options["sort"]) && !empty($options["sort"]) ? $options["sort"] : $lang,
             "order" => isset($options["order"]) && !empty($options["order"]) ? $options["order"] : "ASC", // DESC , ASC
             "prop_status" => isset(self::$status) && !empty(self::$status) ? self::$status : ['Available', 'Under Offer'],
-            "similar_commercials" => config('params.similar_commercials', 'only_similar')
+            "similar_commercials" => config('params.similar_commercials', 'include_similar')
         ];
 
         if (isset($types) && !empty($types)) {
