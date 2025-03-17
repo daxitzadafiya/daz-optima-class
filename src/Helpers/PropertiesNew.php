@@ -2915,6 +2915,13 @@ class PropertiesNew
         }
         if (isset($get["reference"]) && $get["reference"] != "") {
             $query .= '&' . (isset($cms_settings['general_settings']['reference']) ? $cms_settings['general_settings']['reference'] : 'reference') . '=' . $get['reference'];
+        } else {
+            // only_similar (only similar/with their units), exclude_similar (one per group + all not part of group), include_similar (all properties)
+            if(isset($get['similar_commercials']) && !empty($get['similar_commercials'])) {
+                $query .= '&similar_commercials=' . $get['similar_commercials'];
+            } else {
+                $query .= '&similar_commercials=' . config('params.similar_commercials', 'include_similar');
+            }
         }
         if (isset($get["agency_reference"]) && $get["agency_reference"] != "") {
             $query .= '&agency_reference=' . $get['agency_reference'];
@@ -3038,11 +3045,11 @@ class PropertiesNew
         }
 
         // only_similar (only similar/with their units), exclude_similar (one per group + all not part of group), include_similar (all properties)
-        if(isset($get['similar_commercials']) && !empty($get['similar_commercials'])) {
-            $query .= '&similar_commercials=' . $get['similar_commercials'];
-        } else {
-            $query .= '&similar_commercials=' . config('params.similar_commercials', 'include_similar');
-        }
+        // if(isset($get['similar_commercials']) && !empty($get['similar_commercials'])) {
+        //     $query .= '&similar_commercials=' . $get['similar_commercials'];
+        // } else {
+        //     $query .= '&similar_commercials=' . config('params.similar_commercials', 'include_similar');
+        // }
 
         return $query;
     }

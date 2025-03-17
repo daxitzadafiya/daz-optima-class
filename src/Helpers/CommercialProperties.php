@@ -144,6 +144,13 @@ class CommercialProperties
                 ["other_reference" => ['$regex' => ".*" . $get['reference'] . ".*", '$options' => "i"]],
                 ["external_reference" => ['$regex' => ".*" . $get['reference'] . ".*", '$options' => "i"]]
             ];
+        } else {
+            // only_similar (only similar/with their units), exclude_similar (one per group + all not part of group), include_similar (all properties)
+            if(isset($get['similar_commercials']) && !empty($get['similar_commercials'])) {
+                $query['similar_commercials'] = $get['similar_commercials'];
+            } else {
+                $query['similar_commercials'] = config('params.similar_commercials', 'include_similar');
+            }
         }
 
         if(isset($get['project']) && !empty($get['project']) && isset($get['resale']) && !empty($get['resale'])){
@@ -428,11 +435,11 @@ class CommercialProperties
         }
 
         // only_similar (only similar/with their units), exclude_similar (one per group + all not part of group), include_similar (all properties)
-        if(isset($get['similar_commercials']) && !empty($get['similar_commercials'])) {
-            $query['similar_commercials'] = $get['similar_commercials'];
-        } else {
-            $query['similar_commercials'] = config('params.similar_commercials', 'include_similar');
-        }
+        // if(isset($get['similar_commercials']) && !empty($get['similar_commercials'])) {
+        //     $query['similar_commercials'] = $get['similar_commercials'];
+        // } else {
+        //     $query['similar_commercials'] = config('params.similar_commercials', 'include_similar');
+        // }
 
         return $query;
     }
