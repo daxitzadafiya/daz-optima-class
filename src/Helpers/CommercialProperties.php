@@ -656,6 +656,10 @@ class CommercialProperties
             $f_property['created_at'] = is_numeric($property['created_at']) ? $property['created_at'] : strtotime($property['created_at']);
         }
 
+        if (isset($property['updated_at']) && !empty($property['updated_at'])) {
+            $f_property['updated_at'] = is_numeric($property['updated_at']) ? $property['updated_at'] : strtotime($property['updated_at']);
+        }
+
         if (isset($property['featured'])) {
             $f_property['featured'] = $property['featured'];
         }
