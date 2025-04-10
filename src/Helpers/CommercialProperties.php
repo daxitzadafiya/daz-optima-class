@@ -477,8 +477,8 @@ class CommercialProperties
 
         if (isset($settings['general_settings']['reference']) && $settings['general_settings']['reference'] != 'reference') {
             $ref = $settings['general_settings']['reference'];
-            // $f_property['reference'] = isset($property[$ref]) ? $property[$ref] : (isset($property['agency_data'][$ref]) ? $property['agency_data'][$ref] . '-' . $property['reference'] : '');
-            $f_property['reference'] = isset($property[$ref]) && !empty($property[$ref]) ? $property[$ref] : ($ref == 'agency_reference' ? (isset($property['other_reference']) && !empty($property['other_reference']) ? $property['other_reference'] : '') : '');
+            $reference = isset($property['reference']) && !empty($property['reference']) ? $property['reference'] : '';
+            $f_property['reference'] = isset($property[$ref]) && !empty($property[$ref]) ? $property[$ref] : ($ref == 'agency_reference' ? (isset($property['other_reference']) && !empty($property['other_reference']) ? $property['other_reference'] : $reference) : $reference);
         } else {
             $f_property['reference'] = isset($property['reference']) && !empty($property['reference']) ? $property['reference'] : '';
         }
