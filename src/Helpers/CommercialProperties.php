@@ -471,20 +471,35 @@ class CommercialProperties
 
         $f_property = [];
 
-        if (isset($property['other_reference']) && !empty($property['other_reference'])) {
-            $f_property['other_reference'] = $property['other_reference'];
+        if (isset($property['external_reference']) && !empty($property['external_reference'])) {
+            $f_property['other_reference'] = $property['external_reference']; // this is due to a historical change
         }
 
         if (isset($settings['general_settings']['reference']) && $settings['general_settings']['reference'] != 'reference') {
             $ref = $settings['general_settings']['reference'];
             $reference = isset($property['reference']) && !empty($property['reference']) ? $property['reference'] : '';
-            $f_property['reference'] = isset($property[$ref]) && !empty($property[$ref]) ? $property[$ref] : ($ref == 'agency_reference' ? (isset($property['other_reference']) && !empty($property['other_reference']) ? $property['other_reference'] : $reference) : $reference);
+            
+            if(isset($property[$ref]) && !empty($property[$ref]) ) {
+                if($ref == "external_reference"){
+                    $f_property['reference'] = isset($property['other_reference']) && !empty($property['other_reference']) ? $property['other_reference'] : $reference; // this is due to a historical change
+                } else if($ref == 'agency_reference') {
+                    $f_property['reference'] = isset($property['external_reference']) && !empty($property['external_reference']) ? $property['external_reference'] : $reference; // this is due to a historical change
+                } else {
+                    $f_property['reference'] = isset($property[$ref]) && !empty($property[$ref]) ? $property[$ref] : $reference;
+                }
+            } else if($ref == 'agency_reference') {
+                $f_property['reference'] = isset($property['external_reference']) && !empty($property['external_reference']) ? $property['external_reference'] : $reference; // this is due to a historical change
+            } else if($ref == "external_reference") {
+                $f_property['reference'] = isset($property['other_reference']) && !empty($property['other_reference']) ? $property['other_reference'] : $reference; // this is due to a historical change
+            } else {
+                $f_property['reference'] = $reference;
+            }
         } else {
             $f_property['reference'] = isset($property['reference']) && !empty($property['reference']) ? $property['reference'] : '';
         }
 
-        if (isset($property['external_reference']) && !empty($property['external_reference'])) {
-            $f_property['external_reference'] = $property['external_reference'];
+        if (isset($property['other_reference']) && !empty($property['other_reference'])) {
+            $f_property['external_reference'] = $property['other_reference']; // this is due to a historical change
         }
 
         $agency = '';
