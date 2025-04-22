@@ -213,6 +213,7 @@ class ContactUsRequest extends FormRequest
             'reCaptcha' => $this->isReCaptchaEnabled() ? 'required' : 'nullable',
             'verifyCode' => [$this->verifyCode !== null ? 'required' : 'nullable'],
             'reCaptcha3' => $this->isReCaptchaV3Enabled() ? 'required' : 'nullable',
+            'action' => $this->isReCaptchaV3Enabled() ? 'required' : 'nullable',
         ];
     }
 
@@ -240,8 +241,20 @@ class ContactUsRequest extends FormRequest
 
             if(isset($this->reCaptcha) && !empty($this->reCaptcha)) {
                 $recaptcha_secret_site_key = config('params.recaptcha_secret_site_key');
-                if(!(ReCaptcha::verifyResponse($this->reCaptcha, Request::ip()) && (!empty($recaptcha_secret_site_key) && $this->reCaptcha !== 'null'))) {
+                if(!(ReCaptcha::verifyResponse($this->reCaptcha, Request::ip(), 'v2') && (!empty($recaptcha_secret_site_key) && $this->reCaptcha !== 'null'))) {
                     $validator->errors()->add('reCaptcha', Translate::t('invalid reCAPTCHA!'));
+                }
+            }
+
+            if(isset($this->reCaptcha3) && !empty($this->reCaptcha3)) {
+                $recaptcha_secret_site_key = config('params.recaptcha_secret_site_key');
+                $response = ReCaptcha::verifyResponse($this->reCaptcha3, Request::ip(), 'v3');
+                if(isset($response) && !empty($response)) {
+                    if($response['success'] === false || (($response['score'] ?? 0) < config('params.recaptcha_threshold', 0.5)) || (($response['action'] ?? '') !== $this->action)) {
+                        $validator->errors()->add('reCaptcha3', Translate::t('invalid reCAPTCHA!'));
+                    }
+                } else {
+                    $validator->errors()->add('reCaptcha3', Translate::t('invalid reCAPTCHA!'));
                 }
             }
         });

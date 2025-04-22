@@ -100,9 +100,8 @@ class Functions
 
     public static function reCaptcha3($name = 'recaptcha_token', $id = 'recaptchaToken', $options = [])
     {
-        $siteKey = config('params.recaptcha_site_key', env('RECAPTCHA_SITE_KEY'));
-
-        return '<input type="hidden" name="' . $name . '" id="' . $id . '" value="">';
+        return '<input type="hidden" name="' . $name . '" id="' . $id . '" value="">
+        <input type="hidden" name="action" id="' . $id . '_action" value="">';
     }
 
     public static function siteSendEmail($object, $redirect_url = null)
