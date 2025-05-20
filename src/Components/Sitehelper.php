@@ -854,7 +854,7 @@ class Sitehelper
 
     }
 
-    public static function get_geography_available($post, $types = "allow_cities")
+    public static function get_geography_available($post, $types = "allow_cities", $key_system = "key", $value_system = "value", $parent_key = "", $top_level_category = '', $sequence = '')
     {
         $lang = App::getLocale() == 'es' ? 'es_AR' : App::getLocale();
 
@@ -864,14 +864,53 @@ class Sitehelper
         $selected_city = isset($post["city"]) && !empty($post["city"]) ? $post["city"] : [];
 
         $locationGroups = self::get_location_groups_with_properties($types, $selected_location_groups, $selected_country, $selected_provinces, $selected_city);
+
         $geographies = [];
+
         $lang = strtolower(App::getLocale()) == 'es' ? 'es_AR' : strtolower(App::getLocale());
 
         if (isset($locationGroups["docs"]) && !empty($locationGroups["docs"])) {
             foreach ($locationGroups['docs'] as $locationGroup) {
                 if (isset($locationGroup) && !empty($locationGroup)) {
-                    $geographies[$locationGroup['key']]['option_key'] = isset($locationGroup['key']) && !empty($locationGroup['key']) ? $locationGroup['key'] : '';
-                    $geographies[$locationGroup['key']]['option_value'] = isset($locationGroup["value"][$lang]) && !empty($locationGroup["value"][$lang]) ? $locationGroup["value"][$lang] : (isset($locationGroup["value"]["en"]) && !empty($locationGroup["value"]["en"]) ? $locationGroup["value"]["en"] : "");
+                    if (isset($locationGroup[$value_system]) && !empty($locationGroup[$value_system]) && is_array($locationGroup[$value_system])) {
+                        foreach ($locationGroup[$value_system] as $value) {
+
+                            if (!isset($value[$key_system]) || empty($value[$key_system])) {
+                                continue;
+                            }
+                            
+                            $geographies[$value[$key_system]]['option_key'] = isset($value[$key_system]) && !empty($value[$key_system]) ? $value[$key_system] : '';
+
+                            $geographies[$value[$key_system]]['option_value'] = isset($value[$lang]) && !empty($value[$lang]) ? $value[$lang] : (isset($value["en"]) && !empty($value["en"]) ? $value["en"] : "");
+
+                            if (isset($value[$parent_key]) && !empty($value[$parent_key])) {
+                                $geographies[$value[$key_system]][$parent_key] = $value[$parent_key];
+                            }
+
+                            if (isset($locationGroup[$top_level_category]) && !empty($locationGroup[$top_level_category])) {
+                                $geographies[$value[$key_system]][$top_level_category] = $locationGroup[$top_level_category];
+                            }
+
+                            if (isset($locationGroup[$sequence]) && !empty($locationGroup[$sequence])) {
+                                $geographies[$value[$key_system]][$sequence] = $locationGroup[$sequence];
+                            }
+                        }
+                    } else {
+                        if (isset($locationGroup[$key_system]) && !empty($locationGroup[$key_system]) && isset($locationGroup[$value_system]) && !empty($locationGroup[$value_system])) {
+
+                            $geographies[$locationGroup[$key_system]]['option_key'] = isset($locationGroup[$key_system]) && !empty($locationGroup[$key_system]) ? $locationGroup[$key_system] : '';
+
+                            $geographies[$locationGroup[$key_system]]['option_value'] = isset($locationGroup[$value_system][$lang]) && !empty($locationGroup[$value_system][$lang]) ? $locationGroup[$value_system][$lang] : (isset($locationGroup[$value_system]["en"]) && !empty($locationGroup[$value_system]["en"]) ? $locationGroup[$value_system]["en"] : "");
+
+                            if (isset($locationGroup[$top_level_category]) && !empty($locationGroup[$top_level_category])) {
+                                $geographies[$locationGroup[$key_system]][$top_level_category] = $locationGroup[$top_level_category];
+                            }
+
+                            if (isset($locationGroup[$sequence]) && !empty($locationGroup[$sequence])) {
+                                $geographies[$locationGroup[$key_system]][$sequence] = $locationGroup[$sequence];
+                            }
+                        }
+                    }
                 }
             }
         }
