@@ -900,7 +900,7 @@ class Sitehelper
 
                             $geographies[$locationGroup[$key_system]]['option_key'] = isset($locationGroup[$key_system]) && !empty($locationGroup[$key_system]) ? $locationGroup[$key_system] : '';
 
-                            $geographies[$locationGroup[$key_system]]['option_value'] = isset($locationGroup[$value_system][$lang]) && !empty($locationGroup[$value_system][$lang]) ? $locationGroup[$value_system][$lang] : (isset($locationGroup[$value_system]["en"]) && !empty($locationGroup[$value_system]["en"]) ? $locationGroup[$value_system]["en"] : "");
+                            $geographies[$locationGroup[$key_system]]['option_value'] = isset($locationGroup[$value_system][$lang]) && !empty($locationGroup[$value_system][$lang]) ? $locationGroup[$value_system][$lang] : (isset($locationGroup[$value_system]["en"]) && !empty($locationGroup[$value_system]["en"]) ? $locationGroup[$value_system]["en"] : (isset($locationGroup[$value_system]) ? $locationGroup[$value_system] : ""));
 
                             if (isset($locationGroup[$top_level_category]) && !empty($locationGroup[$top_level_category])) {
                                 $geographies[$locationGroup[$key_system]][$top_level_category] = $locationGroup[$top_level_category];
