@@ -63,8 +63,8 @@ class Sitehelper
         self::initialize();
         $settings = self::get_settings($object);
 
-        $favicon =  isset($settings['header']['favicon']['name']) ? '<link rel="icon" sizes="48x48" type="image/png" href="https://images.optima-crm.com/cms_settings/'. self::$template . '/' . $settings['header']['favicon']['name'] .'">' : '';
-        $favicon .=  isset($settings['header']['favicon']['name']) ? '<link rel="apple-touch-icon" sizes="48x48" type="image/png" href="https://images.optima-crm.com/cms_settings/'. self::$template . '/' . $settings['header']['favicon']['name'] .'">' : '';
+        $favicon =  isset($settings['header']['favicon']['name']) ? '<link rel="icon" sizes="48x48" type="image/png" href="https://images.optima-crm.com/cms_settings/' . self::$template . '/' . $settings['header']['favicon']['name'] . '">' : '';
+        $favicon .=  isset($settings['header']['favicon']['name']) ? '<link rel="apple-touch-icon" sizes="48x48" type="image/png" href="https://images.optima-crm.com/cms_settings/' . self::$template . '/' . $settings['header']['favicon']['name'] . '">' : '';
 
         return $favicon;
     }
@@ -100,7 +100,7 @@ class Sitehelper
      */
     public static function get_settings($object)
     {
-        if(!$object->has('settings')) {
+        if (!$object->has('settings')) {
             $object->set('settings', Cms::settings());
         }
 
@@ -116,7 +116,7 @@ class Sitehelper
      */
     public static function get_custom_settings($object)
     {
-        if(!$object->has('custom_settings')) {
+        if (!$object->has('custom_settings')) {
             $object->set('custom_settings', Cms::custom_settings());
         }
 
@@ -132,7 +132,7 @@ class Sitehelper
      */
     public static function get_page_data($object)
     {
-        if(!$object->has('page_data')) {
+        if (!$object->has('page_data')) {
             $object->set('page_data', []);
         }
 
@@ -189,9 +189,9 @@ class Sitehelper
      */
     public static function get_post_custom_settings($object)
     {
-        if($object->has('post_custom_settings')) {
+        if ($object->has('post_custom_settings')) {
             return $object->get('post_custom_settings');
-        } else if($object->has('post')) {
+        } else if ($object->has('post')) {
             $post = self::get_post($object);
             $customSettings = Cms::custom_settings($post['custom_settings']);
             $object->set('post_custom_settings', $customSettings);
@@ -213,11 +213,11 @@ class Sitehelper
     public static function registerCanonicalTag($object, $link = '')
     {
         if (!empty($link)) {
-            return '<link rel="canonical" href="'. $link .'">';
+            return '<link rel="canonical" href="' . $link . '">';
         } else {
             $path = $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
             if (isset($path)) {
-                return '<link rel="canonical" href="https://'. $path .'">';
+                return '<link rel="canonical" href="https://' . $path . '">';
             }
         }
     }
@@ -299,96 +299,93 @@ class Sitehelper
             $meta_desc = (isset($property['meta_desc']) && !empty($property['meta_desc'])) ? $property['meta_desc'] : ((isset($property['rental_meta_desc']) && !empty($property['rental_meta_desc'])) ? $property['rental_meta_desc'] : (isset(Sitehelper::get_page_data($object)['meta_desc']) && !empty(Sitehelper::get_page_data($object)['meta_desc']) ? Sitehelper::get_page_data($object)['meta_desc'] : ""));
             $object->title = $meta_title;
 
-            $propertyMeta = isset($meta_desc) && !empty($meta_desc) ? '<meta name="description" content="'. $meta_desc .'">' : '';
+            $propertyMeta = isset($meta_desc) && !empty($meta_desc) ? '<meta name="description" content="' . $meta_desc . '">' : '';
 
-            $propertyMeta .= isset($property['meta_keywords']) && !empty($property['meta_keywords']) ? '<meta name="keywords" content="'. $property['meta_keywords'] .'">' : '';
+            $propertyMeta .= isset($property['meta_keywords']) && !empty($property['meta_keywords']) ? '<meta name="keywords" content="' . $property['meta_keywords'] . '">' : '';
 
             $propertyMeta .= '<meta property="og:url" content="' . (isset($page_custom_settings['canonical_link']) && !empty($page_custom_settings['canonical_link']) ? $page_custom_settings['canonical_link'] : ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https://" : "http://") . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'])) . '">';
 
-            $propertyMeta .= '<meta property="og:image" content="'. (isset($property['attachments'][0]) && !empty($property['attachments'][0]) ? $property['attachments'][0] : Sitehelper::get_site_logo($object)) .'">';
+            $propertyMeta .= '<meta property="og:image" content="' . (isset($property['attachments'][0]) && !empty($property['attachments'][0]) ? $property['attachments'][0] : Sitehelper::get_site_logo($object)) . '">';
 
             $propertyMeta .= '<meta property="og:type" content="property">';
 
-            $propertyMeta .= isset($meta_title) && !empty($meta_title) ? '<meta property="og:title" content="'. $meta_title .'">' : '';
+            $propertyMeta .= isset($meta_title) && !empty($meta_title) ? '<meta property="og:title" content="' . $meta_title . '">' : '';
 
-            $propertyMeta .= isset($meta_desc) && !empty($meta_desc) ? '<meta property="og:description" content="'. $meta_desc .'">' : '';
+            $propertyMeta .= isset($meta_desc) && !empty($meta_desc) ? '<meta property="og:description" content="' . $meta_desc . '">' : '';
 
-            $propertyMeta .= isset($custom_settings['fb_app_id']) && !empty($custom_settings['fb_app_id']) ? '<meta property="fb:app_id" content="'. $custom_settings['fb_app_id'] .'">' : '';
+            $propertyMeta .= isset($custom_settings['fb_app_id']) && !empty($custom_settings['fb_app_id']) ? '<meta property="fb:app_id" content="' . $custom_settings['fb_app_id'] . '">' : '';
 
-            $propertyMeta .= '<meta name="theme-color" content="'. (isset($property['meta_theme_color']) && !empty($property['meta_theme_color']) ? $property['meta_theme_color'] : '#1e1e54') .'">';
+            $propertyMeta .= '<meta name="theme-color" content="' . (isset($property['meta_theme_color']) && !empty($property['meta_theme_color']) ? $property['meta_theme_color'] : '#1e1e54') . '">';
 
             return $propertyMeta;
-
         } elseif ($development) {
             $object->title = isset($development['meta_title']) && !empty($development['meta_title']) ? $development['meta_title'] : (isset(Sitehelper::get_page_data($object)['meta_title']) && !empty(Sitehelper::get_page_data($object)['meta_title']) ? Sitehelper::get_page_data($object)['meta_title'] : Translate::t('Real Estate Agency'));
 
-            $developmentMeta = isset($development['meta_desc']) && !empty($development['meta_desc']) ? '<meta name="description" content="'. $development['meta_desc'] .'">' : (isset(Sitehelper::get_page_data($object)['meta_desc']) && !empty(Sitehelper::get_page_data($object)['meta_desc']) ? Sitehelper::get_page_data($object)['meta_desc'] : "");
+            $developmentMeta = isset($development['meta_desc']) && !empty($development['meta_desc']) ? '<meta name="description" content="' . $development['meta_desc'] . '">' : (isset(Sitehelper::get_page_data($object)['meta_desc']) && !empty(Sitehelper::get_page_data($object)['meta_desc']) ? Sitehelper::get_page_data($object)['meta_desc'] : "");
 
-            $developmentMeta .= isset($development['keywords']) && !empty($development['keywords']) ? '<meta name="keywords" content="'. $development['keywords'] .'">' : '';
+            $developmentMeta .= isset($development['keywords']) && !empty($development['keywords']) ? '<meta name="keywords" content="' . $development['keywords'] . '">' : '';
 
             $developmentMeta .= '<meta property="og:url" content="' . (isset($page_custom_settings['canonical_link']) && !empty($page_custom_settings['canonical_link']) ? $page_custom_settings['canonical_link'] : ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https://" : "http://") . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'])) . '">';
 
-            $developmentMeta .= '<meta property="og:image" content="'. (isset($development['attachments'][0]) && !empty($development['attachments'][0]) ? $development['attachments'][0] : Sitehelper::get_site_logo($object)) .'">';
+            $developmentMeta .= '<meta property="og:image" content="' . (isset($development['attachments'][0]) && !empty($development['attachments'][0]) ? $development['attachments'][0] : Sitehelper::get_site_logo($object)) . '">';
 
             $developmentMeta .= '<meta property="og:type" content="property in development">';
 
-            $developmentMeta .= isset($development['meta_title']) && !empty($development['meta_title']) ? '<meta property="og:title" content="'. $development['meta_title'] .'">' : '';
+            $developmentMeta .= isset($development['meta_title']) && !empty($development['meta_title']) ? '<meta property="og:title" content="' . $development['meta_title'] . '">' : '';
 
-            $developmentMeta .= isset($development['meta_desc']) && !empty($development['meta_desc']) ? '<meta property="og:description" content="'. $development['meta_desc'] .'">' : '';
+            $developmentMeta .= isset($development['meta_desc']) && !empty($development['meta_desc']) ? '<meta property="og:description" content="' . $development['meta_desc'] . '">' : '';
 
-            $developmentMeta .= isset($custom_settings['fb_app_id']) && !empty($custom_settings['fb_app_id']) ? '<meta property="fb:app_id" content="'. $custom_settings['fb_app_id'] .'">' : '';
+            $developmentMeta .= isset($custom_settings['fb_app_id']) && !empty($custom_settings['fb_app_id']) ? '<meta property="fb:app_id" content="' . $custom_settings['fb_app_id'] . '">' : '';
 
-            $developmentMeta .= isset($development['meta_keywords']) && !empty($development['meta_keywords']) ? '<meta property="keywords" content="'. $development['meta_keywords'] .'">' : '';
+            $developmentMeta .= isset($development['meta_keywords']) && !empty($development['meta_keywords']) ? '<meta property="keywords" content="' . $development['meta_keywords'] . '">' : '';
 
-            $developmentMeta .= '<meta name="theme-color" content="'. (isset($development['meta_theme_color']) && !empty($development['meta_theme_color']) ? $development['meta_theme_color'] : '#1e1e54') .'">';
+            $developmentMeta .= '<meta name="theme-color" content="' . (isset($development['meta_theme_color']) && !empty($development['meta_theme_color']) ? $development['meta_theme_color'] : '#1e1e54') . '">';
 
             return $developmentMeta;
-
         } elseif ($post) {
             $object->title = isset($post['meta_title']) && !empty($post['meta_title']) ? $post['meta_title'] : (isset(Sitehelper::get_page_data($object)['meta_title']) && !empty(Sitehelper::get_page_data($object)['meta_title']) ? Sitehelper::get_page_data($object)['meta_title'] : Translate::t('Real Estate Agency'));
 
-            $postMeta = isset($post['meta_desc']) && !empty($post['meta_desc']) ? '<meta name="description" content="'. $post['meta_desc'] .'">' : (isset(Sitehelper::get_page_data($object)['meta_desc']) && !empty(Sitehelper::get_page_data($object)['meta_desc']) ? Sitehelper::get_page_data($object)['meta_desc'] : "");
+            $postMeta = isset($post['meta_desc']) && !empty($post['meta_desc']) ? '<meta name="description" content="' . $post['meta_desc'] . '">' : (isset(Sitehelper::get_page_data($object)['meta_desc']) && !empty(Sitehelper::get_page_data($object)['meta_desc']) ? Sitehelper::get_page_data($object)['meta_desc'] : "");
 
-            $postMeta .= isset($post['meta_keywords']) && !empty($post['meta_keywords']) ? '<meta name="keywords" content="'. $post['meta_keywords'] .'">' : '';
+            $postMeta .= isset($post['meta_keywords']) && !empty($post['meta_keywords']) ? '<meta name="keywords" content="' . $post['meta_keywords'] . '">' : '';
 
             $postMeta .= '<meta property="og:url" content="' . (isset($page_custom_settings['canonical_link']) && !empty($page_custom_settings['canonical_link']) ? $page_custom_settings['canonical_link'] : ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https://" : "http://") . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'])) . '">';
 
-            $postMeta .= '<meta property="og:image" content="'. (isset($post['attachments'][0]) && !empty($post['attachments'][0]) ? $post['attachments'][0] : Sitehelper::get_site_logo($object)) .'">';
+            $postMeta .= '<meta property="og:image" content="' . (isset($post['attachments'][0]) && !empty($post['attachments'][0]) ? $post['attachments'][0] : Sitehelper::get_site_logo($object)) . '">';
 
             $postMeta .= '<meta property="og:type" content="post">';
 
-            $postMeta .= isset($post['meta_title']) && !empty($post['meta_title']) ? '<meta property="og:title" content="'. $post['meta_title'] .'">' : '';
+            $postMeta .= isset($post['meta_title']) && !empty($post['meta_title']) ? '<meta property="og:title" content="' . $post['meta_title'] . '">' : '';
 
-            $postMeta .= isset($post['meta_desc']) && !empty($post['meta_desc']) ? '<meta property="og:description" content="'. $post['meta_desc'] .'">' : '';
+            $postMeta .= isset($post['meta_desc']) && !empty($post['meta_desc']) ? '<meta property="og:description" content="' . $post['meta_desc'] . '">' : '';
 
-            $postMeta .= isset($custom_settings['fb_app_id']) && !empty($custom_settings['fb_app_id']) ? '<meta property="fb:app_id" content="'. $custom_settings['fb_app_id'] .'">' : '';
+            $postMeta .= isset($custom_settings['fb_app_id']) && !empty($custom_settings['fb_app_id']) ? '<meta property="fb:app_id" content="' . $custom_settings['fb_app_id'] . '">' : '';
 
-            $postMeta .= isset($post['meta_keywords']) && !empty($post['meta_keywords']) ? '<meta property="keywords" content="'. $post['meta_keywords'] .'">' : '';
+            $postMeta .= isset($post['meta_keywords']) && !empty($post['meta_keywords']) ? '<meta property="keywords" content="' . $post['meta_keywords'] . '">' : '';
 
-            $postMeta .= '<meta name="theme-color" content="'. (isset($post['meta_theme_color']) && !empty($post['meta_theme_color']) ? $post['meta_theme_color'] : '#1e1e54') .'">';
+            $postMeta .= '<meta name="theme-color" content="' . (isset($post['meta_theme_color']) && !empty($post['meta_theme_color']) ? $post['meta_theme_color'] : '#1e1e54') . '">';
 
             return $postMeta;
-
         } else {
             $object->title = isset(Sitehelper::get_page_data($object)['meta_title']) && !empty(Sitehelper::get_page_data($object)['meta_title']) ? self::get_page_data($object)['meta_title'] : Translate::t('Real Estate Agency');
 
-            $meta = isset(Sitehelper::get_page_data($object)['meta_desc']) && !empty(Sitehelper::get_page_data($object)['meta_desc']) ? '<meta name="description" content="'. Sitehelper::get_page_data($object)['meta_desc'] .'">' : '';
+            $meta = isset(Sitehelper::get_page_data($object)['meta_desc']) && !empty(Sitehelper::get_page_data($object)['meta_desc']) ? '<meta name="description" content="' . Sitehelper::get_page_data($object)['meta_desc'] . '">' : '';
 
-            $meta .= isset(Sitehelper::get_page_data($object)['meta_keywords']) && !empty(Sitehelper::get_page_data($object)['meta_keywords']) ? '<meta name="keywords" content="'. Sitehelper::get_page_data($object)['meta_keywords'] .'">' : '';
+            $meta .= isset(Sitehelper::get_page_data($object)['meta_keywords']) && !empty(Sitehelper::get_page_data($object)['meta_keywords']) ? '<meta name="keywords" content="' . Sitehelper::get_page_data($object)['meta_keywords'] . '">' : '';
 
             $meta .= '<meta property="og:url" content="' . (isset($page_custom_settings['canonical_link']) && !empty($page_custom_settings['canonical_link']) ? $page_custom_settings['canonical_link'] : ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https://" : "http://") . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'])) . '">';
 
-            $meta .= '<meta property="og:image" content="'. (isset($page_custom_settings['og_img']) && !empty($page_custom_settings['og_img']) ? Cms::ResizeImage($page_custom_settings['og_img'], 400) : Sitehelper::get_site_logo($object)) .'">';
+            $meta .= '<meta property="og:image" content="' . (isset($page_custom_settings['og_img']) && !empty($page_custom_settings['og_img']) ? Cms::ResizeImage($page_custom_settings['og_img'], 400) : Sitehelper::get_site_logo($object)) . '">';
 
             $meta .= '<meta property="og:type" content="website">';
 
-            $meta .= '<meta property="og:title" content="'. (isset(Sitehelper::get_page_data($object)['meta_title']) && !empty(Sitehelper::get_page_data($object)['meta_title']) ? self::get_page_data($object)['meta_title'] : Translate::t('Real Estate Agency')) .'">';
+            $meta .= '<meta property="og:title" content="' . (isset(Sitehelper::get_page_data($object)['meta_title']) && !empty(Sitehelper::get_page_data($object)['meta_title']) ? self::get_page_data($object)['meta_title'] : Translate::t('Real Estate Agency')) . '">';
 
-            $meta .= isset(Sitehelper::get_page_data($object)['meta_desc']) && !empty(Sitehelper::get_page_data($object)['meta_desc']) ? '<meta property="og:description" content="'. Sitehelper::get_page_data($object)['meta_desc'] .'">' : '';
+            $meta .= isset(Sitehelper::get_page_data($object)['meta_desc']) && !empty(Sitehelper::get_page_data($object)['meta_desc']) ? '<meta property="og:description" content="' . Sitehelper::get_page_data($object)['meta_desc'] . '">' : '';
 
-            $meta .= isset($custom_settings['fb_app_id']) && !empty($custom_settings['fb_app_id']) ? '<meta property="fb:app_id" content="'. $custom_settings['fb_app_id'] .'">' : '';
+            $meta .= isset($custom_settings['fb_app_id']) && !empty($custom_settings['fb_app_id']) ? '<meta property="fb:app_id" content="' . $custom_settings['fb_app_id'] . '">' : '';
 
-            $meta .= '<meta name="theme-color" content="'. (isset($property['meta_theme_color']) && !empty($property['meta_theme_color']) ? $property['meta_theme_color'] : '#1e1e54') .'">';
+            $meta .= '<meta name="theme-color" content="' . (isset($property['meta_theme_color']) && !empty($property['meta_theme_color']) ? $property['meta_theme_color'] : '#1e1e54') . '">';
 
             return $meta;
         }
@@ -396,17 +393,17 @@ class Sitehelper
 
     public static function get_title($object)
     {
-        return isset($object->title) && !empty($object->title) ? $object->title : env("APP_NAME") ;
+        return isset($object->title) && !empty($object->title) ? $object->title : env("APP_NAME");
     }
 
     public static function get_script($object)
     {
-        return isset($object->params["settings"]["header"]["google_analytics"]) && !empty($object->params["settings"]["header"]["google_analytics"]) ? $object->params["settings"]["header"]["google_analytics"] : "" ;
+        return isset($object->params["settings"]["header"]["google_analytics"]) && !empty($object->params["settings"]["header"]["google_analytics"]) ? $object->params["settings"]["header"]["google_analytics"] : "";
     }
 
     public static function get_body_script($object)
     {
-        return isset($object->params["settings"]["header"]["google_analytics_body"]) && !empty($object->params["settings"]["header"]["google_analytics_body"]) ? $object->params["settings"]["header"]["google_analytics_body"] : "" ;
+        return isset($object->params["settings"]["header"]["google_analytics_body"]) && !empty($object->params["settings"]["header"]["google_analytics_body"]) ? $object->params["settings"]["header"]["google_analytics_body"] : "";
     }
 
     public static function get_locations_properties_count($country = '1')
@@ -466,7 +463,7 @@ class Sitehelper
         return $url;
     }
 
-    public static function get_location_group_category($key_system = 'key_system',$lg_value = 'value',$top_level_category = 'top_level_category', $sequence = 'sequence')
+    public static function get_location_group_category($key_system = 'key_system', $lg_value = 'value', $top_level_category = 'top_level_category', $sequence = 'sequence')
     {
         $locationGroups = Dropdowns::locationGroups();
         $lang = App::getLocale() == "es" ? 'es_AR' : App::getLocale();
@@ -481,13 +478,12 @@ class Sitehelper
                 $finalFormatedSelectArray[$key]['top_level_category'] = isset($value[$top_level_category]) && !empty($value[$top_level_category]) ? ((is_array($value[$top_level_category]) ? (isset($value[$top_level_category][$lang]) && !empty($value[$top_level_category][$lang]) ? $value[$top_level_category][$lang] : Translate::t($value[$top_level_category]['en'])) : $value[$top_level_category])) : [];
 
                 $finalFormatedSelectArray[$key]['sequence'] = isset($value[$sequence]) && !empty($value[$sequence]) ? ((is_array($value[$sequence]) ? (isset($value[$sequence][$lang]) && !empty($value[$sequence][$lang]) ? $value[$sequence][$lang] : Translate::t($value[$sequence]['en'])) : $value[$sequence])) : 0;
-
             } else {
                 $finalFormatedSelectArray[$key]['option_value'] = isset($value[$lang]) ? (isset($value[$lang]) && !empty($value[$lang]) ? $value[$lang] : Translate::t($value['en'])) : '';
             }
         }
 
-       return $finalFormatedSelectArray;
+        return $finalFormatedSelectArray;
     }
 
     public static function get_all_type($active = false)
@@ -509,11 +505,11 @@ class Sitehelper
 
         if (!file_exists($file) || (file_exists($file) && time() - filemtime($file) > 2 * 3600)) {
             $response = Http::withHeaders([
-                    'Content-Type' => 'application/json',
-                    'Content-Length' => strlen(json_encode($post_data)),
-                    'Cache-Control' => 'no-cache'
-                ])->withBody(json_encode($post_data), 'application/json')
-            ->post(self::$node_url . 'commercial_types?user_apikey=' . self::$api_key);
+                'Content-Type' => 'application/json',
+                'Content-Length' => strlen(json_encode($post_data)),
+                'Cache-Control' => 'no-cache'
+            ])->withBody(json_encode($post_data), 'application/json')
+                ->post(self::$node_url . 'commercial_types?user_apikey=' . self::$api_key);
 
             file_put_contents($file, $response);
         } else {
@@ -819,7 +815,7 @@ class Sitehelper
             parse_str($params, $queryParams);
 
             // Update or add query parameter
-            if(!empty($options)){
+            if (!empty($options)) {
                 foreach ($options as $key => $value) {
                     $queryParams[$key] = $value;
                 }
@@ -851,7 +847,6 @@ class Sitehelper
 
         unset($_GET["resale"], $_GET["project"]);
         unset($_POST["resale"], $_POST["project"]);
-
     }
 
     public static function get_geography_available($post, $types = "allow_cities", $key_system = "key", $value_system = "value", $parent_key = "", $top_level_category = '', $sequence = '')
@@ -878,7 +873,7 @@ class Sitehelper
                             if (!isset($value[$key_system]) || empty($value[$key_system])) {
                                 continue;
                             }
-                            
+
                             $geographies[$value[$key_system]]['option_key'] = isset($value[$key_system]) && !empty($value[$key_system]) ? $value[$key_system] : '';
 
                             $geographies[$value[$key_system]]['option_value'] = isset($value[$lang]) && !empty($value[$lang]) ? $value[$lang] : (isset($value["en"]) && !empty($value["en"]) ? $value["en"] : "");
@@ -909,6 +904,93 @@ class Sitehelper
                             if (isset($locationGroup[$sequence]) && !empty($locationGroup[$sequence])) {
                                 $geographies[$locationGroup[$key_system]][$sequence] = $locationGroup[$sequence];
                             }
+                        }
+                    }
+                }
+            }
+        }
+
+        $geography = array_unique($geographies, SORT_REGULAR);
+        usort($geography, "self::sortedLocation");
+        return $geography;
+    }
+
+    public static function geoDataExistsProperties($types = "", $selected_groups = [], $country = [], $provinces = [], $city = [], $options = []): mixed
+    {
+        self::initialize();
+        $lang = App::getLocale() == 'es' ? 'es_AR' : App::getLocale();
+        $filename = $types . '_g' . implode('', $selected_groups) . "_c" . implode('', $country) . "_p" . implode('', $provinces) . "_t" . implode('', $city) . "_" . $lang;
+        $file = Functions::directory() . 'get_geo_data_if_exists_properties_' . md5($filename) . '.json';
+
+        $query = [
+            "sort" => isset($options["sort"]) && !empty($options["sort"]) ? $options["sort"] : $lang,
+            "order" => isset($options["order"]) && !empty($options["order"]) ? $options["order"] : "ASC", // DESC , ASC
+            "prop_status" => isset(self::$status) && !empty(self::$status) ? self::$status : ['Available', 'Under Offer'],
+            "similar_commercials" => config('params.similar_commercials', 'include_similar')
+        ];
+
+        if (isset($types) && !empty($types)) {
+            $query[$types] = true;
+        }
+
+        if (isset($selected_groups) && !empty($selected_groups)) {
+            $query["location_group"] = array_map('intval', $selected_groups);
+        }
+
+        if (isset($country) && !empty($country)) {
+            $query["country"] = ['$in' => array_map('intval', $country)];
+        }
+
+        if (isset($provinces) && !empty($provinces)) {
+            $query["province"] = ['$in' => array_map('intval', $provinces)];
+        }
+
+        if (isset($city) && !empty($city)) {
+            $query["city"] = ['$in' => array_map('intval', $city)];
+        }
+        $post_data = ["query" => $query];
+        if (!file_exists($file) || (file_exists($file) && time() - filemtime($file) > 2 * 3600)) {
+            $url = self::$node_url . 'locations/geo-data-if-property-exists?user=' . self::$user;
+            $response = Http::withHeaders([
+                'Content-Type' => 'application/json',
+                'Content-Length' => strlen(json_encode($post_data)),
+                'Cache-Control' => 'no-cache'
+            ])->post($url, $post_data);
+
+            file_put_contents($file, $response);
+        } else {
+            $response = file_get_contents($file);
+        }
+
+        return json_decode($response, TRUE);
+    }
+
+    public static function getGEODataIfExistsProperties($post = [], $types = "allow_cities", $key_system = "key", $value_system = "value", $options = [])
+    {
+        $lang = App::getLocale() == 'es' ? 'es_AR' : App::getLocale();
+
+        $selected_location_groups = isset($post["location_groups"]) && !empty($post["location_groups"]) ? $post["location_groups"] : [];
+        $selected_country = isset($post["country"]) && !empty($post["country"]) ? $post["country"] : [];
+        $selected_provinces = isset($post["provinces"]) && !empty($post["provinces"]) ? $post["provinces"] : [];
+        $selected_city = isset($post["city"]) && !empty($post["city"]) ? $post["city"] : [];
+
+        $locationGroups = self::geoDataExistsProperties($types, $selected_location_groups, $selected_country, $selected_provinces, $selected_city);
+
+        $geographies = [];
+
+        $lang = strtolower(App::getLocale()) == 'es' ? 'es_AR' : strtolower(App::getLocale());
+
+        if (isset($locationGroups["docs"]) && !empty($locationGroups["docs"])) {
+            foreach ($locationGroups['docs'] as $locationGroup) {
+                if (isset($locationGroup[$key_system]) && !empty($locationGroup[$key_system])) {
+
+                    $geographies[$locationGroup[$key_system]]['option_key'] = isset($locationGroup[$key_system]) && !empty($locationGroup[$key_system]) ? $locationGroup[$key_system] : '';
+
+                    $geographies[$locationGroup[$key_system]]['option_value'] = isset($locationGroup[$value_system][$lang]) && !empty($locationGroup[$value_system][$lang]) ? $locationGroup[$value_system][$lang] : (isset($locationGroup[$value_system]["en"]) && !empty($locationGroup[$value_system]["en"]) ? $locationGroup[$value_system]["en"] : "");
+
+                    foreach ($options as $val) {
+                        if (isset($locationGroup[$val]) && !empty($locationGroup[$val])) {
+                            $geographies[$locationGroup[$key_system]][$val] = $locationGroup[$val];
                         }
                     }
                 }
