@@ -310,12 +310,12 @@ class Functions
         return Http::get($url)->json();
     }
 
-    public static function getCRMData($url, $cache = true, $fields = array(), $auth = false)
+    public static function getCRMData($url, $cache = true, $fields = array(), $auth = false, $headers = [])
     {
-        return self::getCurlData($url, $cache);
+        return self::getCurlData($url, $cache, $fields, $auth, $headers);
     }
 
-    public static function getCurlData($url, $cache = true, $fields = array(), $auth = false)
+    public static function getCurlData($url, $cache = true, $fields = array(), $auth = false, $headers = [])
     {
         $url = str_replace(" ", "%20", $url);
         $curl = curl_init($url);
@@ -323,6 +323,10 @@ class Functions
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($curl, CURLOPT_VERBOSE, 1);
         curl_setopt($curl, CURLOPT_HEADER, 1);
+
+        if (!empty($headers) && is_array($headers)) {
+            curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
+        }
 
         if ($auth) {
             curl_setopt($curl, CURLOPT_USERPWD, "$auth");

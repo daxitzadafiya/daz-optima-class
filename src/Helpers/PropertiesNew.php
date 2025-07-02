@@ -974,8 +974,14 @@ class PropertiesNew
                 }
             }
 
-
-            $property = Http::get($url);
+            $headers = [
+                'Content-Type' => 'application/json',
+                'Cache-Control' => 'no-cache'
+            ];
+            if ($clientIp = Request::ip()) {
+                $headers['x-forwarded-for'] = $clientIp;
+            }
+            $property = Http::withHeaders($headers)->get($url);
 
             $property = json_decode($property);
 

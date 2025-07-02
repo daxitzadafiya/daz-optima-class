@@ -55,7 +55,16 @@ class MooringProperties
     {
         self::initialize();
         $node_url = self::$node_url . 'api/mooring_properties/view/' . $id . '?user_apikey=' . self::$api_key;
-        $JsonData = Functions::getCRMData($node_url, false);
+        $headers = [
+            'Content-Type: application/json',
+            'Cache-Control: no-cache'
+        ];
+
+        if ($clientIp = Request::ip()) {
+            $headers[] = 'x-forwarded-for: ' . $clientIp;
+        }
+
+        $JsonData = Functions::getCRMData($node_url, false, [], false, $headers);
         $response = json_decode($JsonData, True);
         $property = self::formateProperty($response, $options=[]);     
 

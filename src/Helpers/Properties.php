@@ -979,7 +979,16 @@ class Properties
                 }
             }
 
-            $JsonData = Functions::getCRMData($url, false);
+            $headers = [
+                'Content-Type: application/json',
+                'Cache-Control: no-cache'
+            ];
+
+            if ($clientIp = Request::ip()) {
+                $headers[] = 'x-forwarded-for: ' . $clientIp;
+            }
+
+            $JsonData = Functions::getCRMData($url, false, [], false, $headers);
             $property = json_decode($JsonData);
 
             if (isset($property->property->reference)) {

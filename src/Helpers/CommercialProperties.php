@@ -105,10 +105,16 @@ class CommercialProperties
 
         $post_data = ['options' => $options];
 
-        $response = Http::withHeaders([
+        $headers = [
             'Content-Type' => 'application/json',
             'Cache-Control' => 'no-cache'
-        ])->post(self::$node_url . 'commercial_properties/view/' . $id . '?user=' . self::$user, $post_data);
+        ];
+
+        if (!isset($headers['x-forwarded-for']) && ($clientIp = Request::ip())) {
+            $headers['x-forwarded-for'] = $clientIp;
+        }
+
+        $response = Http::withHeaders($headers)->post(self::$node_url . 'commercial_properties/view/' . $id . '?user=' . self::$user, $post_data);
 
         $response = $response->json();
 

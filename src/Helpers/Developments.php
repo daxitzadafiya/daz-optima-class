@@ -195,7 +195,16 @@ class Developments
             $url .= '&similar_commercials='.config('params.similar_commercials', 'include_similar');
         }
 
-        $JsonData = Functions::getCRMData($url, false);
+        $headers = [
+            'Content-Type: application/json',
+            'Cache-Control: no-cache'
+        ];
+
+        if ($clientIp = Request::ip()) {
+            $headers[] = 'x-forwarded-for: ' . $clientIp;
+        }
+
+        $JsonData = Functions::getCRMData($url, false, [], false, $headers);
         $property = json_decode($JsonData);
 
         $return_data = [];
@@ -744,7 +753,12 @@ class Developments
         $file = $tempDirectory . '/develop_' . $query . '.json';
 
         if (!file_exists($file) || (file_exists($file) && time() - filemtime($file) > 2 * 3600)) {
-            $file_data = Functions::getCRMData($url, false);
+            $headers = [];
+            $clientIp = \Illuminate\Support\Facades\Request::ip();
+            if ($clientIp) {
+                $headers[] = 'x-forwarded-for: ' . $clientIp;
+            }
+            $file_data = Functions::getCRMData($url, false, [], false, $headers);
             file_put_contents($file, $file_data);
         } else {
             $file_data = file_get_contents($file);
