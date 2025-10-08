@@ -33,11 +33,8 @@ class MooringProperties
 
         $node_url = self::$node_url . '/api/mooring_properties/search?user_apikey=' . self::$api_key;
 
-        $response = Http::withHeaders([
-            'Content-Type' => 'application/json',
-            'Content-Length' => strlen(json_encode($query_array)),
-            'Cache-Control' => 'no-cache'
-        ])->post($node_url, $query_array)->json();
+        $headers = Functions::getApiHeaders(['Content-Length' => strlen(json_encode($query_array))]);
+        $response = Http::withHeaders($headers)->post($node_url, $query_array)->json();
 
         $properties = [];
 

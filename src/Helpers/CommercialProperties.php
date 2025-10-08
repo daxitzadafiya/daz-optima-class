@@ -71,11 +71,9 @@ class CommercialProperties
         if (isset($set_options['cache']) && $set_options['cache'] == true) {
             $response = self::DoCache($post_data, $node_url);
         } else {
-            $response = Http::withHeaders([
-                'Content-Type' => 'application/json',
-                'Content-Length' => strlen(json_encode($post_data)),
-                'Cache-Control' => 'no-cache'
-            ])->post($node_url, $post_data);
+            
+            $headers = Functions::getApiHeaders(['Content-Length' => strlen(json_encode($post_data))]);
+            $response = Http::withHeaders($headers)->post($node_url, $post_data);
         }
 
         $response = $response->json();
@@ -105,14 +103,7 @@ class CommercialProperties
 
         $post_data = ['options' => $options];
 
-        $headers = [
-            'Content-Type' => 'application/json',
-            'Cache-Control' => 'no-cache'
-        ];
-
-        if (!isset($headers['x-forwarded-for']) && ($clientIp = Request::ip())) {
-            $headers['x-forwarded-for'] = $clientIp;
-        }
+        $headers = Functions::getApiHeaders();
 
         $response = Http::withHeaders($headers)->post(self::$node_url . 'commercial_properties/view/' . $id . '?user=' . self::$user, $post_data);
 
@@ -1291,11 +1282,8 @@ class CommercialProperties
         $file = $tempDirectory . sha1($file_name) . '.json';
         if (!file_exists($file) || (file_exists($file) && time() - filemtime($file) > 2 * 3600)) {
 
-            $file_data = Http::withHeaders([
-                'Content-Type' => 'application/json',
-                'Content-Length' => strlen(json_encode($query)),
-                'Cache-Control' => 'no-cache'
-            ])->post($url, $query)->json();
+            $headers = Functions::getApiHeaders(['Content-Length' => strlen(json_encode($query))]);
+            $file_data = Http::withHeaders($headers)->post($url, $query)->json();
 
             file_put_contents($file, $file_data);
         } else {
@@ -1369,10 +1357,8 @@ class CommercialProperties
 
         $post_data["query"] = isset($map_query['ids']) && !empty($map_query['ids']) ? array_merge($post_data["query"], ["id"  => $map_query['ids']]) : $post_data["query"];
 
-        $response = Http::withHeaders([
-            'Content-Type' => 'application/json',
-            'Cache-Control' => 'no-cache'
-        ])->post($node_url, $post_data)->json();
+        $headers = Functions::getApiHeaders();
+        $response = Http::withHeaders($headers)->post($node_url, $post_data)->json();
 
         if (!File::exists($webroot)) {
             File::makeDirectory($webroot, 0755, true); // Creates the directory with proper permissions
@@ -1413,10 +1399,9 @@ class CommercialProperties
         ];
 
         $node_url = self::$node_url . 'commercial_properties/get-properties-with-transaction-types/' . $transaction_type . '?user=' . self::$user;
-        $response = Http::withHeaders([
-            'Content-Type' => 'application/json',
-            'Cache-Control' => 'no-cache'
-        ])->post($node_url, $post_data)->json();
+
+        $headers = Functions::getApiHeaders();
+        $response = Http::withHeaders($headers)->post($node_url, $post_data)->json();
 
         $properties = [];
         if (isset($response) && isset($response['docs']))
@@ -1471,11 +1456,8 @@ class CommercialProperties
 
         $node_url = self::$node_url . 'companies/search-company?user=' . self::$user;
 
-
-        return Http::withHeaders([
-            'Content-Type' => 'application/json',
-            'Cache-Control' => 'no-cache'
-        ])->post($node_url, $post_data)->json();
+        $headers = Functions::getApiHeaders();
+        return Http::withHeaders($headers)->post($node_url, $post_data)->json();
     }
 
     public static function findListingAgency($id)
@@ -1491,10 +1473,8 @@ class CommercialProperties
 
         $node_url = self::$node_url . 'companies/company-type-of-agency/' . $id;
 
-        return Http::withHeaders([
-            'Content-Type' => 'application/json',
-            'Cache-Control' => 'no-cache'
-        ])->post($node_url, $post_data)->json();
+        $headers = Functions::getApiHeaders();
+        return Http::withHeaders($headers)->post($node_url, $post_data)->json();
     }
 
     public static function findAnAgency($id)
@@ -1511,10 +1491,8 @@ class CommercialProperties
 
         $node_url = self::$node_url . 'companies/get-agency-data/' . $id;
 
-        return Http::withHeaders([
-            'Content-Type' => 'application/json',
-            'Cache-Control' => 'no-cache'
-        ])->post($node_url, $post_data)->json();
+        $headers = Functions::getApiHeaders();
+        return Http::withHeaders($headers)->post($node_url, $post_data)->json();
     }
 
     public static function createProperty($data)
@@ -1616,20 +1594,15 @@ class CommercialProperties
             }
         }
 
+        $headers = Functions::getApiHeaders();
         if (isset($data['prop_id']) && !empty($data['prop_id'])) {
             $node_url = self::$node_url . 'commercial_properties/update/' . $data['prop_id'] . '?user=' . $data['user_id'];
 
-            return Http::withHeaders([
-                'Content-Type' => 'application/json',
-                'Cache-Control' => 'no-cache'
-            ])->put($node_url, $fields)->json();
+            return Http::withHeaders($headers)->put($node_url, $fields)->json();
         } else {
             $node_url = self::$node_url . 'commercial_properties/create?user=' . $data['user_id'];
 
-            return Http::withHeaders([
-                'Content-Type' => 'application/json',
-                'Cache-Control' => 'no-cache'
-            ])->post($node_url, $fields)->json();
+            return Http::withHeaders($headers)->post($node_url, $fields)->json();
         }
     }
 
@@ -1644,10 +1617,8 @@ class CommercialProperties
             'files' => $images,
         ];
 
-        return  Http::withHeaders([
-            'Content-Type' => 'application/json',
-            'Cache-Control' => 'no-cache'
-        ])->post($node_url, $fields)->json();
+        $headers = Functions::getApiHeaders();
+        return  Http::withHeaders($headers)->post($node_url, $fields)->json();
     }
 
     public static function saveCompanyAttachments($company_id, $images, $type)
@@ -1662,10 +1633,8 @@ class CommercialProperties
             'files' => $images,
         ];
 
-        return Http::withHeaders([
-            'Content-Type' => 'application/json',
-            'Cache-Control' => 'no-cache'
-        ])->post($node_url, $fields)->json();
+        $headers = Functions::getApiHeaders();
+        return Http::withHeaders($headers)->post($node_url, $fields)->json();
     }
 
     public static function savePropertyOfInterest($data)
@@ -1683,10 +1652,8 @@ class CommercialProperties
             ],
         ];
 
-        return Http::withHeaders([
-            'Content-Type' => 'application/json',
-            'Cache-Control' => 'no-cache'
-        ])->post($node_url, $fields)->json();
+        $headers = Functions::getApiHeaders();
+        return Http::withHeaders($headers)->post($node_url, $fields)->json();
     }
 
     public static function getAllUserProperties($query, $options = ['page' => 1, 'limit' => 10], $sort = ['current_price' => '-1'])
@@ -1704,10 +1671,8 @@ class CommercialProperties
             "type" => $query['property_type'],
         ];
 
-        return Http::withHeaders([
-            'Content-Type' => 'application/json',
-            'Cache-Control' => 'no-cache'
-        ])->post($node_url, $post_data)->json();
+        $headers = Functions::getApiHeaders();
+        return Http::withHeaders($headers)->post($node_url, $post_data)->json();
     }
 
     public static function getCadastralData()
@@ -1717,7 +1682,8 @@ class CommercialProperties
 
         if (!file_exists($file) || (file_exists($file) && time() - filemtime($file) > 2 * 3600)) {
             $node_url = self::$node_url . 'commercial_properties/get-all-agencies-of-same-cadastral-number/?user=' . self::$user;
-            $file_data = Http::post($node_url)->body();
+            $headers = Functions::getApiHeaders();
+            $file_data = Http::withHeaders($headers)->post($node_url)->body();
 
             file_put_contents($file, $file_data);
         } else {
@@ -1735,10 +1701,8 @@ class CommercialProperties
             'ids' => $same_cadastral_prop_ids,
         ];
 
-        $response = Http::withHeaders([
-            'Content-Type' => 'application/json',
-            'Cache-Control' => 'no-cache'
-        ])->post($url, $query)->json();
+        $headers = Functions::getApiHeaders();
+        $response = Http::withHeaders($headers)->post($url, $query)->json();
 
         $properties = [];
 

@@ -73,11 +73,8 @@ class Dropdowns
 
             $post_data = ["query" => (object) $query, "options" => $options];
 
-            $response = Http::withHeaders([
-                'Content-Type' => 'application/json',
-                'Content-Length' => strlen(json_encode($post_data, JSON_NUMERIC_CHECK)),
-                'Cache-Control' => 'no-cache'
-            ])->post(self::$node_url . 'regions?user='. self::$user, $post_data);
+            $headers = Functions::getApiHeaders(['Content-Length' => strlen(json_encode($post_data, JSON_NUMERIC_CHECK))]);
+            $response = Http::withHeaders($headers)->post(self::$node_url . 'regions?user='. self::$user, $post_data);
 
             $data = $response->json();
             $return_data = isset($data['docs']) ? $data['docs'] : [];
@@ -139,11 +136,8 @@ class Dropdowns
 
             $post_data = ["query" => (object) $query, "options" => $options];
 
-            $response = Http::withHeaders([
-                'Content-Type' => 'application/json',
-                'Content-Length' => strlen(json_encode($post_data, JSON_NUMERIC_CHECK)),
-                'Cache-Control' => 'no-cache'
-            ])->post(self::$node_url . 'provinces?user=' . self::$user, $post_data);
+            $headers = Functions::getApiHeaders(['Content-Length' => strlen(json_encode($post_data, JSON_NUMERIC_CHECK))]);
+            $response = Http::withHeaders($headers)->post(self::$node_url . 'provinces?user=' . self::$user, $post_data);
 
             $data = $response->json();
             $return_data = isset($data['docs']) ? $data['docs'] : [];
@@ -223,11 +217,8 @@ class Dropdowns
 
             $post_data = ["query" => (object) $query, "options" => $options];
 
-            $response = Http::withHeaders([
-                'Content-Type' => 'application/json',
-                'Content-Length' => strlen(json_encode($post_data, JSON_NUMERIC_CHECK)),
-                'Cache-Control' => 'no-cache'
-            ])->post(self::$node_url . 'cities?user=' . self::$user, $post_data);
+            $headers = Functions::getApiHeaders(['Content-Length' => strlen(json_encode($post_data, JSON_NUMERIC_CHECK))]);
+            $response = Http::withHeaders($headers)->post(self::$node_url . 'cities?user=' . self::$user, $post_data);
 
             $data = $response->json();
 
@@ -323,11 +314,8 @@ class Dropdowns
 
             $post_data = ["query" => (object) $query, "options" => $options];
 
-            $response = Http::withHeaders([
-                'Content-Type' => 'application/json',
-                'Content-Length' => strlen(json_encode($post_data, JSON_NUMERIC_CHECK)),
-                'Cache-Control' => 'no-cache'
-            ])->post(self::$node_url . 'locations?user=' . self::$user, $post_data);
+            $headers = Functions::getApiHeaders(['Content-Length' => strlen(json_encode($post_data, JSON_NUMERIC_CHECK))]);
+            $response = Http::withHeaders($headers)->post(self::$node_url . 'locations?user=' . self::$user, $post_data);
 
             $data = $response->json();
 
@@ -349,11 +337,8 @@ class Dropdowns
         if (!file_exists($file) || (file_exists($file) && time() - filemtime($file) > 2 * 3600)) {
             $post_data = ["query" => (object) [], "options" => ["page" => 1, "limit" => 1000, "sort" => ["value" => 1], "select" => "_id key value agency basic_info." . self::$agency]];
 
-            $response = Http::withHeaders([
-                'Content-Type' => 'application/json',
-                'Content-Length' => strlen(json_encode($post_data)),
-                'Cache-Control' => 'no-cache'
-            ])->post(self::$node_url . 'urbanisations/dropdown?user=' . self::$user, $post_data);
+            $headers = Functions::getApiHeaders(['Content-Length' => strlen(json_encode($post_data))]);
+            $response = Http::withHeaders($headers)->post(self::$node_url . 'urbanisations/dropdown?user=' . self::$user, $post_data);
 
             $data = $response->json();
 
@@ -388,11 +373,8 @@ class Dropdowns
 
             $post_data = ["query" => (object) $query, "options" => $options];
 
-            $response = Http::withHeaders([
-                'Content-Type' => 'application/json',
-                'Content-Length' => strlen(json_encode($post_data, JSON_NUMERIC_CHECK)),
-                'Cache-Control' => 'no-cache'
-            ])->post(self::$node_url . 'urbanisations/dropdown?user=' . self::$user, $post_data);
+            $headers = Functions::getApiHeaders(['Content-Length' => strlen(json_encode($post_data, JSON_NUMERIC_CHECK))]);
+            $response = Http::withHeaders($headers)->post(self::$node_url . 'urbanisations/dropdown?user=' . self::$user, $post_data);
 
             $data = $response->json();
             $return_data = isset($data['docs']) ? $data['docs'] : [];
@@ -423,11 +405,8 @@ class Dropdowns
     {
         self::initialize();
 
-        $response = Http::withHeaders([
-            'Content-Type' => 'application/json',
-            'Content-Length' => strlen(json_encode([])),
-            'Cache-Control' => 'no-cache'
-        ])->post(self::$node_url . 'mooring_types/all?user_apikey=' . self::$api_key, []);
+        $headers = Functions::getApiHeaders(['Content-Length' => strlen(json_encode([]))]);
+        $response = Http::withHeaders($headers)->post(self::$node_url . 'mooring_types/all?user_apikey=' . self::$api_key, []);
 
         $return_data = $response->json();
 
@@ -485,11 +464,9 @@ class Dropdowns
         $post_data = ["query" => (object) $query, "options" => $options];
 
         if (!file_exists($file) || (file_exists($file) && time() - filemtime($file) > 2 * 3600)) {
-            $response = Http::withHeaders([
-                'Content-Type' => 'application/json',
-                'Content-Length' => strlen(json_encode($post_data)),
-                'Cache-Control' => 'no-cache'
-            ])->post(self::$node_url . 'commercial_types?user_apikey=' . self::$api_key, $post_data);
+
+            $headers = Functions::getApiHeaders(['Content-Length' => strlen(json_encode($post_data))]);
+            $response = Http::withHeaders($headers)->post(self::$node_url . 'commercial_types?user_apikey=' . self::$api_key, $post_data);
 
             file_put_contents($file, $response);
         }else{

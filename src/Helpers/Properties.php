@@ -72,7 +72,8 @@ class Properties
                 'favourite_ids' => request()->input('pids'),
             ];
 
-            $response = Http::asForm()->post($url, $fields)->json();
+            $headers = Functions::getApiHeaders();
+            $response = Http::withHeaders($headers)->asForm()->post($url, $fields)->json();
 
             if(request()->input('return_property') == 1) {
                 $JsonData = $response;
@@ -3314,7 +3315,8 @@ class Properties
         self::initialize();
 
         $url = self::$apiUrl . 'properties/calculate-rental-price&user_apikey=' . self::$api_key . '&property=' . $property . '&from=' . $arrival . '&to=' . $departure;
-        $json = file_get_contents($url);
+        
+        $json = Functions::getCRMData($url);
 
         return json_decode($json);
     }
@@ -3341,6 +3343,7 @@ class Properties
             'owner_id' => (isset($this->owner_id) ? $this->owner_id : null),
         );
 
-        $response = Http::asForm()->post($url, $fields);
+        $headers = Functions::getApiHeaders();
+        $response = Http::withHeaders($headers)->asForm()->post($url, $fields);
     }
 }

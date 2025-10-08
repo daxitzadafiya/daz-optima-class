@@ -504,11 +504,8 @@ class Sitehelper
         $post_data = ["query" => $query, "options" => $options];
 
         if (!file_exists($file) || (file_exists($file) && time() - filemtime($file) > 2 * 3600)) {
-            $response = Http::withHeaders([
-                'Content-Type' => 'application/json',
-                'Content-Length' => strlen(json_encode($post_data)),
-                'Cache-Control' => 'no-cache'
-            ])->withBody(json_encode($post_data), 'application/json')
+            $headers = Functions::getApiHeaders(['Content-Length' => strlen(json_encode($post_data))]);
+            $response = Http::withHeaders($headers)->withBody(json_encode($post_data), 'application/json')
                 ->post(self::$node_url . 'commercial_types?user_apikey=' . self::$api_key);
 
             file_put_contents($file, $response);
@@ -598,7 +595,8 @@ class Sitehelper
         self::initialize();
         $url = self::$apiUrl . 'cms/post-count&user=' . self::$user . '&site_id=' . self::$site_id;
 
-        $response = Http::get($url);
+        $headers = Functions::getApiHeaders();
+        $response = Http::withHeaders($headers)->get($url);
 
         return json_decode($response);
     }
@@ -720,11 +718,8 @@ class Sitehelper
         $post_data = ["query" => $query];
         if (!file_exists($file) || (file_exists($file) && time() - filemtime($file) > 2 * 3600)) {
             $url = self::$node_url . 'locationgroups/get-location-groups-with-properties?user=' . self::$user;
-            $response = Http::withHeaders([
-                'Content-Type' => 'application/json',
-                'Content-Length' => strlen(json_encode($post_data)),
-                'Cache-Control' => 'no-cache'
-            ])->post($url, $post_data);
+            $headers = Functions::getApiHeaders(['Content-Length' => strlen(json_encode($post_data))]);
+            $response = Http::withHeaders($headers)->post($url, $post_data);
 
             file_put_contents($file, $response);
         } else {
@@ -790,11 +785,8 @@ class Sitehelper
         if (!file_exists($file) || (file_exists($file) && time() - filemtime($file) > 2 * 3600)) {
             $url = self::$node_url . 'locations?user=' . self::$user;
 
-            $response = Http::withHeaders([
-                'Content-Type' => 'application/json',
-                'Content-Length' => strlen(json_encode($post_data)),
-                'Cache-Control' => 'no-cache'
-            ])->post($url, $post_data);
+            $headers = Functions::getApiHeaders(['Content-Length' => strlen(json_encode($post_data))]);
+            $response = Http::withHeaders($headers)->post($url, $post_data);
 
             file_put_contents($file, $response);
         } else {
@@ -951,11 +943,9 @@ class Sitehelper
         $post_data = ["query" => $query];
         if (!file_exists($file) || (file_exists($file) && time() - filemtime($file) > 2 * 3600)) {
             $url = self::$node_url . 'locations/geo-data-if-property-exists?user=' . self::$user;
-            $response = Http::withHeaders([
-                'Content-Type' => 'application/json',
-                'Content-Length' => strlen(json_encode($post_data)),
-                'Cache-Control' => 'no-cache'
-            ])->post($url, $post_data);
+
+            $headers = Functions::getApiHeaders(['Content-Length' => strlen(json_encode($post_data))]);
+            $response = Http::withHeaders($headers)->post($url, $post_data);
 
             file_put_contents($file, $response);
         } else {

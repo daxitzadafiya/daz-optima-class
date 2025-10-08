@@ -55,16 +55,17 @@ class PropertiesNew
 
         $url = self::$node_url . 'properties?user_apikey=' . self::$api_key . $query;
 
+        $headers = Functions::getApiHeaders();
         if (!request()->has('isConsoleRequest)') && request()->input('pids') !== null) {
             $fields = [
                 'favourite_ids' => request()->input('pids'),
             ];
 
-            return Http::asForm()->post($url, $fields)->json();
+            return Http::withHeaders($headers)->asForm()->post($url, $fields)->json();
         }
 
 
-        $JsonData = $cache ? self::DoCache($query, $url) : Http::get($url);
+        $JsonData = $cache ? self::DoCache($query, $url) : Http::withHeaders($headers)->get($url);
 
         if (strpos($query, '&latlng=true') !== false || strpos($query, '&just_external_reference=true') !== false ||  strpos($query, '&just_agency_reference=true') !== false || strpos($query, '&just_reference=true') !== false) {
             return json_decode($JsonData, true); // Decode and return early
@@ -974,13 +975,8 @@ class PropertiesNew
                 }
             }
 
-            $headers = [
-                'Content-Type' => 'application/json',
-                'Cache-Control' => 'no-cache'
-            ];
-            if ($clientIp = Request::ip()) {
-                $headers['x-forwarded-for'] = $clientIp;
-            }
+            $headers = Functions::getApiHeaders();
+
             $property = Http::withHeaders($headers)->get($url);
 
             $property = json_decode($property);
@@ -3238,7 +3234,8 @@ class PropertiesNew
         $file = $tempDirectory . sha1($query) . '.json';
 
         if (!file_exists($file) || (file_exists($file) && time() - filemtime($file) > 2 * 3600)) {
-            $file_data = Http::get($url);
+            $headers = Functions::getApiHeaders();
+            $file_data = Http::withHeaders($headers)->get($url);
             file_put_contents($file, $file_data);
         } else {
             $file_data = file_get_contents($file);
@@ -3447,7 +3444,7 @@ class PropertiesNew
     {
         self::initialize();
         $url = self::$apiUrl . 'properties/calculate-rental-price&user_apikey=' . self::$api_key . '&property=' . $property . '&from=' . $arrival . '&to=' . $departure;
-        $json = file_get_contents($url);
+        $json = Functions::getCRMData($url);
 
         return json_decode($json);
     }
@@ -3474,7 +3471,8 @@ class PropertiesNew
             'owner_id' => (isset($this->owner_id) ? $this->owner_id : null),
         );
 
-        $response = Http::asForm()->post($url, $fields);
+        $headers = Functions::getApiHeaders();
+        $response = Http::withHeaders($headers)->asForm()->post($url, $fields);
     }
 
     public static function getLocationsGroups()
@@ -3484,7 +3482,8 @@ class PropertiesNew
         $file = Functions::directory() . 'location_groups' . $query . '.json';
         if (!file_exists($file) || (file_exists($file) && time() - filemtime($file) > 2 * 3600)) {
             $node_url = self::$node_url . '/properties/location-groups-key-value?user_apikey=' . self::$api_key . $query;
-            $file_data = Http::get($node_url);
+            $headers = Functions::getApiHeaders();
+            $file_data = Http::withHeaders($headers)->get($node_url);
             if (json_decode($file_data, true)) {
                 file_put_contents($file, $file_data);
             }
@@ -3648,18 +3647,13 @@ class PropertiesNew
             }
         }
 
+        $headers = Functions::getApiHeaders();
         if (isset($data['prop_id']) && !empty($data['prop_id'])) {
             $node_url = self::$node_url . 'commercial_properties/update/' . $data['prop_id'] . '?user=' . self::$user;
-            $response = Http::withHeaders([
-                'Content-Type' => 'application/json',
-                'Cache-Control' => 'no-cache'
-            ])->withBody(json_encode($fields), 'application/json')->put($node_url);
+            $response = Http::withHeaders($headers)->withBody(json_encode($fields), 'application/json')->put($node_url);
         } else {
             $node_url = self::$node_url . 'commercial_properties/create?user=' . self::$user;
-            $response = Http::withHeaders([
-                'Content-Type' => 'application/json',
-                'Cache-Control' => 'no-cache'
-            ])->withBody(json_encode($fields), 'application/json')->post($node_url);
+            $response = Http::withHeaders($headers)->withBody(json_encode($fields), 'application/json')->post($node_url);
         }
 
         return $response->json();

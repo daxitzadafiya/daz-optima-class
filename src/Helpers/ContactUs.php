@@ -460,7 +460,8 @@ class ContactUs extends Model
             'street_number' => isset($this->street_number) ? $this->street_number : null
         );
         
-        $response = Http::post($url, $fields);
+        $headers = Functions::getApiHeaders();
+        $response = Http::withHeaders($headers)->post($url, $fields);
         $res = $response->json();
 
         return $res['_id'];
@@ -489,10 +490,11 @@ class ContactUs extends Model
             'comments' => isset($call_rememeber) && $call_rememeber != '' ? $call_rememeber : (isset($this->guests) ? 'Number of Guests: ' . $this->guests : null),
         );
 
-        $response = Http::post($url, $fields);
+        $headers = Functions::getApiHeaders();
+        $response = Http::withHeaders($headers)->post($url, $fields);
         $res = $response->json();
 
-        return $res['_id'];
+        return $res['_id'] ?? false;
     }
 
     public function collaboratorEmail()
@@ -518,7 +520,8 @@ class ContactUs extends Model
             'collaborator' => 'true',
         );
 
-        $response = Http::asForm()->post($url, $fields);
+        $headers = Functions::getApiHeaders();
+        $response = Http::withHeaders($headers)->asForm()->post($url, $fields);
         $res = $response->json();
 
         return $res['_id'];
@@ -534,7 +537,8 @@ class ContactUs extends Model
                 'token' => $token,
             );
 
-            $response = Http::asForm()->post($url, $fields);
+            $headers = Functions::getApiHeaders();
+            $response = Http::withHeaders($headers)->asForm()->post($url, $fields);
 
             $res = $response->json();
 
@@ -576,7 +580,8 @@ class ContactUs extends Model
             "source" => isset($data['source']) ? $data['source'] : null,
         );
 
-        $response = Http::post($url, $fields);
+        $headers = Functions::getApiHeaders();
+        $response = Http::withHeaders($headers)->post($url, $fields);
 
         return $response->json();
     }

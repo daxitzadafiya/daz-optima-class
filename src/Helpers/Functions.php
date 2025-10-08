@@ -307,7 +307,8 @@ class Functions
             'user_apikey' => self::$api_key,
             'search_word' => $agent_name,
         ]);
-        return Http::get($url)->json();
+        $headers = Functions::getApiHeaders();
+        return Http::withHeaders($headers)->get($url)->json();
     }
 
     public static function getCRMData($url, $cache = true, $fields = array(), $auth = false, $headers = [])
@@ -404,4 +405,46 @@ class Functions
 
         return Request::all() ?? [];
     }
+
+    public static function getApiHeaders($headers_params = [])
+    {
+        $request = request();
+
+        $client_ip = $request->ip();
+
+        // Get the user agent from the current request, fallback to a default if not available
+        $userAgent = $request->header('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36');
+        $headers = [
+            'User-Agent' => $userAgent,
+            'Content-Type' => 'application/json',
+            'Accept' => 'application/json, text/javascript, */*; q=0.01',
+            'Connection' => 'keep-alive',
+            'Cache-Control' => 'no-cache',
+        ];
+
+        if (!empty($headers_params) && is_array($headers_params)) {
+            foreach ($headers_params as $key => $value) {
+                if (is_array($value)) {
+                    if (strtolower($key) === 'referer' && !empty($value)) {
+                        $headers['Referer'] = $value[0] ?? 'https://my3.optima-crm.com/';
+                        if (count($value) > 1) {
+                            $headers['X-Client-Origins'] = implode(',', $value);
+                        }
+                    } else {
+                        $headers[$key] = implode(',', $value);
+                    }
+                } else {
+                    $headers[$key] = $value;
+                }
+            }
+        }
+
+        // Add x-forwarded-for header if IP is valid
+        if (!empty($client_ip) && filter_var($client_ip, FILTER_VALIDATE_IP)) {
+            $headers['x-forwarded-for'] = $client_ip;
+        }
+
+        return $headers;
+    }
+    
 }
