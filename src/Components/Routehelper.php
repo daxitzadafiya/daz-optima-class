@@ -48,7 +48,7 @@ class Routehelper
         return $groupedRoutes;
     }
 
-     /**
+    /**
      * Generate route definitions from grouped routes.
      */
     public static function generateRouteDefinitions(array $groupedRoutes): string
@@ -78,26 +78,37 @@ class Routehelper
         }
 
         $post_routes = config('params.post_route', []);
+        $primarily_locale  = config('params.primarily_locale', null);
         $post_routes_pattern = [];
-        foreach($post_routes as $key => $value){
+        foreach ($post_routes as $key => $value) {
             $post_routes_pattern = array_merge($post_routes_pattern, Cms::getSlugByTagNameInAllLocales($value));
+        }
+
+        if ($primarily_locale) {
+            $definitions .= "\nRoute::get('{$primarily_locale}/{path}', function (\$path) {
+                    return redirect('/' . \$path, 302);
+                })->where('path', '.*');\n";
         }
 
         foreach ($groupedRoutes as $controller => $routes) {
             $definitions .= "\nRoute::controller($controller::class)->group(function () {\n";
 
-            foreach($routes as $lang => $siteRoutes) {
-                $definitions .= "    Route::prefix(\"$lang\")->group(function () {\n";
+            foreach ($routes as $lang => $siteRoutes) {
+
+                if ($lang !== $primarily_locale) {
+                    $definitions .= "    Route::prefix(\"$lang\")->group(function () {\n";
+                }
 
                 foreach ($siteRoutes as $route) {
-                    if(in_array($route['pattern'], $post_routes_pattern)) {
+                    if (in_array($route['pattern'], $post_routes_pattern)) {
                         $definitions .= "        Route::any(\"{$route['pattern']}\", \"{$route['action']}\");\n";
                     } else {
                         $definitions .= "        Route::get(\"{$route['pattern']}\", \"{$route['action']}\");\n";
                     }
                 }
-
-                $definitions .= "    });\n";
+                if ($lang !== $primarily_locale) {
+                    $definitions .= "    });\n";
+                }
             }
 
             $definitions .= "});\n";
@@ -144,7 +155,7 @@ class Routehelper
     {
         $filePath = base_path('routes/site.php');
 
-        if(!File::exists($filePath)){
+        if (!File::exists($filePath)) {
             file_put_contents($filePath, "");
         }
 
