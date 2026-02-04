@@ -36,7 +36,9 @@ trait ConfigTrait
     protected static $img_url_wm;
     protected static $default_title;
     protected static $date_fromate;
-
+    protected static $project_related_properties;
+    protected static $project_properties_status;
+    protected static $has_images;
     /**
      * Initialize configuration values.
     */
@@ -74,5 +76,8 @@ trait ConfigTrait
         self::$img_url_wm = config('params.img_url_wm');
         self::$default_title = config('params.default_title');
         self::$date_fromate = config('params.date_fromate');
+        self::$project_related_properties = config('params.project_related_properties');
+        self::$project_properties_status = config('params.project_properties_status');
+        self::$has_images = config('params.has_images');
     }
 }

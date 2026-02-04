@@ -31,7 +31,7 @@ class Urlhelper
 
     public static function developmentDetailsSlug()
     {
-        return self::slug('developmentDetails');
+        return self::slug('project-details');
     }
 
     public static function blogListingUrl()
@@ -129,7 +129,7 @@ class Urlhelper
         $slugify = new Slugify();
         $permaLink = isset($development['slug_all'][$lang]) ? $development['slug_all'][$lang] : 'property';
 
-        return $slugify->slugify($permaLink) . '_' . $development['id'];
+        return $slugify->slugify($permaLink) . '_' . (isset($development['id']) && !empty($development['id']) ? $development['id'] : (isset($development['reference']) && !empty($development['reference']) ? $development['reference'] : ''));
     }
 
     /**

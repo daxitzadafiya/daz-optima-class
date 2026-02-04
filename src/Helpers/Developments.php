@@ -7,6 +7,7 @@ use Daxit\OptimaClass\Traits\ConfigTrait;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\Http;
 
 class Developments
 {
@@ -17,6 +18,7 @@ class Developments
         self::initialize();
         $langugesSystem = Cms::SystemLanguages();
         $lang = strtoupper(App::getLocale());
+        $agency = self::$agency;
         $contentLang = $lang;
 
         foreach ($langugesSystem as $sysLang) {
@@ -62,6 +64,9 @@ class Developments
 
             if (isset($property->property->user_reference) && $property->property->user_reference != '')
                 $data['reference'] = $property->property->user_reference;
+
+            if (isset($property->property->project_name) && $property->property->project_name != '')
+                $data['project_name'] = $property->property->project_name;
 
             if (isset($property->property->title->$lang) && $property->property->title->$lang != '')
                 $data['title'] = $property->property->title->$lang;
@@ -132,6 +137,51 @@ class Developments
                 $data['lng'] = $property->property->longitude;
             }
 
+            if (isset($property->property->distance_airport) && count((array) $property->property->distance_airport) > 0 && isset($property->property->distance_airport->value) && $property->property->distance_airport->value > 0) {
+                $data['distance_airport'] = $property->property->distance_airport->value . ' ' . (isset($property->property->distance_airport->unit) ? $property->property->distance_airport->unit : 'km');
+            }
+            if (isset($property->property->distance_beach) && count((array) $property->property->distance_beach) > 0 && isset($property->property->distance_beach->value) && $property->property->distance_beach->value > 0) {
+                $data['distance_beach'] = $property->property->distance_beach->value . ' ' . (isset($property->property->distance_beach->unit) ? $property->property->distance_beach->unit : 'km');
+            }
+            if (isset($property->property->distance_golf) && count((array) $property->property->distance_golf) > 0 && isset($property->property->distance_golf->value) && $property->property->distance_golf->value > 0) {
+                $data['distance_golf'] = $property->property->distance_golf->value . ' ' . (isset($property->property->distance_golf->unit) ? $property->property->distance_golf->unit : 'km');
+            }
+            if (isset($property->property->distance_restaurant) && count((array) $property->property->distance_restaurant) > 0 && isset($property->property->distance_restaurant->value) && $property->property->distance_restaurant->value > 0) {
+                $data['distance_restaurant'] = $property->property->distance_restaurant->value . ' ' . (isset($property->property->distance_restaurant->unit) ? $property->property->distance_restaurant->unit : 'km');
+            }
+            if (isset($property->property->distance_sea) && count((array) $property->property->distance_sea) > 0 && isset($property->property->distance_sea->value) && $property->property->distance_sea->value > 0) {
+                $data['distance_sea'] = $property->property->distance_sea->value . ' ' . (isset($property->property->distance_sea->unit) ? $property->property->distance_sea->unit : 'km');
+            }
+            if (isset($property->property->distance_supermarket) && count((array) $property->property->distance_supermarket) > 0 && isset($property->property->distance_supermarket->value) && $property->property->distance_supermarket->value > 0) {
+                $data['distance_supermarket'] = $property->property->distance_supermarket->value . ' ' . (isset($property->property->distance_supermarket->unit) ? $property->property->distance_supermarket->unit : 'km');
+            }
+            if (isset($property->property->distance_next_town) && count((array) $property->property->distance_next_town) > 0 && isset($property->property->distance_next_town->value) && $property->property->distance_next_town->value > 0) {
+                $data['distance_next_town'] = $property->property->distance_next_town->value . ' ' . (isset($property->property->distance_next_town->unit) ? $property->property->distance_next_town->unit : 'km');
+            }
+
+            if (isset($property->property->private_info_object->$agency->featured) && $property->property->private_info_object->$agency->featured == true) {
+                $data['featured'] = $property->property->private_info_object->$agency->featured;
+            }
+
+            if (isset($property->property->phase) && is_array($property->property->phase) && $property->property->phase != '') {
+                $latestCompletionDate = '';
+                foreach ($property->property->phase as $phase) {
+                    if (isset($phase->completion_date) && strtotime($phase->completion_date) > strtotime($latestCompletionDate)) {
+                        $latestCompletionDate = $phase->completion_date;
+                    }
+                }
+                $data['last_phase_completion_date'] = $latestCompletionDate;
+                $data['is_key_ready'] = strtotime($latestCompletionDate) <= strtotime(date('Y-m-d'));
+            }
+
+            if (isset($property->property->phase) && !empty($property->property->phase)) {
+                $data['phase'] = $property->property->phase;
+            }
+
+            if (isset($property->property->properties_phase_wise) && !empty($property->property->properties_phase_wise)) {
+                $data['properties_phase_wise'] = $property->property->properties_phase_wise;
+            }
+
             if (isset($property->attachments) && count($property->attachments) > 0) {
                 $attachments_size = isset($options['images_size']) && !empty($options['images_size']) ? $options['images_size'] . '/' : '1200/';
                 $attachments = [];
@@ -154,7 +204,9 @@ class Developments
                 }
             }
 
-            $data['slug_all'] = $slugs;
+            if(isset($slugs) && !empty($slugs)){
+                $data['slug_all'] = $slugs;
+            }
             $return_data[] = $data;
         }
 
@@ -212,6 +264,7 @@ class Developments
         $floor_plans = [];
         $home_staging = [];
         $quality_specifications = [];
+        $sales_dossier = [];
         $settings = Cms::settings();
 
         if (isset($property->property->_id))
@@ -237,6 +290,9 @@ class Developments
         if (isset($property->property->city) && $property->property->city != '')
             $return_data['city'] = $property->property->city;
 
+        if (isset($property->property->city_key) && $property->property->city_key != '')
+            $return_data['city_key'] = $property->property->city_key;
+
         if (isset($property->property->phase_low_price_from) && $property->property->phase_low_price_from != '')
             $return_data['price_from'] = number_format((int) $property->property->phase_low_price_from, 0, '', '.');
 
@@ -245,6 +301,16 @@ class Developments
 
         if (isset($property->property->description->$lang))
             $return_data['description'] = $property->property->description->$lang;
+
+        if (isset($property->property->seo_title->$lang) && $property->property->seo_title->$lang != '') {
+            $return_data['meta_title'] = $property->property->seo_title->$lang;
+        }
+        if (isset($property->property->seo_description->$lang) && $property->property->seo_description->$lang != '') {
+            $return_data['meta_desc'] = $property->property->seo_description->$lang;
+        }
+        if (isset($property->property->seo_keywords->$lang) && $property->property->seo_keywords->$lang != '') {
+            $return_data['meta_keywords'] = $property->property->seo_keywords->$lang;
+        }
         if ((isset($property->property->alternative_latitude) && $property->property->alternative_latitude != '') && (isset($property->property->alternative_longitude) && $property->property->alternative_longitude != '')) {
             if (isset($property->property->alternative_latitude))
                 $return_data['lat'] = $property->property->alternative_latitude;
@@ -262,6 +328,10 @@ class Developments
         }
         if (isset($property->property->province)) {
             $return_data['province'] = $property->property->province;
+        }
+
+        if (isset($property->property->province_key) && $property->property->province_key != '') {
+            $return_data['province_key'] = $property->property->province_key;
         }
         if (isset($property->property->bedrooms_from) && $property->property->bedrooms_from > 0) {
             $return_data['bedrooms_from'] = $property->property->bedrooms_from;
@@ -311,7 +381,11 @@ class Developments
         $attachments_size = isset($options['images_size']) && !empty($options['images_size']) ? $options['images_size'] . '/' : '1200/';
         if (isset($property->attachments) && count($property->attachments) > 0) {
             foreach ($property->attachments as $pic) {
-                $attachments[] = self::$dev_img . '/' . $pic->model_id . '/'.$attachments_size. $pic->file_md5_name;
+                $attachments[] = [
+                    'image_label_value' => $pic->image_label_value ?? '',
+                    'image_label' => $pic->image_label ?? '',
+                    'image_url' => self::$dev_img . '/' . ($pic->model_id ?? '') . '/'.$attachments_size. ($pic->file_md5_name ?? ''),
+                ];
             }
             $return_data['attachments'] = $attachments;
         }
@@ -346,8 +420,10 @@ class Developments
         }
 
         if (isset($property->documents) && count($property->documents) > 0) {
+            $floor_plan_types = ["FP", 118, 119, 120, 121, 122, 123, 124, 125, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147];
+
             foreach ($property->documents as $pic) {
-                if (isset($pic->identification_type) && $pic->identification_type == 'FP') {
+                if (isset($pic->identification_type) && in_array($pic->identification_type, $floor_plan_types)) {
 
                     if (isset(self::$constructions_doc_url)) {
                         $floor_plans[] = array(
@@ -372,36 +448,58 @@ class Developments
             }
             $return_data['quality_specifications'] = $quality_specifications;
         }
-        if (isset($property->property->phase) && count($property->property->phase) > 0) {
-            $phases = [];
-            foreach ($property->property->phase as $phase) {
-                $arr = [];
-                if (isset($phase->phase_name) && $phase->phase_name != '') {
-                    $arr['phase_name'] = $phase->phase_name;
+
+        if (isset($property->documents) && count($property->documents) > 0) {
+            foreach ($property->documents as $pic) {
+                if (isset($pic->identification_type) && $pic->identification_type == 128) {
+                    if (isset(self::$constructions_doc_url))
+                        $sales_dossier[] = self::$constructions_doc_url . '/' . $pic->model_id . '/' . $pic->file_md5_name;
                 }
-                if (isset($phase->price_from) && $phase->price_from != '') {
-                    $arr['price_from'] = $phase->price_from;
-                }
-                if (isset($phase->price_to) && $phase->price_to != '') {
-                    $arr['price_to'] = $phase->price_to;
-                }
-                if (isset($phase->tq) && count($phase->tq) > 0) {
-                    $all_types = Dropdowns::types();
-                    $types = [];
-                    foreach ($phase->tq as $tq) {
-                        if (isset($tq->type) && $tq->type != '') {
-                            foreach ($all_types as $type) {
-                                if ($type['key'] == $tq->type)
-                                    $types[] = isset($type['value'][strtolower($contentLang)]) ? $type['value'][strtolower($contentLang)] : (isset($type['value']['en']) ? $type['value']['en'] : '');
-                            }
-                        }
-                    }
-                    $arr['types'] = $types;
-                }
-                $phases[] = $arr;
             }
-            $return_data['phases'] = $phases;
+            $return_data['sales_dossier'] = $sales_dossier;
         }
+
+
+        if (isset(self::$project_related_properties) && self::$project_related_properties == true) {
+            $related_project_properties = self::getRelatedProjectProperties(['reference' => $reference]);
+            $return_data['related_project_properties'] = $related_project_properties;
+        }
+
+        // if (isset($property->property->phase) && count($property->property->phase) > 0) {
+        //     $phases = [];
+        //     foreach ($property->property->phase as $phase) {
+        //         $arr = [];
+        //         if (isset($phase->phase_name) && $phase->phase_name != '') {
+        //             $arr['phase_name'] = $phase->phase_name;
+        //         }
+        //         if (isset($phase->price_from) && $phase->price_from != '') {
+        //             $arr['price_from'] = $phase->price_from;
+        //         }
+        //         if (isset($phase->price_to) && $phase->price_to != '') {
+        //             $arr['price_to'] = $phase->price_to;
+        //         }
+        //         if (isset($phase->tq) && count($phase->tq) > 0) {
+        //             $all_types = Dropdowns::types();
+        //             $types = [];
+        //             foreach ($phase->tq as $tq) {
+        //                 if (isset($tq->type) && $tq->type != '') {
+        //                     foreach ($all_types as $type) {
+        //                         if ($type['key'] == $tq->type)
+        //                             $types[] = isset($type['value'][strtolower($contentLang)]) ? $type['value'][strtolower($contentLang)] : (isset($type['value']['en']) ? $type['value']['en'] : '');
+        //                     }
+        //                 }
+        //             }
+        //             $arr['types'] = $types;
+        //         }
+        //         $phases[] = $arr;
+        //     }
+        //     $return_data['phases'] = $phases;
+        // }
+
+        if (isset($property->property->phase) && is_array($property->property->phase) && count($property->property->phase) > 0) {
+            $return_data['phases'] = $property->property->phase;
+        }
+
         $features = [];
         $setting = [];
         $views = [];
@@ -444,7 +542,7 @@ class Developments
             }
         }
         $properties = [];
-        foreach ($property->properties as $key => $value) {
+        foreach ($property->properties ?? [] as $key => $value) {
             $data = [];
             if (isset($value->property->sale) && $value->property->sale == 1)
                 $data['sale'] = $value->property->sale;
@@ -523,7 +621,7 @@ class Developments
         // commercial properties
         $commercial_properties = [];
         if(isset($get['model']) && !empty($get['model'])){
-            foreach ($property->properties as $key => $value) {
+            foreach ($property->properties ?? [] as $key => $value) {
                 $data = [];
                 if (isset($value->property->sale) && $value->property->sale == 1)
                     $data['sale'] = $value->property->sale;
@@ -669,6 +767,15 @@ class Developments
             }
         }
 
+        if (isset($get["city"]) && $get["city"] != "") {
+            if (is_array($get["city"]) && count($get["city"])) {
+                foreach ($get["city"] as $value) {
+                    if ($value != '')
+                        $query .= '&city[]=' . $value;
+                }
+            }
+        }
+
         if (isset($get["type"]) && is_array($get["type"]) && $get["type"] != "") {
             foreach ($get["type"] as $key => $value) {
                 if ($value != '')
@@ -688,6 +795,14 @@ class Developments
 
         if (isset($get["bathrooms"]) && $get["bathrooms"] != "") {
             $query .= '&bathrooms[]=' . $get["bathrooms"] . '&bathrooms[]=50';
+        }
+
+        if (isset($get["bedrooms_from"]) && $get["bedrooms_from"] != "") {
+            $query .= '&bedrooms_from=' . $get["bedrooms_from"] . '&bedrooms_to=50';
+        }
+
+        if (isset($get["bathrooms_from"]) && $get["bathrooms_from"] != "") {
+            $query .= '&bathrooms_from=' . $get["bathrooms_from"] . '&bathrooms_to=50';
         }
 
         if (isset($get["orderby"]) && !empty($get["orderby"]) && is_array($get["orderby"])) {
@@ -732,6 +847,107 @@ class Developments
             $query .= '&reference=' . $get['reference'];
         }
 
+        if (isset($get['phase_built_year']) && !empty($get['phase_built_year'])) {
+            $query .= '&phase_built_year=1970-01-01,' . $get['phase_built_year'];
+        }
+
+        if (isset($get["max_distace"]) && !empty($get["max_distace"])) {
+            $query .= '&distances_sea=' . ($get["max_distace"] / 1000) . ',km';
+            $query .= '&distances_sea=' . ($get["max_distace"]) . ',meters';
+        }
+
+        if (isset($get['parking']) && !empty($get['parking']) && is_array($get['parking'])) {
+            foreach ($get['parking'] as $value) {
+                if ($value != '') {
+                    $query .= '&parking[]=' . $value;
+                }
+            }
+        }
+
+        if (isset($get['pool']) && !empty($get['pool']) && is_array($get['pool'])) {
+            foreach ($get['pool'] as $value) {
+                if ($value != '') {
+                    $query .= '&pool[]=' . $value;
+                }
+            }
+        }
+
+        if (isset($get['garden']) && !empty($get['garden']) && is_array($get['garden'])) {
+            foreach ($get['garden'] as $value) {
+                if ($value != '') {
+                    $query .= '&garden[]=' . $value;
+                }
+            }
+        }
+
+        if (isset($get['leisures']) && !empty($get['leisures']) && is_array($get['leisures'])) {
+            foreach ($get['leisures'] as $value) {
+                if ($value != '') {
+                    $query .= '&leisures[]=' . $value;
+                }
+            }
+        }
+
+        if (isset($get['categories']) && !empty($get['categories']) && is_array($get['categories'])) {
+            foreach ($get['categories'] as $value) {
+                if ($value != '') {
+                    $query .= '&categories[]=' . $value;
+                }
+            }
+        }
+
+        if (isset($get['setting']) && !empty($get['setting']) && is_array($get['setting'])) {
+            foreach ($get['setting'] as $value) {
+                if ($value != '') {
+                    $query .= '&setting[]=' . $value;
+                }
+            }
+        }
+
+        if (isset($get['views']) && !empty($get['views']) && is_array($get['views'])) {
+            foreach ($get['views'] as $value) {
+                if ($value != '') {
+                    $query .= '&views[]=' . $value;
+                }
+            }
+        }
+
+        if (isset($get['features']) && !empty($get['features']) && is_array($get['features'])) {
+            foreach ($get['features'] as $value) {
+                if ($value != '') {
+                    $query .= '&features[]=' . $value;
+                }
+            }
+        }
+
+        if (isset($get['general_features']) && !empty($get['general_features']) && is_array($get['general_features'])) {
+            foreach ($get['general_features'] as $value) {
+                if ($value != '') {
+                    $query .= '&general_features[]=' . $value;
+                }
+            }
+        }
+
+        if (isset($get['feature_or']) && !empty($get['feature_or'])) {
+            $query .= '&feature_or=' . $get['feature_or'];
+        }
+
+        if (isset($get['max_built']) && !empty($get['max_built'])) {
+            $query .= '&built_size_from=' . $get['max_built'];
+        }
+
+        if (isset($get['min_built']) && !empty($get['min_built'])) {
+            $query .= '&built_size_to=' . $get['min_built'];
+        }
+
+        if (config('params.project_prop_status')) {
+            $query .= '&project_prop_status=' . config('params.project_prop_status');
+        }
+
+        if (config('params.has_images') && (!isset($_GET['prop_ids']) || (isset($_GET['prop_ids']) && empty($_GET['prop_ids'])))) {
+            $query .= '&has_images=true';
+        }
+
         return $query;
     }
 
@@ -754,7 +970,7 @@ class Developments
 
         if (!file_exists($file) || (file_exists($file) && time() - filemtime($file) > 2 * 3600)) {
             $headers = [];
-            $clientIp = \Illuminate\Support\Facades\Request::ip();
+            $clientIp = Request::ip();
             if ($clientIp) {
                 $headers[] = 'x-forwarded-for: ' . $clientIp;
             }
@@ -765,5 +981,82 @@ class Developments
         }
 
         return $file_data;
+    }
+
+    public static function getPropertiesPagination($ref, $property, $current_page, $prop_page_size = 30, $get = [])
+    {
+        self::initialize();
+
+        $url = self::$apiUrl . 'constructions/view-by-ref&user=' . self::$user . '&ref=' . $ref . '&prop_page=' . $current_page . '&prop_page_size=' . $prop_page_size;
+        $development_status = (isset($get['status']) && !empty($get['status']) ? $get['status'] : (!empty(self::$status) ? self::$status : []));
+        foreach ($development_status as $status) {
+            $url .= '&status[]=' . $status;
+        }
+        if(isset($get['model']) && !empty($get['model'])){
+            $url .= '&model='. $get['model'];
+        }
+        
+        // echo "<pre>";print_r($url);die;
+        $JsonData = Functions::getCRMData($url, false);
+        $property_pagination = json_decode($JsonData);
+        if (isset($property->properties) && isset($property_pagination->properties)) {
+            $property->properties = array_merge($property->properties , $property_pagination->properties);
+        }
+        // echo "<pre>";print_r($property->properties);die;
+        
+        if (isset($property->properties_pagination) && isset($property_pagination->properties_pagination)) {
+            $property->properties_pagination = $property_pagination->properties_pagination;
+        }
+
+        $current_page++;
+        if(isset($property->properties_pagination->total_pages) && $property->properties_pagination->total_pages >= $current_page){
+            $property = self::getPropertiesPagination($ref, $property, $current_page, $prop_page_size, $get);
+        }
+        // echo "<pre>";print_r([$url, $property]);die;
+        return $property;
+    }
+
+    public static function getRelatedProjectProperties($query = [], $set_options = [])
+    {
+        self::initialize();
+
+        if (!isset($query['reference']) || empty($query['reference'])) {
+            return [];
+        }
+
+        $query_data = [
+            'options' => [
+                'sort' => [
+                    'reference' => 1,
+                ],
+            ],
+            'frontend' => true,
+            'query' => [
+                'status' => !empty(self::$project_properties_status) ? self::$project_properties_status : ['Available'],
+                'similar_commercials' => 'include_similar',
+            ],
+        ];
+
+        if (isset(self::$has_images) && self::$has_images == true) {
+            $query_data['query']['has_images'] = true;
+        }
+
+        $baseNodeUrl = rtrim(self::$node_url ?? '', '/');
+        $url = $baseNodeUrl . '/commercial_properties/commercial-construction?user=' . self::$user . '&ref=' . $query['reference'];
+
+        $body = json_encode($query_data);
+        $headers = Functions::getApiHeaders([
+            'Content-Length' => strlen($body),
+        ]);
+
+        $response = Http::withHeaders($headers)
+            ->withBody($body, 'application/json')
+            ->post($url);
+
+        if ($response->failed()) {
+            return [];
+        }
+
+        return $response->json() ?? [];
     }
 }
