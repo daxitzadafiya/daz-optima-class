@@ -894,7 +894,7 @@ class Cms
             $file_name = $name . '-all';
         }
 
-        $file = Functions::directory() . str_replace(' ', '_', strtolower(Functions::clean($file_name))) . str_replace(' ', '_', strtolower(Functions::clean($category))) . '.json';
+        $file = Functions::directory() . md5(str_replace(' ', '_', strtolower(Functions::clean($file_name))) . str_replace(' ', '_', strtolower(Functions::clean(is_array($category) ? implode(',', $category) : ($category ?? ''))))) . '.json';
 
         if(isset($options['user_id']) && !empty($options['user_id'])) {
             $query = '&user=' . $options['user_id'];
@@ -914,8 +914,15 @@ class Cms
                 $query .= '&page=' . $options['page'];
             }
         }
-        if ($category != null)
-            $query .= '&category=' . $category;
+        if ($category != null) {
+            if(is_array($category)) {
+                foreach($category as $cat) {
+                    $query .= '&category[]=' . $cat;
+                }
+            } else {
+                $query .= '&category=' . $category;
+            }
+        }
         if ($imageseo)
             $query .= '&seoimage=yes';
 
