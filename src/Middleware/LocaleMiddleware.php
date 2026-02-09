@@ -37,7 +37,7 @@ class LocaleMiddleware
             }
         }
         $browserLocale = Str::lower(substr($request->getPreferredLanguage(), 0, 2));
-        $locale = $request->segment(1) ?: $browserLocale;
+        $locale = $request->segment(1) ?: Config::get('app.locale', 'en') ?: $browserLocale;
 
         $availableLocales = Cms::siteLanguages();
 
@@ -47,7 +47,11 @@ class LocaleMiddleware
             return !in_array((isset($item['key']) && !empty($item['key']) ? strtolower($item['key']) : $item), $remove_lang);
         }));
 
-        if (isset($locale) && in_array($locale, $availableLocales)) {
+        $availableLocaleCodes = array_map(function ($item) {
+            return isset($item['key']) && !empty($item['key']) ? strtolower($item['key']) : $item;
+        }, $availableLocales);
+
+        if (isset($locale) && in_array(strtolower($locale), $availableLocaleCodes)) {
             App::setLocale($locale);
         } else {
             App::setLocale(Config::get('app.fallback_locale', 'en'));
