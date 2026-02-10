@@ -690,12 +690,20 @@ class CommercialProperties
             $f_property['type_one'] = Translate::t($property['type_one_value'][$contentLang]);
         }
 
+        if (isset($property['type_one_obj'][$contentLang])) {
+            $f_property['type_one'] = Translate::t($property['type_one_obj'][$contentLang]);
+        }
+
         if (isset($property['type_two'])) {
             $f_property['type_two_key'] = Translate::t($property['type_two']);
         }
 
         if (isset($property['type_two_value'][$contentLang])) {
             $f_property['type_two'] = Translate::t($property['type_two_value'][$contentLang]);
+        }
+
+        if (isset($property['type_two_obj'][$contentLang])) {
+            $f_property['type_two'] = Translate::t($property['type_two_obj'][$contentLang]);
         }
 
         if (isset($property['address']['formatted_address'])) {
