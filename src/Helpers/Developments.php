@@ -36,7 +36,16 @@ class Developments
         if ($cache == true) {
             $JsonData = self::DoCache($query, $url);
         } else {
-            $JsonData = Functions::getCRMData($url, false);
+            if (isset($_GET['prop_ids']) && !empty($_GET['prop_ids'])) {
+                $post_data = [
+                    'project_ids' => isset($_GET['prop_ids']) ? (is_array($_GET['prop_ids']) ? $_GET['prop_ids'] : explode(',', $_GET['prop_ids'])) : []
+                ];
+                $headers = Functions::getApiHeaders(['Content-Length' => strlen(json_encode($post_data))]);
+                $response = Http::withHeaders($headers)->post($url, $post_data);
+                $JsonData = $response;
+            }else{
+                $JsonData = Functions::getCRMData($url, false);
+            }
         }
 
         $apiData = json_decode($JsonData);

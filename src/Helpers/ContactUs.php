@@ -457,7 +457,8 @@ class ContactUs extends Model
             'collaborator' => $this->collaborator,
             'city_town' => isset($this->city_town) ? $this->city_town : null,
             'street_address' => isset($this->street_address) ? $this->street_address : null,
-            'street_number' => isset($this->street_number) ? $this->street_number : null
+            'street_number' => isset($this->street_number) ? $this->street_number : null,
+            'commercial_profile' => isset($this->commercial_profile) ? $this->commercial_profile : null,
         );
         
         $headers = Functions::getApiHeaders();
