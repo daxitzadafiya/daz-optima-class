@@ -191,6 +191,7 @@ class Cms
             'custom_settings' => isset($data['custom_settings']) ? $data['custom_settings'] : '',
             'created_at' => isset($data['created_at']) ? $data['created_at'] : '',
             'categories' => isset($data['categories']) ? $data['categories'] : [],
+            'tags' => isset($data['tags']) ? $data['tags'] : [],
             'created_username' => isset($data['created_username']) ? $data['created_username'] : [],
             'created_by' => isset($data['created_by']) ? $data['created_by'] : [],
         ];
@@ -975,6 +976,7 @@ class Cms
             $array['meta_keywords'] = isset($data_each['meta_keywords'][$lang]) ? $data_each['meta_keywords'][$lang] : '';
             $array['custom_settings'] = isset($data_each['custom_settings']) ? $data_each['custom_settings'] : '';
             $array['categories'] = isset($data_each['categories']) ? $data_each['categories'] : [];
+            $array['tags'] = isset($data_each['tags']) ? $data_each['tags'] : [];
             $array['totalCount'] = isset($data_each['total_count']) ? $data_each['total_count'] : 0;
             $array['post_order'] = isset($data_each['post_order']) ? $data_each['post_order'] : 0;
             $ret_data[] = $array;
