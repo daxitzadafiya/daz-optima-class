@@ -54,7 +54,7 @@ class Developments
         if (strpos($query, "&latlng=true")) {
             return $apiData;
         }
-
+        $agency_data = CommercialProperties::getAgency();
         foreach ($apiData as $property) {
             $data = [];
             $features = [];
@@ -196,7 +196,12 @@ class Developments
                 $attachments = [];
 
                 foreach ($property->attachments as $pic) {
-                    $attachments[] = self::$dev_img . '/' . $pic->model_id . '/' . $attachments_size . $pic->file_md5_name;
+                    if(isset($agency_data['watermark_image']['show_onweb']) && $agency_data['watermark_image']['show_onweb'] == 1){
+                        $attachments[] = self::$dev_img_wm_link . '/' . $pic->model_id . '/' . $attachments_size . $pic->file_md5_name;
+                    }
+                    else {
+                        $attachments[] = self::$dev_img . '/' . $pic->model_id . '/' . $attachments_size . $pic->file_md5_name;
+                    }
                 }
 
                 $data['attachments'] = $attachments;
@@ -275,6 +280,7 @@ class Developments
         $quality_specifications = [];
         $sales_dossier = [];
         $settings = Cms::settings();
+        $agency_data = CommercialProperties::getAgency();
 
         if (isset($property->property->_id))
             $return_data['_id'] = $property->property->_id;
@@ -390,11 +396,22 @@ class Developments
         $attachments_size = isset($options['images_size']) && !empty($options['images_size']) ? $options['images_size'] . '/' : '1200/';
         if (isset($property->attachments) && count($property->attachments) > 0) {
             foreach ($property->attachments as $pic) {
-                $attachments[] = [
-                    'image_label_value' => $pic->image_label_value ?? '',
-                    'image_label' => $pic->image_label ?? '',
-                    'image_url' => self::$dev_img . '/' . ($pic->model_id ?? '') . '/'.$attachments_size. ($pic->file_md5_name ?? ''),
-                ];
+                if(isset($agency_data['watermark_image']['show_onweb']) && $agency_data['watermark_image']['show_onweb'] == 1){
+                    $attachments[] = self::$dev_img_wm_link . '/' . $pic->model_id . '/' . $attachments_size . $pic->file_md5_name;
+                    $attachments[] = [
+                        'image_label_value' => $pic->image_label_value ?? '',
+                        'image_label' => $pic->image_label ?? '',
+                        'image_url' => self::$dev_img_wm_link . '/' . ($pic->model_id ?? '') . '/'.$attachments_size. ($pic->file_md5_name ?? ''),
+                    ];
+                }
+                else {
+                    $attachments[] = [
+                        'image_label_value' => $pic->image_label_value ?? '',
+                        'image_label' => $pic->image_label ?? '',
+                        'image_url' => self::$dev_img . '/' . ($pic->model_id ?? '') . '/'.$attachments_size. ($pic->file_md5_name ?? ''),
+                    ];
+                }
+                
             }
             $return_data['attachments'] = $attachments;
         }

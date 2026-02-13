@@ -21,6 +21,7 @@ trait ConfigTrait
     protected static $com_img;
     protected static $api_key;
     protected static $dev_img;
+    protected static $dev_img_wm_link;
     protected static $constructions_doc_url;
     protected static $floor_plans_url;
     protected static $img_url;
@@ -61,6 +62,7 @@ trait ConfigTrait
         self::$com_img = config('params.com_img');
         self::$api_key = config('params.api_key');
         self::$dev_img = config('params.dev_img');
+        self::$dev_img_wm_link = config('params.dev_img_wm_link');
         self::$constructions_doc_url = config('params.constructions_doc_url');
         self::$floor_plans_url = config('params.floor_plans_url');
         self::$img_url = config('params.img_url');
