@@ -1311,12 +1311,12 @@ class CommercialProperties
         $sort = ['current_price' => '-1'];
         $query_array = [];
         $options = ["page" => 1, "limit" => 10];
-        $options['populate'] = [
-            [
-                'path' => 'property_attachments',
-                'match' => ['document' => ['$ne' => true], 'publish_status' => ['$ne' => false]],
-            ]
-        ];
+        // $options['populate'] = [
+        //     [
+        //         'path' => 'property_attachments',
+        //         'match' => ['document' => ['$ne' => true], 'publish_status' => ['$ne' => false]],
+        //     ]
+        // ];
 
         Functions::mergeRequest( $_GET ?? []);
 
@@ -1345,8 +1345,8 @@ class CommercialProperties
         if (isset($query) && $query != '' && is_array($query)) {
             if (!count($query)) {
                 // if(Request::has('prop_ids') && Request::input('prop_ids') == "false"){
-                    unset($_GET["prop_ids"]);
-                    Request::replace(Request::except('prop_ids'));
+                    // unset($_GET["prop_ids"]);
+                    // Request::replace(Request::except('prop_ids'));
                 // }
                 $query = self::setQuery();
             }
@@ -1366,31 +1366,57 @@ class CommercialProperties
 
         $post_data["query"] = isset($map_query['ids']) && !empty($map_query['ids']) ? array_merge($post_data["query"], ["id"  => $map_query['ids']]) : $post_data["query"];
 
-        $headers = Functions::getApiHeaders();
-        $response = Http::withHeaders($headers)->post($node_url, $post_data)->json();
-
+        // Ensure the "uploads" directory exists
         if (!File::exists($webroot)) {
-            File::makeDirectory($webroot, 0755, true); // Creates the directory with proper permissions
+            File::makeDirectory($webroot, 0755, true);
         }
 
         // Ensure the "uploads/temp" directory exists
         $tempDirectory = $webroot . 'temp/';
         if (!File::exists($tempDirectory)) {
-            File::makeDirectory($tempDirectory, 0755, true); // Creates the directory with proper permissions
-        }
-        if (!$cache) {
-            return $response;
+            File::makeDirectory($tempDirectory, 0755, true);
         }
 
-        $file = $tempDirectory . 'commercial_properties-latlang.json';
-        if (!file_exists($file) || (file_exists($file) && time() - filemtime($file) > 2 * 3600)) {
-            file_put_contents($file, $response);
-            $file_data = file_put_contents($file, $response);
+        // Generate dynamic cache filename based on GET parameters
+        $file_name = 'cached_commercial_properties_latlang_';
+        if (isset($_GET) && !empty($_GET)) {
+            $flat = self::flatten_key_value($_GET);
+            foreach ($flat as $k => $v) {
+                $file_name .= $k . '=' . $v . '_';
+            }
+        }
+
+        $file = $tempDirectory . sha1($file_name) . '.json';
+
+        if (!$cache || !file_exists($file) || (file_exists($file) && (time() - filemtime($file) > 2 * 3600))) {
+            $headers = Functions::getApiHeaders();
+            $response = Http::withHeaders($headers)->post($node_url, $post_data)->json();
+            $file_data = json_encode($response);
+            file_put_contents($file, $file_data);
         } else {
             $file_data = file_get_contents($file);
         }
 
         return json_decode($file_data, true);
+    }
+
+    /**
+     * Flatten a multi-dimensional array into a single-level key-value array
+     * Used for generating cache filenames based on query parameters
+     */
+    private static function flatten_key_value($array, $prefix = '')
+    {
+        $result = [];
+        foreach ($array as $key => $value) {
+            $new_key = $prefix === '' ? $key : $prefix . '_' . $key;
+            
+            if (is_array($value)) {
+                $result = array_merge($result, self::flatten_key_value($value, $new_key));
+            } else {
+                $result[$new_key] = $value;
+            }
+        }
+        return $result;
     }
 
     public static function getAgencyProperties($transaction_type = 'sale', $id, $options = ['page' => 1, 'limit' => 10])

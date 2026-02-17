@@ -924,6 +924,21 @@ class Cms
                 $query .= '&category=' . $category;
             }
         }
+
+        if (isset($options['tag']) && !empty($options['tag'])) {
+            if(is_array($options['tag'])) {
+                foreach($options['tag'] as $cat) {
+                    $query .= '&tag[]=' . $cat;
+                }
+            } else {
+                $query .= '&tag=' . $options['tag'];
+            }
+        }
+        
+        if (isset($options['title']) && !empty($options['title'])) {
+            $query .= '&title=' . $options['title'];
+        }
+
         if ($imageseo)
             $query .= '&seoimage=yes';
 
