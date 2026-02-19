@@ -823,10 +823,13 @@ class Developments
             $query .= '&bathrooms[]=' . $get["bathrooms"] . '&bathrooms[]=50';
         }
 
-        if (isset($get["bedrooms_from"]) && $get["bedrooms_from"] != "") {
-            $query .= '&bedrooms_from=' . $get["bedrooms_from"] . '&bedrooms_to=50';
+        if(config('params.bedrooms_range') == true){
+            $query .= '&bathrooms=' . $get["bedrooms_from"] . ',50';
+        } else {
+            if (isset($get["bedrooms_from"]) && $get["bedrooms_from"] != "") {
+                $query .= '&bedrooms_from=' . $get["bedrooms_from"] . '&bedrooms_to=50';
+            }
         }
-
         if (isset($get["bathrooms_from"]) && $get["bathrooms_from"] != "") {
             $query .= '&bathrooms_from=' . $get["bathrooms_from"] . '&bathrooms_to=50';
         }
@@ -880,6 +883,9 @@ class Developments
         if (isset($get["max_distace"]) && !empty($get["max_distace"])) {
             $query .= '&distances_sea=' . ($get["max_distace"] / 1000) . ',km';
             $query .= '&distances_sea=' . ($get["max_distace"]) . ',meters';
+            if(config('params.exclude_zero_distances') == true){
+                $query .= '&exclude_zero_distances=1';
+            }
         }
 
         if (isset($get['parking']) && !empty($get['parking']) && is_array($get['parking'])) {

@@ -495,6 +495,10 @@ class CommercialProperties
             $f_property['reference'] = isset($property['reference']) && !empty($property['reference']) ? $property['reference'] : '';
         }
 
+        if (isset($property['reference']) && !empty($property['reference'])) {
+            $f_property['crm_reference'] = $property['reference'];
+        }
+
         if (isset($property['other_reference']) && !empty($property['other_reference'])) {
             $f_property['external_reference'] = $property['other_reference']; // this is due to a historical change
         }
