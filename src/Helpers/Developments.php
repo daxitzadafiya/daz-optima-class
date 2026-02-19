@@ -822,14 +822,15 @@ class Developments
         if (isset($get["bathrooms"]) && $get["bathrooms"] != "") {
             $query .= '&bathrooms[]=' . $get["bathrooms"] . '&bathrooms[]=50';
         }
-
-        if(config('params.bedrooms_range') == true){
-            $query .= '&bathrooms=' . $get["bedrooms_from"] . ',50';
-        } else {
-            if (isset($get["bedrooms_from"]) && $get["bedrooms_from"] != "") {
+        
+        if (isset($get["bedrooms_from"]) && $get["bedrooms_from"] != "") {
+            if(config('params.bedrooms_range') == true){
+                $query .= '&bedrooms=' . $get["bedrooms_from"] . ',50';
+            } else {
                 $query .= '&bedrooms_from=' . $get["bedrooms_from"] . '&bedrooms_to=50';
             }
         }
+        
         if (isset($get["bathrooms_from"]) && $get["bathrooms_from"] != "") {
             $query .= '&bathrooms_from=' . $get["bathrooms_from"] . '&bathrooms_to=50';
         }
