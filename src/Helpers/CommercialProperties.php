@@ -431,6 +431,38 @@ class CommercialProperties
             $query['listing_agent'] = ['$in' => $intArray];
         }
 
+        if (isset($get['max_distace']) && !empty($get['max_distace'])) {
+            $query['$and'] = array_merge($query['$and'] ?? [], [['$or' => [['distances.sea.value' => ['$lte' => (int)($get['max_distace'] / 1000)], 'distances.sea.unit' => 'km'], ['distances.sea.value' => ['$lte' => (int)($get['max_distace'])], 'distances.sea.unit' => 'meters']]]]);
+        }
+
+        if (isset($get['year_built']) && !empty($get['year_built'])) {
+            $year_built = ['$exists' => true, '$nin' => ["", null], '$lte' => $get['year_built']];
+            if (isset($get['key_ready']) && !empty($get['key_ready'])) {
+                $query['$and'] = array_merge($query['$and'] ?? [], [['$or' => [['categories.key_ready' => true], ['year_built' => $year_built]]]]);
+            } else {
+                $query['year_built'] = $year_built;
+            }
+        }
+
+        if (isset($get['select_construction']) && !empty($get['select_construction'])) {
+            $query['select_construction'] = is_array($get['select_construction']) ? ['$nin' => $get['select_construction']] : ['$ne' => $get['select_construction']];
+        }
+
+        if (isset($get['exclude_construction']) && !empty($get['exclude_construction'])) {
+            $query['select_construction'] = is_array($get['exclude_construction']) ? ['$nin' => $get['exclude_construction']] : ['$ne' => $get['exclude_construction']];
+        }
+
+        if (isset($get['exclude_reference']) && !empty($get['exclude_reference'])) {
+            $query['reference'] = is_array($get['exclude_reference']) ? ['$nin' => $get['exclude_reference']] : ['$ne' => $get['exclude_reference']];
+        }
+        if(isset($get["similar_project"]) && !empty($get["similar_project"])){
+            $query['similar_project'] = $get["similar_project"];
+        }
+        
+        if(isset(self::$has_images) && !empty(self::$has_images) && !isset($query['_id'])){
+            $query['has_images'] = self::$has_images;
+        }
+
         // only_similar (only similar/with their units), exclude_similar (one per group + all not part of group), include_similar (all properties)
         // if(isset($get['similar_commercials']) && !empty($get['similar_commercials'])) {
         //     $query['similar_commercials'] = $get['similar_commercials'];
