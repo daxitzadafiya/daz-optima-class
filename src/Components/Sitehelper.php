@@ -327,7 +327,7 @@ class Sitehelper
 
             $developmentMeta .= '<meta property="og:url" content="' . (isset($page_custom_settings['canonical_link']) && !empty($page_custom_settings['canonical_link']) ? $page_custom_settings['canonical_link'] : ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https://" : "http://") . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'])) . '">';
 
-            $developmentMeta .= '<meta property="og:image" content="' . (isset($development['attachments'][0]) && !empty($development['attachments'][0]) ? $development['attachments'][0] : Sitehelper::get_site_logo($object)) . '">';
+            $developmentMeta .= '<meta property="og:image" content="' . (isset($development['attachments'][0]['image_url']) && !empty($development['attachments'][0]['image_url']) ? $development['attachments'][0]['image_url'] : Sitehelper::get_site_logo($object)) . '">';
 
             $developmentMeta .= '<meta property="og:type" content="property in development">';
 
