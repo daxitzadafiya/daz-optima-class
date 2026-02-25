@@ -341,6 +341,11 @@ class Developments
             $return_data['location'] = $property->property->location;
             $return_data['location_key'] = isset($property->property->location_key) ? $property->property->location_key : '';
         }
+
+        if (isset($property->property->region)) {
+            $return_data['region'] = $property->property->region;
+        }
+        
         if (isset($property->property->province)) {
             $return_data['province'] = $property->property->province;
         }

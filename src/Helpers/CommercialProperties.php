@@ -770,6 +770,10 @@ class CommercialProperties
             $f_property['country'] = $property['country'];
         }
 
+        if (isset($property['region'])) {
+            $f_property['region'] = $property['region'];
+        }
+
         if (isset($property['latitude_alt']) && isset($property['longitude_alt']) && $property['latitude_alt'] != '' && $property['longitude_alt'] != '') {
             $f_property['lat'] = $property['latitude_alt'];
             $f_property['lng'] = $property['longitude_alt'];
