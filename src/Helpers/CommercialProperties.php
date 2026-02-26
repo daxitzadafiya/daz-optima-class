@@ -963,7 +963,11 @@ class CommercialProperties
                 if (isset($pic["publish_status"]) && !empty($pic["publish_status"])) {
                     $document = [];
                     if (isset($pic['document']) && $pic['document'] == 1 && isset($set_options['image_size']) && !empty($set_options['image_size'])) {
-                        $document["link"] = self::$property_img_resize_link . '/' . $pic['model_id'] . '/' . $set_options['image_size'] . '/' .  urldecode($pic['file_md5_name']);
+                        if(isset($pic['file_type']) && $pic['file_type'] == 'pdf') {
+                            $document["link"] = self::$com_img . '/' . $pic['model_id'] . '/' . urldecode($pic['file_md5_name']);
+                        } else {
+                            $document["link"] = self::$property_img_resize_link . '/' . $pic['model_id'] . '/' . $set_options['image_size'] . '/' .  urldecode($pic['file_md5_name']);
+                        }
                         $document["type"] = isset($pic["identification_type"]) && !empty($pic["identification_type"]) ? $pic["identification_type"] : 'document';
                     } elseif (isset($pic['document']) && $pic['document'] == 1) {
                         $document["link"] = self::$com_img . '/' . $pic['model_id'] . '/' .  urldecode($pic['file_md5_name']);
