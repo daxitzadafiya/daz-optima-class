@@ -1303,6 +1303,10 @@ class CommercialProperties
             $f_property['year_built'] = $year_built_date->format('d-m-Y');
         }
 
+        if (isset($property['select_construction']) && $property['select_construction']) {
+            $f_property['select_construction'] = $property['select_construction'];
+        }
+
         if (isset($property['similar_commercials']) && !empty($property['similar_commercials'])) {
             $f_property['similar_commercials'] = $property['similar_commercials'];
         }
@@ -1809,5 +1813,205 @@ class CommercialProperties
             $file_data = file_get_contents($file);
         }
         return json_decode($file_data, true);
+    }
+
+    public static function getProjectDetailsWiseProperties($id, $set_options = [])
+    {
+        self::initialize();
+        $url = self::$node_url . 'commercial_properties/project-related-properties/' . $id . '?user=' . self::$user;
+        $query['query'] = [
+            'status' => (isset(self::$status) && !empty(self::$status) ? self::$status : ['Available', 'Under Offer']),
+        ];
+        if (isset($set_options['show_project']) && $set_options['show_project']) {
+            $query['extra_data'] = [
+                'show_project' => $set_options['show_project'],
+            ];
+        }
+        $headers = Functions::getApiHeaders(['Content-Length' => strlen(json_encode($query))]);
+        $response = Http::withHeaders($headers)->post($url, $query);
+        $response = $response->json();
+
+        $similar_project_properties = [];
+        if (isset($response['similar_project_properties']) && !empty($response['similar_project_properties'])) {
+            foreach ($response['similar_project_properties'] as $key => $property) {
+                $similar_project_properties[] = self::ProjectWisePropertiesFormat($property, $set_options);
+            }
+            $response['similar_project_properties'] = $similar_project_properties;
+        }
+        return $response;
+    }
+
+
+    public static function ProjectWisePropertiesFormat($property, $set_options = [])
+    {
+        $settings = Cms::settings();
+
+        $lang = strtoupper(App::getLocale());
+        $contentLang = strtolower(App::getLocale());
+
+        if (strtolower(App::getLocale()) == 'es') {
+            $contentLang = 'es_AR';
+        }
+        if (strtolower(App::getLocale()) == 'po') {
+            $contentLang = 'pl';
+            $lang = strtoupper("pl");
+        }
+        $f_property = [];
+        if (isset($settings['general_settings']['reference']) && $settings['general_settings']['reference'] != 'reference') {
+            $ref = $settings['general_settings']['reference'];
+            $f_property['reference'] = $property[$ref];
+        } else {
+            $f_property['reference'] = isset($property['reference']) ? $property['reference'] : '';
+        }
+        if (isset($property['external_reference'])) {
+            $f_property['external_reference'] = $property['external_reference'];
+        }
+
+        if (isset($property['from_residential']) && !empty($property['from_residential'])) {
+            $f_property['from_residential'] = $property['from_residential'];
+        }
+        if (isset($property['_id'])) {
+            $f_property['_id'] = $property['_id'];
+        }
+        if (isset($property['reference'])) {
+            $f_property['id'] = $property['reference'];
+        }
+        if (isset($property['title'][$lang]) && $property['title'][$lang] != '') {
+            $f_property['sale_title'] = $property['title'][$lang];
+        } elseif (isset($property['shared_data']['title'][$lang]) && $property['shared_data']['title'][$lang] != '') {
+            $f_property['sale_title'] = $property['shared_data']['title'][$lang];
+        } else {
+            $f_property['sale_title'] = (isset($property['property_type_one']['value'][$contentLang]) ? Translate::t($property['property_type_one']['value'][$contentLang]) : '') . ' ' . (isset($property['property_location']['value'][$contentLang]) ? Translate::t('in') . ' ' . Translate::t($property['property_location']['value'][$contentLang]) : '');
+        }
+
+        if (isset($property['status'])) {
+            $f_property['status'] = Translate::t($property['status']);
+        }
+        if (isset($property['property_urls']) && !empty($property['property_urls'])) {
+            $f_property['urls'] =  $property['property_urls'];
+        }
+        if (isset($property['urls_without_domain']) && !empty($property['urls_without_domain'])) {
+            $f_property['property_url'] = $property['urls_without_domain'];
+        }
+        if (isset($property['type_one'])) {
+            $f_property['type'] = Translate::t($property['type_one']);
+        }
+        if (isset($property['property_type_one']['value'][$contentLang])) {
+            $f_property['property_type_one'] = Translate::t($property['property_type_one']['value'][$contentLang]);
+        }
+        if (isset($property['type_two'])) {
+            $f_property['type_two_key'] = Translate::t($property['type_two']);
+        }
+        if (isset($property['property_type_two']['value'][$contentLang])) {
+            $f_property['property_type_two'] = Translate::t($property['property_type_two']['value'][$contentLang]);
+        }
+        if (isset($property['address']['formatted_address'])) {
+            $f_property['address'] = $property['address']['formatted_address'];
+        }
+        if (isset($property['street'])) {
+            $f_property['street'] = $property['street'];
+        }
+        if (isset($property['apartment_number'])) {
+            $f_property['apartment_number'] = $property['apartment_number'];
+        }
+        if (isset($property['bedrooms']) && $property['bedrooms'] > 0) {
+            $f_property['bedrooms'] = $property['bedrooms'];
+        }
+        if (isset($property['bathrooms']) && $property['bathrooms'] > 0) {
+            $f_property['bathrooms'] = $property['bathrooms'];
+        }
+        if (isset($property['current_price'])) {
+            $f_property['price'] = $property['current_price'];
+        }
+        if (isset($property['property_attachments']) && count($property['property_attachments']) > 0 && !isset($property['from_residential'])) {
+            $attachments = [];
+            $attachments_alt = [];
+            foreach ($property['property_attachments'] as $pic) {
+                if (isset($pic["publish_status"]) && !empty($pic["publish_status"])) {
+                    if (isset($pic['document']) && $pic['document'] != 1 && isset($set_options['image_size']) && !empty($set_options['image_size'])) {
+                        $attachments[] = config('params.property_img_resize_link') . '/' . $pic['model_id'] . '/' . $set_options['image_size'] . '/' .  urldecode($pic['file_md5_name']);
+                    } elseif (isset($pic['document']) && $pic['document'] != 1) {
+                        $attachments[] = config('params.com_img') . '/' . $pic['model_id'] . '/' .  urldecode($pic['file_md5_name']);
+                    }
+                    if (isset($pic['alt_description'][$lang]) && !empty($pic['alt_description'][$lang])) {
+                        $attachments_alt[] = $pic['alt_description'][$lang];
+                    }
+                }
+            }
+            $f_property['attachments'] = $attachments;
+            $f_property['attachments_alt'] = $attachments_alt;
+        } elseif (isset($property['attachments']) && count($property['attachments']) > 0 && isset($property['from_residential']) && $property['from_residential'] == 1) {
+            $attachments = [];
+            $attachments_alt = [];
+            foreach ($property['attachments'] as $pic) {
+                if (isset($pic["publish_status"]) && !empty($pic["publish_status"])) {
+                    if (isset($pic['document']) && $pic['document'] != 1 && isset($set_options['image_size']) && !empty($set_options['image_size'])) {
+                        // $attachments[] = Yii::$app->params['mls_img_url'] . (isset($property['agency']) ? $property['agency'] : '') . '/' . $pic['model_id'] . '/' . $set_options['image_size'] . '/' .  urldecode($pic['file_md5_name']);
+                        $attachments[] = config('params.img_url_without_wm') . '/' . $pic['model_id'] . '/' . $set_options['image_size'] . '/' .  urldecode($pic['file_md5_name']);
+                    } elseif (isset($pic['document']) && $pic['document'] != 1) {
+                        $attachments[] = config('params.img_url_without_wm') . '/' . $pic['model_id'] . '/1200/' .  urldecode($pic['file_md5_name']);
+                    }
+                    if (isset($pic['alt_description'][$lang]) && !empty($pic['alt_description'][$lang])) {
+                        $attachments_alt[] = $pic['alt_description'][$lang];
+                    }
+                }
+            }
+            $f_property['attachments'] = $attachments;
+            $f_property['attachments_alt'] = $attachments_alt;
+        }
+        $type_img = array('jpg', 'jpeg', 'png', 'gif', 'bmp', 'tif', 'tiff', 'webp', 'heic', 'heif', 'avif', 'raw', 'cr2', 'nef', 'arw', 'orf', 'dng');
+        if (isset($property['property_attachments']) && count($property['property_attachments']) > 0 && !isset($property['from_residential'])) {
+            $attachments_document = [];
+            foreach ($property['property_attachments'] as $pic) {
+                if (isset($pic["publish_status"]) && !empty($pic["publish_status"])) {
+                    $document = [];
+                    if (isset($pic['document']) && $pic['document'] == 1 && isset($set_options['image_size']) && !empty($set_options['image_size']) && isset($pic['file_type']) && in_array($pic['file_type'],  $type_img)) {
+                        $document["link"] = config('params.property_img_resize_link') . '/' . $pic['model_id'] . '/' . $set_options['image_size'] . '/' .  urldecode($pic['file_md5_name']);
+                        $document["type"] = isset($pic["identification_type"]) && !empty($pic["identification_type"]) ? $pic["identification_type"] : 'document';
+                        $document["file_type"] = isset($pic["file_type"]) && !empty($pic["file_type"]) ? $pic["file_type"] : '';
+                    } elseif (isset($pic['document']) && $pic['document'] == 1) {
+                        $document["link"] = config('params.com_img') . '/' . $pic['model_id'] . '/' .  urldecode($pic['file_md5_name']);
+                        $document["type"] = isset($pic["identification_type"]) && !empty($pic["identification_type"]) ? $pic["identification_type"] : 'document';
+                        $document["file_type"] = isset($pic["file_type"]) && !empty($pic["file_type"]) ? $pic["file_type"] : '';
+                    }
+                    $attachments_document[] = $document;
+                }
+            }
+            $f_property['attachments_document'] = array_filter($attachments_document);
+        } elseif (isset($property['attachments']) && count($property['attachments']) > 0 && isset($property['from_residential']) && $property['from_residential'] == 1) {
+            $attachments_document = [];
+            foreach ($property['attachments'] as $pic) {
+                if (isset($pic["publish_status"]) && !empty($pic["publish_status"])) {
+                    $document = [];
+                    if (isset($pic['document']) && $pic['document'] == 1 && isset($set_options['image_size']) && !empty($set_options['image_size']) && isset($pic['file_type']) && in_array($pic['file_type'],  $type_img)) {
+                        $document["link"] = config('params.img_url_without_wm') . '/' . $pic['model_id'] . '/' . $set_options['image_size'] . '/' .  urldecode($pic['file_md5_name']);
+                        $document["type"] = isset($pic["identification_type"]) && !empty($pic["identification_type"]) ? $pic["identification_type"] : 'document';
+                        $document["file_type"] = isset($pic["file_type"]) && !empty($pic["file_type"]) ? $pic["file_type"] : '';
+                    } elseif (isset($pic['document']) && $pic['document'] == 1) {
+                        $document["link"] = config('params.img_url_without_wm') . '/' . $pic['model_id'] . '/1200/' .  urldecode($pic['file_md5_name']);
+                        $attachments_document[]["type"] = isset($pic["identification_type"]) && !empty($pic["identification_type"]) ? $pic["identification_type"] : 'document';
+                        $document["file_type"] = isset($pic["file_type"]) && !empty($pic["file_type"]) ? $pic["file_type"] : '';
+                    }
+                    $attachments_document[] = $document;
+                }
+            }
+            $f_property['attachments_document'] = array_filter($attachments_document);
+        }
+        if (isset($property['title']) && $property['title'] != '') {
+            $f_property['title'] = isset($property['title'][$lang]) && !empty($property['title'][$lang]) ? $property['title'][$lang] : (isset($property['title']["EN"]) ? $property['title']["EN"] : "");
+        }
+        if (isset($property['bedrooms']) && $property['bedrooms'] != '') {
+            $f_property['bedrooms'] = $property['bedrooms'];
+        }
+        if (isset($property['bathrooms']) && $property['bathrooms'] != '') {
+            $f_property['bathrooms'] = $property['bathrooms'];
+        }
+        if (isset($property['plot']) && $property['plot'] != '') {
+            $f_property['plot'] = $property['plot'];
+        }
+        if (isset($property['built']) && $property['built'] != '') {
+            $f_property['built'] = $property['built'];
+        }
+        return $f_property;
     }
 }
