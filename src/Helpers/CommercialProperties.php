@@ -1829,7 +1829,7 @@ class CommercialProperties
         }
         $headers = Functions::getApiHeaders(['Content-Length' => strlen(json_encode($query))]);
         $response = Http::withHeaders($headers)->post($url, $query);
-        $response = $response->json();
+        $response = $response->status() == 200 ? $response->json() : [];
 
         $similar_project_properties = [];
         if (isset($response['similar_project_properties']) && !empty($response['similar_project_properties'])) {
