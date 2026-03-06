@@ -297,7 +297,9 @@ class Developments
         if (isset($property->property->reference) && $property->property->reference != '')
             $return_data['id'] = $property->property->reference;
 
-        if (isset($property->property->title->$lang) && $property->property->title->$lang != '')
+        if (isset($property->property->project_name) && $property->property->project_name != '')
+            $return_data['title'] = $property->property->project_name;
+        else if (isset($property->property->title->$lang) && $property->property->title->$lang != '')
             $return_data['title'] = $property->property->title->$lang;
         else
             $return_data['title'] = 'N/A';
