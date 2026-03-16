@@ -1314,6 +1314,10 @@ class CommercialProperties
         if (isset($property['similar_commercials']) && !empty($property['similar_commercials'])) {
             $f_property['similar_commercials'] = $property['similar_commercials'];
         }
+        
+        if (isset($property['listing_agent_id']) && !empty($property['listing_agent_id'])) {
+            $f_property['listing_agent_id'] = $property['listing_agent_id'];
+        }
 
         return $f_property;
     }
