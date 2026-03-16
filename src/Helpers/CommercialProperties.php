@@ -853,6 +853,10 @@ class CommercialProperties
             $f_property['province'] = $property['province_value'][$contentLang];
         }
 
+        if (isset($property['province'])) {
+            $f_property['province_key'] = $property['province'];
+        }
+
         if (isset($property['location'])) {
             $f_property['location_key'] = $property['location'];
         }
