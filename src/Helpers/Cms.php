@@ -591,9 +591,10 @@ class Cms
      *
      * @return mixed|string
     */
-    public static function getSlugByTagName($tag)
+    
+    public static function getSlugByTagName($tag, $lang = null)
     {
-        $lang = strtoupper(App::getLocale());
+        $lang = $lang ? strtoupper($lang) : strtoupper(App::getLocale());
         $file_data = self::getSlugs();
 
         foreach ($file_data as $data) {
