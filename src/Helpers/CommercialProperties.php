@@ -463,6 +463,14 @@ class CommercialProperties
             $query['has_images'] = self::$has_images;
         }
 
+        if(isset($get["updated_from"]) && !empty($get["updated_from"])){
+            $query['updated_from'] = $get["updated_from"];
+        }
+
+        if(isset($get["updated_to"]) && !empty($get["updated_to"])){
+            $query['updated_to'] = $get["updated_to"];
+        }
+
         // only_similar (only similar/with their units), exclude_similar (one per group + all not part of group), include_similar (all properties)
         // if(isset($get['similar_commercials']) && !empty($get['similar_commercials'])) {
         //     $query['similar_commercials'] = $get['similar_commercials'];
