@@ -201,6 +201,7 @@ class ContactUsRequest extends FormRequest
             'street_address' => '',
             'street_number' => '',
             'city_town' => '',
+            'commercial_profile' => '',
             'first_name' => 'required',
             // 'last_name' => 'required',
             'email' => 'required|email',
