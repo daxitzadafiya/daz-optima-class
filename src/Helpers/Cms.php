@@ -591,7 +591,7 @@ class Cms
      *
      * @return mixed|string
     */
-    
+
     public static function getSlugByTagName($tag, $lang = null)
     {
         $lang = $lang ? strtoupper($lang) : strtoupper(App::getLocale());
@@ -737,6 +737,8 @@ class Cms
     public function updateAgencyPageTemplates()
     {
         $post_templates = [];
+        $header = [];
+        $action = [];
         $files = (array) self::get_files('php', 1, true);
 
         foreach ($files as $file => $full_path) {
@@ -764,9 +766,7 @@ class Cms
 
         }
 
-        echo '<pre>';
-        print_r($post_templates);
-        die;
+        return $post_templates;
     }
 
     public static function get_files($type = null, $depth = 0, $search_parent = false)
@@ -935,7 +935,7 @@ class Cms
                 $query .= '&tag=' . $options['tag'];
             }
         }
-        
+
         if (isset($options['title']) && !empty($options['title'])) {
             $query .= '&title=' . $options['title'];
         }
@@ -958,17 +958,12 @@ class Cms
             $file_data = file_get_contents($file);
         }
 
-        $header = get_headers($url, 1);
         $data = json_decode($file_data, TRUE);
         $lang = strtoupper(App::getLocale());
         $ret_data = [];
         $array = [];
 
         foreach ($data as $key => $data_each) {
-            if (isset($header['X-Pagination-Total-Count'])) {
-                $array['totalCount'] = $header['X-Pagination-Total-Count'];
-            }
-
             $attachment_url = isset($data_each['featured_image'][$lang]['name']) ? self::$cms_img . '/' . $data_each['_id'] . '/' . $data_each['featured_image'][$lang]['name'] : '';
             if ($imageseo) {
                 $attachment_url = isset($data_each['featured_image'][$lang]['file_md5_name']) ? self::$cms_img . '/' . $data_each['_id'] . '/' . $data_each['featured_image'][$lang]['file_md5_name'] : $attachment_url;
