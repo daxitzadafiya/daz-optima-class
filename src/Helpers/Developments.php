@@ -303,7 +303,7 @@ class Developments
                 $return_data['id'] = $property->property->reference;
             if (isset($property->property->title->$lang) && $property->property->title->$lang != '')
                 $return_data['title'] = $property->property->title->$lang;
-            elseif (isset($property->property->project_name) && $property->property->project_name != '')        
+            elseif (isset($property->property->project_name) && $property->property->project_name != '')
                 $return_data['title'] = $property->property->project_name;
             else
                 $return_data['title'] = 'N/A';
@@ -351,7 +351,7 @@ class Developments
             if (isset($property->property->region)) {
                 $return_data['region'] = $property->property->region;
             }
-            
+
             if (isset($property->property->province)) {
                 $return_data['province'] = $property->property->province;
             }
@@ -422,7 +422,7 @@ class Developments
                             'image_url' => self::$dev_img . '/' . ($pic->model_id ?? '') . '/'.$attachments_size. ($pic->file_md5_name ?? ''),
                         ];
                     }
-                    
+
                 }
                 $return_data['attachments'] = $attachments;
             }
@@ -834,7 +834,7 @@ class Developments
         if (isset($get["bathrooms"]) && $get["bathrooms"] != "") {
             $query .= '&bathrooms[]=' . $get["bathrooms"] . '&bathrooms[]=50';
         }
-        
+
         if (isset($get["bedrooms_from"]) && $get["bedrooms_from"] != "") {
             if(config('params.bedrooms_range') == true){
                 $query .= '&bedrooms=' . $get["bedrooms_from"] . ',50';
@@ -842,7 +842,7 @@ class Developments
                 $query .= '&bedrooms_from=' . $get["bedrooms_from"] . '&bedrooms_to=50';
             }
         }
-        
+
         if (isset($get["bathrooms_from"]) && $get["bathrooms_from"] != "") {
             $query .= '&bathrooms_from=' . $get["bathrooms_from"] . '&bathrooms_to=50';
         }
@@ -887,6 +887,10 @@ class Developments
 
         if (isset($get["reference"]) && $get["reference"] != "") {
             $query .= '&reference=' . $get['reference'];
+        }
+
+        if (isset($get["project_name"]) && $get["project_name"] != "") {
+            $query .= '&project_name=' . $get['project_name'];
         }
 
         if (isset($get['phase_built_year']) && !empty($get['phase_built_year'])) {
@@ -1040,7 +1044,7 @@ class Developments
         if(isset($get['model']) && !empty($get['model'])){
             $url .= '&model='. $get['model'];
         }
-        
+
         // echo "<pre>";print_r($url);die;
         $JsonData = Functions::getCRMData($url, false);
         $property_pagination = json_decode($JsonData);
@@ -1048,7 +1052,7 @@ class Developments
             $property->properties = array_merge($property->properties , $property_pagination->properties);
         }
         // echo "<pre>";print_r($property->properties);die;
-        
+
         if (isset($property->properties_pagination) && isset($property_pagination->properties_pagination)) {
             $property->properties_pagination = $property_pagination->properties_pagination;
         }
