@@ -885,7 +885,9 @@ class Developments
             $query .= '&conditions[]=never_lived';
         }
 
-        if (isset($get["reference"]) && $get["reference"] != "") {
+        if ((isset($get["reference"]) && $get["reference"] != "") && (isset($get["search_all_references"]) && $get["search_all_references"] != "")) {
+            $query .= '&reference=' . $get['reference'] . '&search_all_references=true';
+        } elseif (isset($get["reference"]) && $get["reference"] != "") {
             $query .= '&reference=' . $get['reference'];
         }
 
