@@ -886,7 +886,7 @@ class Developments
         }
 
         if ((isset($get["reference"]) && $get["reference"] != "") && (isset($get["search_all_references"]) && $get["search_all_references"] != "")) {
-            $query .= '&reference=' . $get['reference'] . '&search_all_references=true';
+            $query .= '&reference=' . $get['reference'] . '&search_all_references=' . $get['search_all_references'];
         } elseif (isset($get["reference"]) && $get["reference"] != "") {
             $query .= '&reference=' . $get['reference'];
         }
