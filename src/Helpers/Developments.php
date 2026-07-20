@@ -308,6 +308,12 @@ class Developments
             else
                 $return_data['title'] = 'N/A';
 
+            if(isset($property->property->project_name) && $property->property->project_name != '') {
+                $return_data['project_name'] = $property->property->project_name;
+            } else {
+                $return_data['project_name'] = 'N/A';
+            }
+
             if (isset($property->property->city) && $property->property->city != '')
                 $return_data['city'] = $property->property->city;
 
