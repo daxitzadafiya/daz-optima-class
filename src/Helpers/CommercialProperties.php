@@ -71,7 +71,7 @@ class CommercialProperties
         if (isset($set_options['cache']) && $set_options['cache'] == true) {
             $response = self::DoCache($post_data, $node_url);
         } else {
-            
+
             $headers = Functions::getApiHeaders(['Content-Length' => strlen(json_encode($post_data))]);
             $response = Http::withHeaders($headers)->post($node_url, $post_data);
         }
@@ -458,7 +458,7 @@ class CommercialProperties
         if(isset($get["similar_project"]) && !empty($get["similar_project"])){
             $query['similar_project'] = $get["similar_project"];
         }
-        
+
         if(isset(self::$has_images) && !empty(self::$has_images) && !isset($query['_id'])){
             $query['has_images'] = self::$has_images;
         }
@@ -479,6 +479,28 @@ class CommercialProperties
         // }
 
         return $query;
+    }
+
+    public static function getPropertyFeaturesList($key)
+    {
+        return match ($key) {
+            1 => Translate::t('samsung'),
+            2 => Translate::t('lg'),
+            3 => Translate::t('whirlpool'),
+            4 => Translate::t('general_electric'),
+            5 => Translate::t('bosch'),
+            6 => Translate::t('panasonic'),
+            7 => Translate::t('sony'),
+            8 => Translate::t('philips'),
+            9 => Translate::t('siemens'),
+            10 => Translate::t('kitchenaid'),
+            11 => Translate::t('electrolux'),
+            12 => Translate::t('dyson'),
+            13 => Translate::t('haier'),
+            14 => Translate::t('miele'),
+            15 => Translate::t('frigidaire'),
+            default => null,
+        };
     }
 
     public static function formateProperty($property, $set_options = [])
@@ -515,7 +537,7 @@ class CommercialProperties
         if (isset($settings['general_settings']['reference']) && $settings['general_settings']['reference'] != 'reference') {
             $ref = $settings['general_settings']['reference'];
             $reference = isset($property['reference']) && !empty($property['reference']) ? $property['reference'] : '';
-            
+
             if(isset($property[$ref]) && !empty($property[$ref]) ) {
                 if($ref == "external_reference"){
                     $f_property['reference'] = isset($property['other_reference']) && !empty($property['other_reference']) ? $property['other_reference'] : $reference; // this is due to a historical change
@@ -1268,6 +1290,15 @@ class CommercialProperties
             }
         }
 
+        if(isset($property['kitchen']) && !empty($property['kitchen'])) {
+            foreach($property['kitchen'] as $key => $value) {
+                if($key === 'appliances_brand') {
+                    $value = self::getPropertyFeaturesList($value);
+                    $property['kitchen'][$key] = $value;
+                }
+            }
+        }
+
         $f_property['property_features'] = [];
         $f_property['property_features']['categories'] = $categories;
         $f_property['property_features']['setting'] = $setting;
@@ -1322,7 +1353,7 @@ class CommercialProperties
         if (isset($property['similar_commercials']) && !empty($property['similar_commercials'])) {
             $f_property['similar_commercials'] = $property['similar_commercials'];
         }
-        
+
         if (isset($property['listing_agent_id']) && !empty($property['listing_agent_id'])) {
             $f_property['listing_agent_id'] = $property['listing_agent_id'];
         }
@@ -1473,7 +1504,7 @@ class CommercialProperties
         $result = [];
         foreach ($array as $key => $value) {
             $new_key = $prefix === '' ? $key : $prefix . '_' . $key;
-            
+
             if (is_array($value)) {
                 $result = array_merge($result, self::flatten_key_value($value, $new_key));
             } else {
