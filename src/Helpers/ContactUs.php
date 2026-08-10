@@ -389,7 +389,7 @@ class ContactUs extends Model
             'address' => isset($this->address) ? $this->address : null,
             'property' => isset($this->reference) ? $this->reference : null,
             'classification' => isset($this->classification) ? $this->classification : null,
-            'newsletter' => isset($this->news_letter) && $this->news_letter == true ? $this->news_letter : false,
+            'newsletter' => isset($this->news_letter) && (bool) $this->news_letter == true ? $this->news_letter : false,
             'assigned_to' => isset($this->assigned_to) ? $this->assigned_to : null,
             'rent_from_date' => isset($this->arrival_date) ? $this->arrival_date : null,
             'rent_to_date' => isset($this->departure_date) ? $this->departure_date : null,
@@ -460,7 +460,7 @@ class ContactUs extends Model
             'street_number' => isset($this->street_number) ? $this->street_number : null,
             'commercial_profile' => isset($this->commercial_profile) ? $this->commercial_profile : null,
         );
-        
+
         $headers = Functions::getApiHeaders();
         $response = Http::withHeaders($headers)->post($url, $fields);
         $res = $response->json();

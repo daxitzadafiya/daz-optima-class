@@ -145,6 +145,7 @@ class ContactUsRequest extends FormRequest
             'application' => '',
             // 'cv_file' => '',
             'gdpr_status' => 'required',
+            'newsletter' => '',
             'buyer' => '',
             'listing_agency_email' => '',
             'listing_agency_id' => '',
