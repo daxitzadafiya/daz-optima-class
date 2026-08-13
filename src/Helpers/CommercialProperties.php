@@ -66,14 +66,14 @@ class CommercialProperties
         }
 
         $random_query = isset($get['random']) && !empty($get['random']) ? '&random=' . $get['random'] : '';
-        $node_url = self::$node_url . 'commercial_properties?user=' . self::$user . $random_query;
+        $commercial_url = self::$commercial_url . 'commercial_properties?user=' . self::$user . $random_query;
 
         if (isset($set_options['cache']) && $set_options['cache'] == true) {
-            $response = self::DoCache($post_data, $node_url);
+            $response = self::DoCache($post_data, $commercial_url);
         } else {
 
             $headers = Functions::getApiHeaders(['Content-Length' => strlen(json_encode($post_data))]);
-            $response = Http::withHeaders($headers)->post($node_url, $post_data);
+            $response = Http::withHeaders($headers)->post($commercial_url, $post_data);
         }
 
         $response = $response->json();
@@ -105,7 +105,7 @@ class CommercialProperties
 
         $headers = Functions::getApiHeaders();
 
-        $response = Http::withHeaders($headers)->post(self::$node_url . 'commercial_properties/view/' . $id . '?user=' . self::$user, $post_data);
+        $response = Http::withHeaders($headers)->post(self::$commercial_url . 'commercial_properties/view/' . $id . '?user=' . self::$user, $post_data);
 
         $response = $response->json();
 
@@ -1400,8 +1400,8 @@ class CommercialProperties
     {
         self::initialize();
         $webroot = public_path() . '/uploads/';
-        $node_url = self::$node_url . 'commercial_properties/find-all?user=' . self::$user . (isset($qry) && $qry == 'true' ? '&latLang=1' : '');
-        $node_url = isset($selectedFields) && !empty($selectedFields) ? ($node_url . $selectedFields) : $node_url;
+        $commercial_url = self::$commercial_url . 'commercial_properties/find-all?user=' . self::$user . (isset($qry) && $qry == 'true' ? '&latLang=1' : '');
+        $commercial_url = isset($selectedFields) && !empty($selectedFields) ? ($commercial_url . $selectedFields) : $commercial_url;
         $query = [];
         $sort = ['current_price' => '-1'];
         $query_array = [];
@@ -1485,7 +1485,7 @@ class CommercialProperties
 
         if (!$cache || !file_exists($file) || (file_exists($file) && (time() - filemtime($file) > 2 * 3600))) {
             $headers = Functions::getApiHeaders();
-            $response = Http::withHeaders($headers)->post($node_url, $post_data)->json();
+            $response = Http::withHeaders($headers)->post($commercial_url, $post_data)->json();
             $file_data = json_encode($response);
             file_put_contents($file, $file_data);
         } else {
@@ -1528,10 +1528,10 @@ class CommercialProperties
             'id' => $id
         ];
 
-        $node_url = self::$node_url . 'commercial_properties/get-properties-with-transaction-types/' . $transaction_type . '?user=' . self::$user;
+        $commercial_url = self::$commercial_url . 'commercial_properties/get-properties-with-transaction-types/' . $transaction_type . '?user=' . self::$user;
 
         $headers = Functions::getApiHeaders();
-        $response = Http::withHeaders($headers)->post($node_url, $post_data)->json();
+        $response = Http::withHeaders($headers)->post($commercial_url, $post_data)->json();
 
         $properties = [];
         if (isset($response) && isset($response['docs']))
@@ -1726,13 +1726,13 @@ class CommercialProperties
 
         $headers = Functions::getApiHeaders();
         if (isset($data['prop_id']) && !empty($data['prop_id'])) {
-            $node_url = self::$node_url . 'commercial_properties/update/' . $data['prop_id'] . '?user=' . $data['user_id'];
+            $commercial_url = self::$commercial_url . 'commercial_properties/update/' . $data['prop_id'] . '?user=' . $data['user_id'];
 
-            return Http::withHeaders($headers)->put($node_url, $fields)->json();
+            return Http::withHeaders($headers)->put($commercial_url, $fields)->json();
         } else {
-            $node_url = self::$node_url . 'commercial_properties/create?user=' . $data['user_id'];
+            $commercial_url = self::$commercial_url . 'commercial_properties/create?user=' . $data['user_id'];
 
-            return Http::withHeaders($headers)->post($node_url, $fields)->json();
+            return Http::withHeaders($headers)->post($commercial_url, $fields)->json();
         }
     }
 
@@ -1789,7 +1789,7 @@ class CommercialProperties
     public static function getAllUserProperties($query, $options = ['page' => 1, 'limit' => 10], $sort = ['current_price' => '-1'])
     {
         self::initialize();
-        $node_url = self::$node_url . 'commercial_properties/get-all-properties-of-user/?user=' . $query['_id'];
+        $commercial_url = self::$commercial_url . 'commercial_properties/get-all-properties-of-user/?user=' . $query['_id'];
         $post_data['options'] = [
             'page' => isset($options['page']) ? (int)$options['page'] : 1,
             'limit' => isset($options['limit']) ? (int)$options['limit'] : 10,
@@ -1802,7 +1802,7 @@ class CommercialProperties
         ];
 
         $headers = Functions::getApiHeaders();
-        return Http::withHeaders($headers)->post($node_url, $post_data)->json();
+        return Http::withHeaders($headers)->post($commercial_url, $post_data)->json();
     }
 
     public static function getCadastralData()
@@ -1811,9 +1811,9 @@ class CommercialProperties
         $file = Functions::directory() . 'cadastral-data.json';
 
         if (!file_exists($file) || (file_exists($file) && time() - filemtime($file) > 2 * 3600)) {
-            $node_url = self::$node_url . 'commercial_properties/get-all-agencies-of-same-cadastral-number/?user=' . self::$user;
+            $commercial_url = self::$commercial_url . 'commercial_properties/get-all-agencies-of-same-cadastral-number/?user=' . self::$user;
             $headers = Functions::getApiHeaders();
-            $file_data = Http::withHeaders($headers)->post($node_url)->body();
+            $file_data = Http::withHeaders($headers)->post($commercial_url)->body();
 
             file_put_contents($file, $file_data);
         } else {
@@ -1826,7 +1826,7 @@ class CommercialProperties
     public static function getCadastralProperties($same_cadastral_prop_ids)
     {
         self::initialize();
-        $url = self::$node_url . '/commercial_properties/get-same-properties-of-cadastral-number/?user=' . self::$user;
+        $url = self::$commercial_url . '/commercial_properties/get-same-properties-of-cadastral-number/?user=' . self::$user;
         $query['query'] = [
             'ids' => $same_cadastral_prop_ids,
         ];
@@ -1865,7 +1865,7 @@ class CommercialProperties
     public static function getProjectDetailsWiseProperties($id, $set_options = [])
     {
         self::initialize();
-        $url = self::$node_url . 'commercial_properties/project-related-properties/' . $id . '?user=' . self::$user;
+        $url = self::$commercial_url . 'commercial_properties/project-related-properties/' . $id . '?user=' . self::$user;
         $query['query'] = [
             'status' => (isset(self::$status) && !empty(self::$status) ? self::$status : ['Available', 'Under Offer']),
         ];

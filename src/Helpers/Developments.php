@@ -1098,7 +1098,7 @@ class Developments
             $query_data['query']['has_images'] = true;
         }
 
-        $baseNodeUrl = rtrim(self::$node_url ?? '', '/');
+        $baseNodeUrl = rtrim(self::$commercial_url ?? '', '/');
         $url = $baseNodeUrl . '/commercial_properties/commercial-construction?user=' . self::$user . '&ref=' . $query['reference'];
 
         $body = json_encode($query_data);

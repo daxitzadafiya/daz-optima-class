@@ -53,7 +53,7 @@ class PropertiesNew
             $query .= self::setQuery();
         }
 
-        $url = self::$node_url . 'properties?user_apikey=' . self::$api_key . $query;
+        $url = self::$commercial_url . 'properties?user_apikey=' . self::$api_key . $query;
 
         $headers = Functions::getApiHeaders();
         if (!request()->has('isConsoleRequest)') && request()->input('pids') !== null) {
@@ -939,7 +939,7 @@ class PropertiesNew
 
         if (isset($reference) && !empty($reference)) {
 
-            $url = self::$node_url . 'properties/view-by-ref?ref=' . $reference . '&ip=' . Request::ip() . '&user_apikey=' . self::$api_key;
+            $url = self::$commercial_url . 'properties/view-by-ref?ref=' . $reference . '&ip=' . Request::ip() . '&user_apikey=' . self::$api_key;
 
             if (isset($with_booking) && $with_booking == true) {
                 $url .= '&with_booking=true';
@@ -3481,9 +3481,9 @@ class PropertiesNew
         $query = '';
         $file = Functions::directory() . 'location_groups' . $query . '.json';
         if (!file_exists($file) || (file_exists($file) && time() - filemtime($file) > 2 * 3600)) {
-            $node_url = self::$node_url . '/properties/location-groups-key-value?user_apikey=' . self::$api_key . $query;
+            $commercial_url = self::$commercial_url . '/properties/location-groups-key-value?user_apikey=' . self::$api_key . $query;
             $headers = Functions::getApiHeaders();
-            $file_data = Http::withHeaders($headers)->get($node_url);
+            $file_data = Http::withHeaders($headers)->get($commercial_url);
             if (json_decode($file_data, true)) {
                 file_put_contents($file, $file_data);
             }
@@ -3649,11 +3649,11 @@ class PropertiesNew
 
         $headers = Functions::getApiHeaders();
         if (isset($data['prop_id']) && !empty($data['prop_id'])) {
-            $node_url = self::$node_url . 'commercial_properties/update/' . $data['prop_id'] . '?user=' . self::$user;
-            $response = Http::withHeaders($headers)->withBody(json_encode($fields), 'application/json')->put($node_url);
+            $commercial_url = self::$commercial_url . 'commercial_properties/update/' . $data['prop_id'] . '?user=' . self::$user;
+            $response = Http::withHeaders($headers)->withBody(json_encode($fields), 'application/json')->put($commercial_url);
         } else {
-            $node_url = self::$node_url . 'commercial_properties/create?user=' . self::$user;
-            $response = Http::withHeaders($headers)->withBody(json_encode($fields), 'application/json')->post($node_url);
+            $commercial_url = self::$commercial_url . 'commercial_properties/create?user=' . self::$user;
+            $response = Http::withHeaders($headers)->withBody(json_encode($fields), 'application/json')->post($commercial_url);
         }
 
         return $response->json();

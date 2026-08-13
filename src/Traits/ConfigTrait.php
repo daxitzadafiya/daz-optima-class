@@ -5,6 +5,7 @@ namespace Daxit\OptimaClass\Traits;
 trait ConfigTrait
 {
     protected static $rootUrl;
+    protected static $commercial_url;
     protected static $apiUrl;
     protected static $site_id;
     protected static $user;
@@ -46,6 +47,7 @@ trait ConfigTrait
     protected static function initialize()
     {
         self::$rootUrl = config('params.rootUrl');
+        self::$commercial_url = config('params.commercial_url');
         self::$apiUrl = config('params.apiUrl');
         self::$site_id = config('params.site_id');
         self::$user = config('params.user');
