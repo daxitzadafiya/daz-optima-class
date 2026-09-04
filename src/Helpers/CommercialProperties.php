@@ -135,8 +135,12 @@ class CommercialProperties
             $query['current_price'] = $current_price;
         }
 
-        if (isset($get['reference']) && !empty($get['reference'])) {
-            $query['$or'] = [
+        $hasReference = isset($get['reference']) && $get['reference'] !== '' && $get['reference'] !== null;
+        $referenceOr = null;
+        if ($hasReference) {
+            // Match exact reference OR other/external reference text.
+            // Keep this as its own clause so type/location filters cannot leak into the same $or.
+            $referenceOr = [
                 ["reference" => (int) $get['reference']],
                 ["other_reference" => ['$regex' => ".*" . $get['reference'] . ".*", '$options' => "i"]],
                 ["external_reference" => ['$regex' => ".*" . $get['reference'] . ".*", '$options' => "i"]]
@@ -183,7 +187,33 @@ class CommercialProperties
             foreach ($get['type'] as $int_val) {
                 $intArray[] = (int) $int_val;
             }
-            $query['type_one'] = ['$in' => $intArray];
+            if(config('params.exclude_type_two') == true) {
+                if(isset($get['or_sub_type']) && !empty($get['or_sub_type'])){
+                    $typeCondition = ["type_one" => ['$in' => $intArray], "type_two" => ['$nin' => $get['or_sub_type']]];
+                    if ($hasReference) {
+                        // Reference + type must be AND, not merged into one $or
+                        $query['$and'] = array_merge($query['$and'] ?? [], [['$or' => $referenceOr], $typeCondition]);
+                        $referenceOr = null;
+                    } else {
+                        $query['$or'] = array_merge($query['$or'] ?? [], [$typeCondition]);
+                    }
+                } elseif (isset($get['add_sub_type']) && !empty($get['add_sub_type'])){
+                    $typeOr = [["type_one" => ['$in' => $intArray]], ["type_two" => ['$in' => $get['add_sub_type']]]];
+                    if ($hasReference) {
+                        $query['$and'] = array_merge($query['$and'] ?? [], [['$or' => $referenceOr], ['$or' => $typeOr]]);
+                        $referenceOr = null;
+                    } else {
+                        $query['$or'] = array_merge($query['$or'] ?? [], $typeOr);
+                    }
+                }
+            } else {
+                $query['type_one'] = ['$in' => $intArray];
+            }
+        }
+
+        // Reference-only (or reference + non-$or type filters): keep top-level $or.
+        if ($referenceOr !== null) {
+            $query['$or'] = array_merge($query['$or'] ?? [], $referenceOr);
         }
 
         if (isset($get['sub_type']) && !empty($get['sub_type']) && is_array($get['sub_type']) && count($get['sub_type']) > 0 && $get['sub_type'][0] != 0 && $get['sub_type'][0] != '' && $get['sub_type'][0] != '0') {
