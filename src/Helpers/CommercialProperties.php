@@ -1879,6 +1879,7 @@ class CommercialProperties
 
     public static function getAgency()
     {
+        self::initialize();
         $file = Functions::directory() . 'agency' . '.json';
         $url = self::$apiUrl . 'properties/agency&user_apikey=' . self::$api_key;
         if (!file_exists($file) || (file_exists($file) && time() - filemtime($file) > 2 * 3600)) {
